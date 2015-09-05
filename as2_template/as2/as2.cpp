@@ -1,5 +1,5 @@
 // The template code for Assignment 2 
-// Authors: Jeremy Griffith 
+// Authors Jeremy Griffith 
 
 #include <stdio.h>
 #include <stdlib.h>

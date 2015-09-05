@@ -46,6 +46,9 @@ Temporary Items
 # Visual Studios Files
 # ===========================
 
-*.sdf
+# Files
 *.opensdf
-*.suo
+*.sdf
+
+# Directories
+.vs
