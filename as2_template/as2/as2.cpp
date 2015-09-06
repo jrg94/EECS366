@@ -1,4 +1,4 @@
-// Author Jeremy Griffith 
+// Author Jeremy Griffith
 
 #include <stdio.h>
 #include <stdlib.h>
