@@ -9,7 +9,6 @@
 #define ON 1
 #define OFF 0
 
-
 // Global variables
 int window_width, window_height;    // Window dimensions
 
@@ -23,6 +22,8 @@ int lasty = 0;	// Holds last y position
 int rotx = 0;	// Holds the x rotation
 int roty = 0;	// Holds the y rotation
 
+double zoom_distance = 1;		// Holds the zoom distance
+
 int zoom_flag = OFF;		// Holds the zoom state
 int rotate_flag = OFF;		// Holds the rotate state
 
@@ -32,8 +33,10 @@ void drawRedRectangle(void);
 void drawBlueTetrahedron(void);
 void drawGreenLine(void);
 
-// Vertex and Face data structure used in the mesh reader
-// Feel free to change them
+/**
+ * Vertex and Face data structure used in the mesh reader
+ * Feel free to change them
+ */
 typedef struct _point {
   float x,y,z;
 } point;
@@ -175,7 +178,8 @@ void	display(void)
 
 	glTranslatef(0, 0, -3);
 	glRotatef(rotx, 0, 1, 0); 
-	glRotatef(roty, 1, 0, 0);  
+	glRotatef(roty, 1, 0, 0); 
+	glScalef(zoom_distance, zoom_distance, zoom_distance);
 
 	if (AXES) {
 		//Axes are on
@@ -219,8 +223,10 @@ void	display(void)
 }
 
 
-// This function is called whenever the window is resized. 
-// Parameters are the new dimentions of the window
+/**
+ * This function is called whenever the window is resized. 
+ * Parameters are the new dimentions of the window
+ */
 void	resize(int x,int y)
 {
     glViewport(0,0,x,y);
@@ -236,7 +242,9 @@ void	resize(int x,int y)
     printf("Resized to %d %d\n",x,y);
 }
 
-// Rotates the camera
+/**
+ * Rotates the camera
+ */
 void rotation(int dirx, int diry)
 {
 	rotx = rotx + dirx;
@@ -262,25 +270,37 @@ void rotation(int dirx, int diry)
 	glutPostRedisplay();
 }
 
+/**
+ * Zooms the camera
+ */
 void zoom(int direction)
 {
-	if (direction > 0)
-		glScaled(2, 2, 2);
-	else if (direction < 0)
-		glScaled(.5, .5, .5);
+	
+	zoom_distance = zoom_distance + (direction / 20.0);
+
+	// Limits zoom to half the size of the original object
+	if (zoom_distance < .5) {
+		zoom_distance = .5;
+	}
+	// Limits zoom to twice the size of the original object
+	else if (zoom_distance > 2) {
+		zoom_distance = 2;
+	}
 
 	//Redisplay object
 	glutPostRedisplay();
 }
 
-// This function is called whenever the mouse is pressed or released
-// button is a number 0 to 2 designating the button
-// state is 1 for release 0 for press event
-// x and y are the location of the mouse (in window-relative coordinates)
-//
-// Button 0 - Left click
-// Button 1 - Scroll wheel click
-// Button 2 - Right click
+/**
+ * This function is called whenever the mouse is pressed or released
+ * button is a number 0 to 2 designating the button
+ * state is 1 for release 0 for press event
+ * x and y are the location of the mouse (in window-relative coordinates)
+ *
+ * Button 0 - Left click
+ * Button 1 - Scroll wheel click
+ * Button 2 - Right click
+ */
 void	mouseButton(int button, int state, int x, int y)
 {
 	lastx = x;
@@ -307,10 +327,12 @@ void	mouseButton(int button, int state, int x, int y)
 }
 
 
-// This function is called whenever the mouse is moved with a mouse button held down.
-// x and y are the location of the mouse (in window-relative coordinates)
-//
-// Saves position data based on drag events
+/**
+ * This function is called whenever the mouse is moved with a mouse button held down.
+ * x and y are the location of the mouse (in window-relative coordinates)
+ *
+ * Saves position data based on drag events
+ */
 void	mouseMotion(int x, int y)
 {
 	int dirx;
@@ -328,7 +350,7 @@ void	mouseMotion(int x, int y)
 	}
 	// If in the zoom state, zoom
 	else if (zoom_flag == 1) {
-		 
+		zoom(diry);
 	}
 
 	lastx = x;
@@ -342,9 +364,11 @@ void	mouseMotion(int x, int y)
 }
 
 
-// This function is called whenever there is a keyboard input
-// key is the ASCII value of the key pressed
-// x and y are the location of the mouse
+/**
+ * This function is called whenever there is a keyboard input
+ * key is the ASCII value of the key pressed
+ * x and y are the location of the mouse
+ */
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
@@ -393,7 +417,9 @@ void	keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-// A convenience function for drawing the axes
+/**
+ * A convenience function for drawing the axes
+ */
 void drawAxes(void)
 {
 	glColor3f(0.5, 0.5, 0.5);
@@ -412,7 +438,9 @@ void drawAxes(void)
 	glEnd();
 }
 
-// A convenience function for drawing a red rectangle
+/**
+ * A convenience function for drawing a red rectangle
+ */
 void drawRedRectangle(void)
 {
 	// Draw a red rectangle
@@ -425,7 +453,9 @@ void drawRedRectangle(void)
 	glEnd();
 }
 
-// A convenience function for drawing a blue tetrahedron
+/**
+ * A convenience function for drawing a blue tetrahedron
+ */
 void drawBlueTetrahedron(void)
 {
 	// Draw a blue tetraheadron
@@ -449,7 +479,9 @@ void drawBlueTetrahedron(void)
 	glEnd();
 }
 
-// A convenience function for drawing a green line
+/**
+ * A convenience function for drawing a green line
+ */
 void drawGreenLine(void)
 {
 	// Draw a green line
@@ -460,13 +492,15 @@ void drawGreenLine(void)
 	glEnd();
 }
 
-// Here's the main
+/**
+ * The main function
+ */
 int main(int argc, char* argv[])
 {
     // Initialize GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutCreateWindow("Assignment 2 Template (orthogonal)");
+    glutCreateWindow("Assignment 2 (orthogonal)");
     glutDisplayFunc(display);
     glutReshapeFunc(resize);
     glutMouseFunc(mouseButton);
