@@ -13,18 +13,18 @@
 // Global variables
 int window_width, window_height;    // Window dimensions
 
-int PERSPECTIVE = OFF;
-int AXES = OFF;
-int OBJECT = OFF;
+int PERSPECTIVE = OFF;	
+int AXES = ON;
+int OBJECT = ON;
 
-int lastx = 0;
-int lasty = 0;
+int lastx = 0;	// Holds last x position
+int lasty = 0;	// Holds last y position
 
-int rotx = 0;
-int roty = 0;
+int rotx = 0;	// Holds the x rotation
+int roty = 0;	// Holds the y rotation
 
-int zoom_flag = 0;
-int rotate_flag = 1;
+int zoom_flag = OFF;		// Holds the zoom state
+int rotate_flag = OFF;		// Holds the rotate state
 
 // Functions
 void drawAxes(void);
@@ -47,8 +47,10 @@ int verts, faces, norms;    // Number of vertices, faces and normals in the syst
 point *vertList, *normList; // Vertex and Normal Lists
 faceStruct *faceList;	    // Face List
 
-// The mesh reader itself
-// It can read *very* simple obj files
+/**
+ * The mesh reader itself
+ * It can read *very* simple obj files
+ */
 void meshReader (char *filename,int sign)
 {
   float x,y,z,len;
@@ -161,10 +163,11 @@ void meshReader (char *filename,int sign)
 }
 
 
-
-// The display function. It is called whenever the window needs
-// redrawing (ie: overlapping window moves, resize, maximize)
-// You should redraw your polygons here
+/** 
+ * The display function. It is called whenever the window needs
+ * redrawing (ie: overlapping window moves, resize, maximize)
+ * You should redraw your polygons here
+ */
 void	display(void)
 {
     // Clear the background
@@ -180,8 +183,10 @@ void	display(void)
 	}
 
 	if (OBJECT) {
-		//object is turned on
-		//TODO Make work
+		// Object is turned on
+
+		// Draw a blue tetrahedron
+		drawBlueTetrahedron();
 	}
    
 	if (PERSPECTIVE) {
@@ -207,15 +212,6 @@ void	display(void)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// Draw a red rectangle
-	drawRedRectangle();
-
-    // Draw a blue tetrahedron
-	drawBlueTetrahedron();
-
-    // Draw a green line
-	drawGreenLine();
-
     // (Note that the origin is lower left corner)
     // (Note also that the window spans (0,1) )
     // Finish drawing, update the frame buffer, and swap buffers
@@ -240,6 +236,7 @@ void	resize(int x,int y)
     printf("Resized to %d %d\n",x,y);
 }
 
+// Rotates the camera
 void rotation(int dirx, int diry)
 {
 	rotx = rotx + dirx;
@@ -291,16 +288,16 @@ void	mouseButton(int button, int state, int x, int y)
 
 	// If left click is pressed, set rotate flag to 1
 	if (button == 0 && state == 0) {
-		rotate_flag = 1;
+		rotate_flag = ON;
 	// If left click is released, set rotate flag to 0
 	} else if (button == 0 && state == 1) {
-		rotate_flag = 0;
+		rotate_flag = OFF;
 	// If right click is pressed, set zoom flag to 1
 	} else if (button == 2 && state == 0) {
-		zoom_flag = 1;
+		zoom_flag = ON;
 	// If right click is released, set zoom flag to 0
 	} else if (button == 2 && state == 1) {
-		zoom_flag = 0;
+		zoom_flag = OFF;
 	}
 
 	//When button 0 is in state 0, use mouseMotion to figure out the direction to rotate
@@ -322,7 +319,7 @@ void	mouseMotion(int x, int y)
 	// dirx stores the difference between x and lastx
 	dirx = lastx - x;
 	// dir stores the differenc between y and last y
-	diry = lasty - y;
+	diry = y - lasty;
 	
 
 	// If in the rotate state, rotate
@@ -403,15 +400,15 @@ void drawAxes(void)
 	glBegin(GL_LINES);
 		glColor3f(0.5, 0.0, 0.0);
 		glVertex3f(0, 0.0, 0.0);
-		glVertex3f(1.0, 0.0, 0.0);
+		glVertex3f(2.0, 0.0, 0.0);
 
 		glColor3f(0.0, 0.5, 0.0);
-		glVertex3f(0.0, 1.0, 0.0);
+		glVertex3f(0.0, 2.0, 0.0);
 		glVertex3f(0.0, 0, 0.0);
 
 		glColor3f(0.0, 0.0, 0.5);
 		glVertex3f(0.0, 0.0, 0);
-		glVertex3f(0.0, 0.0, 1.0);
+		glVertex3f(0.0, 0.0, 2.0);
 	glEnd();
 }
 
