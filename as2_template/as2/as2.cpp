@@ -22,6 +22,8 @@ int lasty = 0;	// Holds last y position
 int rotx = 0;	// Holds the x rotation
 int roty = 0;	// Holds the y rotation
 
+double zoom_distance = 1;		// Holds the zoom distance
+
 int zoom_flag = OFF;		// Holds the zoom state
 int rotate_flag = OFF;		// Holds the rotate state
 
@@ -176,7 +178,8 @@ void	display(void)
 
 	glTranslatef(0, 0, -3);
 	glRotatef(rotx, 0, 1, 0); 
-	glRotatef(roty, 1, 0, 0);  
+	glRotatef(roty, 1, 0, 0); 
+	glScalef(zoom_distance, zoom_distance, zoom_distance);
 
 	if (AXES) {
 		//Axes are on
@@ -272,10 +275,17 @@ void rotation(int dirx, int diry)
  */
 void zoom(int direction)
 {
-	if (direction > 0)
-		glScaled(2, 2, 2);
-	else if (direction < 0)
-		glScaled(.5, .5, .5);
+	
+	zoom_distance = zoom_distance + (direction / 20.0);
+
+	// Limits zoom to half the size of the original object
+	if (zoom_distance < .5) {
+		zoom_distance = .5;
+	}
+	// Limits zoom to twice the size of the original object
+	else if (zoom_distance > 2) {
+		zoom_distance = 2;
+	}
 
 	//Redisplay object
 	glutPostRedisplay();
@@ -340,7 +350,7 @@ void	mouseMotion(int x, int y)
 	}
 	// If in the zoom state, zoom
 	else if (zoom_flag == 1) {
-		 
+		zoom(diry);
 	}
 
 	lastx = x;
