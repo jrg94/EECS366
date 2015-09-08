@@ -13,8 +13,14 @@
 // Global variables
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
+int AXES = OFF;
+int OBJECT = OFF;
+int startx = 0;
+int starty = 0;
+int direcx = 0;
+int direcy = 0;
 
-// Vertex and Face data structure sued in the mesh reader
+// Vertex and Face data structure used in the mesh reader
 // Feel free to change them
 typedef struct _point {
   float x,y,z;
@@ -151,6 +157,32 @@ void	display(void)
 {
     // Clear the background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if (AXES) {
+		//Axes are on
+		glColor3f(1, 0, 0); //x axis
+		glBegin(GL_LINES);
+			glVertex3f(.5, .5, .5);
+			glVertex3f(1, .5, .5);
+		glEnd();
+
+		glColor3f(0, 1, 0); //z axis
+		glBegin(GL_LINES);
+			glVertex3f(.5, .5, .5);
+			glVertex3f(.5, .5, 1);
+		glEnd();
+
+		glColor3f(0, 0, 1); //y axis
+		glBegin(GL_LINES);
+			glVertex3f(.5, .5, .5);
+			glVertex3f(.5, 1, .5);
+		glEnd();
+	}
+
+	if (OBJECT) {
+		//object is turned on
+		//TODO Make work
+	}
    
 	if (PERSPECTIVE) {
 		// Perpective Projection 
@@ -235,6 +267,27 @@ void	resize(int x,int y)
     printf("Resized to %d %d\n",x,y);
 }
 
+void rotation(void)
+{
+	if (direcx > 0)
+		glRotated(20, .5, .5, .5);
+	else if (direcx < 0)
+		glRotated(-20, .5, .5, .5);
+
+	//Redisplay object
+	glutPostRedisplay();
+}
+
+void zoom(void)
+{
+	if (direcy > 0)
+		glScaled(2, 2, 2);
+	else if (direcy < 0)
+		glScaled(.5, .5, .5);
+
+	//Redisplay object
+	glutPostRedisplay();
+}
 
 // This function is called whenever the mouse is pressed or released
 // button is a number 0 to 2 designating the button
@@ -242,6 +295,14 @@ void	resize(int x,int y)
 // x and y are the location of the mouse (in window-relative coordinates)
 void	mouseButton(int button,int state,int x,int y)
 {
+	startx = x;
+	starty = y;
+	if (button == 0 && state == 0)
+		rotation();
+	else if (button == 1 && state == 0)
+		zoom();
+	//When button 0 is in state 0, use mouseMotion to figure out the direction to rotate
+	//When button 1 is in state 0, use mouseMotion to figure out the direction to zoom
     printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
 }
 
@@ -250,6 +311,24 @@ void	mouseButton(int button,int state,int x,int y)
 // x and y are the location of the mouse (in window-relative coordinates)
 void	mouseMotion(int x, int y)
 {
+	int dirx;
+	int diry;
+	dirx = x - startx;
+	diry = y - starty;
+
+	if (dirx > 0)
+		direcx = 1;
+	else if (dirx < 0)
+		direcx = -1;
+	if (diry > 0)
+		direcy = 1;
+	else if (diry < 0)
+		direcy = -1;
+
+	//When moving left, rotate clockwise
+	//When moving right, rotate counterclockwise
+	//When moving up, zoom in
+	//When moving down, zoom out
 	printf("Mouse is at %d, %d\n", x,y);
 }
 
@@ -260,7 +339,7 @@ void	mouseMotion(int x, int y)
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-    case '':                           /* Quit */
+    case 'q':                           /* Quit */
 		exit(1);
 		break;
     case 'p':
@@ -275,6 +354,28 @@ void	keyboard(unsigned char key, int x, int y)
 			PERSPECTIVE = ON;
 		}
 		break;
+	case 'a':
+		//Toggle Axes Display
+		if (AXES) {
+			//switch axes off
+			AXES = OFF;
+		}
+		else {
+			//switch axes on
+			AXES = ON;
+		}
+		break;
+	case 's':
+		//Toggle Object Display
+		if (OBJECT) {
+			//switch object off
+			OBJECT = OFF;
+		}
+		else {
+			//switch object back on
+			OBJECT = ON;
+		}
+		break;
     default:
 		break;
     }
@@ -282,7 +383,6 @@ void	keyboard(unsigned char key, int x, int y)
     // Schedule a new display event
     glutPostRedisplay();
 }
-
 
 // Here's the main
 int main(int argc, char* argv[])
