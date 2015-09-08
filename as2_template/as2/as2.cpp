@@ -12,13 +12,25 @@
 
 // Global variables
 int window_width, window_height;    // Window dimensions
+
 int PERSPECTIVE = OFF;
 int AXES = OFF;
 int OBJECT = OFF;
-int startx = 0;
-int starty = 0;
-int direcx = 0;
-int direcy = 0;
+
+int lastx = 0;
+int lasty = 0;
+
+int rotx = 0;
+int roty = 0;
+
+int zoom_flag = 0;
+int rotate_flag = 1;
+
+// Functions
+void drawAxes(void);
+void drawRedRectangle(void);
+void drawBlueTetrahedron(void);
+void drawGreenLine(void);
 
 // Vertex and Face data structure used in the mesh reader
 // Feel free to change them
@@ -158,25 +170,13 @@ void	display(void)
     // Clear the background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glTranslatef(0, 0, -3);
+	glRotatef(rotx, 0, 1, 0); 
+	glRotatef(roty, 1, 0, 0);  
+
 	if (AXES) {
 		//Axes are on
-		glColor3f(1, 0, 0); //x axis
-		glBegin(GL_LINES);
-			glVertex3f(.5, .5, .5);
-			glVertex3f(1, .5, .5);
-		glEnd();
-
-		glColor3f(0, 1, 0); //z axis
-		glBegin(GL_LINES);
-			glVertex3f(.5, .5, .5);
-			glVertex3f(.5, .5, 1);
-		glEnd();
-
-		glColor3f(0, 0, 1); //y axis
-		glBegin(GL_LINES);
-			glVertex3f(.5, .5, .5);
-			glVertex3f(.5, 1, .5);
-		glEnd();
+		drawAxes();
 	}
 
 	if (OBJECT) {
@@ -207,41 +207,14 @@ void	display(void)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // Draw a red rectangle
-    glColor3f(1,0,0);
-	glBegin(GL_POLYGON);
-		glVertex3f(0.8,0.8,-0.8);
-		glVertex3f(0.8,-0.8,-0.8);
-		glVertex3f(-0.8,-0.8,-0.0);
-		glVertex3f(-0.8,0.8,-0.0);
-    glEnd();
+	// Draw a red rectangle
+	drawRedRectangle();
 
-    // Draw a blue tetraheadron
-    glColor3f(0,0,1);
-    glBegin(GL_TRIANGLES);
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(-0.8,-0.4,0.8);
-
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(0.0,-0.4,-0.8);
-
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.0,-0.4,-0.8);
-		glVertex3f(-0.8,-0.4,0.8);
-
-		glVertex3f(-0.8,-0.4,0.8);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(0.0,-0.4,-0.8);
-    glEnd();
+    // Draw a blue tetrahedron
+	drawBlueTetrahedron();
 
     // Draw a green line
-    glColor3f(0,1,0);
-    glBegin(GL_LINES);
-		glVertex3f(1.8,1.8,0.0);
-		glVertex3f(0.1,0.1,0.0);
-    glEnd();
+	drawGreenLine();
 
     // (Note that the origin is lower left corner)
     // (Note also that the window spans (0,1) )
@@ -267,22 +240,36 @@ void	resize(int x,int y)
     printf("Resized to %d %d\n",x,y);
 }
 
-void rotation(void)
+void rotation(int dirx, int diry)
 {
-	if (direcx > 0)
-		glRotated(20, .5, .5, .5);
-	else if (direcx < 0)
-		glRotated(-20, .5, .5, .5);
+	rotx = rotx + dirx;
+	roty = roty + diry;
+
+	// Limits x rotation to 180 degrees
+	if (rotx > 180) {
+		rotx = 180;
+	}
+	else if (rotx < 0) {
+		rotx = 0;
+	}
+
+	// Limits y rotation to 180 degrees
+	if (roty > 180) {
+		roty = 180;
+	}
+	else if (roty < 0) {
+		roty = 0;
+	}
 
 	//Redisplay object
 	glutPostRedisplay();
 }
 
-void zoom(void)
+void zoom(int direction)
 {
-	if (direcy > 0)
+	if (direction > 0)
 		glScaled(2, 2, 2);
-	else if (direcy < 0)
+	else if (direction < 0)
 		glScaled(.5, .5, .5);
 
 	//Redisplay object
@@ -293,37 +280,62 @@ void zoom(void)
 // button is a number 0 to 2 designating the button
 // state is 1 for release 0 for press event
 // x and y are the location of the mouse (in window-relative coordinates)
-void	mouseButton(int button,int state,int x,int y)
+//
+// Button 0 - Left click
+// Button 1 - Scroll wheel click
+// Button 2 - Right click
+void	mouseButton(int button, int state, int x, int y)
 {
-	startx = x;
-	starty = y;
-	if (button == 0 && state == 0)
-		rotation();
-	else if (button == 1 && state == 0)
-		zoom();
+	lastx = x;
+	lasty = y;
+
+	// If left click is pressed, set rotate flag to 1
+	if (button == 0 && state == 0) {
+		rotate_flag = 1;
+	// If left click is released, set rotate flag to 0
+	} else if (button == 0 && state == 1) {
+		rotate_flag = 0;
+	// If right click is pressed, set zoom flag to 1
+	} else if (button == 2 && state == 0) {
+		zoom_flag = 1;
+	// If right click is released, set zoom flag to 0
+	} else if (button == 2 && state == 1) {
+		zoom_flag = 0;
+	}
+
 	//When button 0 is in state 0, use mouseMotion to figure out the direction to rotate
-	//When button 1 is in state 0, use mouseMotion to figure out the direction to zoom
+	//When button 2 is in state 0, use mouseMotion to figure out the direction to zoom
     printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
+	printf("Rotate state: %d\nZoom state: %d\n", rotate_flag, zoom_flag);
 }
 
 
-//This function is called whenever the mouse is moved with a mouse button held down.
+// This function is called whenever the mouse is moved with a mouse button held down.
 // x and y are the location of the mouse (in window-relative coordinates)
+//
+// Saves position data based on drag events
 void	mouseMotion(int x, int y)
 {
 	int dirx;
 	int diry;
-	dirx = x - startx;
-	diry = y - starty;
 
-	if (dirx > 0)
-		direcx = 1;
-	else if (dirx < 0)
-		direcx = -1;
-	if (diry > 0)
-		direcy = 1;
-	else if (diry < 0)
-		direcy = -1;
+	// dirx stores the difference between x and lastx
+	dirx = lastx - x;
+	// dir stores the differenc between y and last y
+	diry = lasty - y;
+	
+
+	// If in the rotate state, rotate
+	if (rotate_flag == 1) {
+		rotation(dirx, diry);
+	}
+	// If in the zoom state, zoom
+	else if (zoom_flag == 1) {
+		 
+	}
+
+	lastx = x;
+	lasty = y;
 
 	//When moving left, rotate clockwise
 	//When moving right, rotate counterclockwise
@@ -380,8 +392,75 @@ void	keyboard(unsigned char key, int x, int y)
 		break;
     }
 
-    // Schedule a new display event
+    //  Schedulea new display event
     glutPostRedisplay();
+}
+
+// A convenience function for drawing the axes
+void drawAxes(void)
+{
+	glColor3f(0.5, 0.5, 0.5);
+	glBegin(GL_LINES);
+		glColor3f(0.5, 0.0, 0.0);
+		glVertex3f(0, 0.0, 0.0);
+		glVertex3f(1.0, 0.0, 0.0);
+
+		glColor3f(0.0, 0.5, 0.0);
+		glVertex3f(0.0, 1.0, 0.0);
+		glVertex3f(0.0, 0, 0.0);
+
+		glColor3f(0.0, 0.0, 0.5);
+		glVertex3f(0.0, 0.0, 0);
+		glVertex3f(0.0, 0.0, 1.0);
+	glEnd();
+}
+
+// A convenience function for drawing a red rectangle
+void drawRedRectangle(void)
+{
+	// Draw a red rectangle
+	glColor3f(1, 0, 0);
+	glBegin(GL_POLYGON);
+		glVertex3f(0.8, 0.8, -0.8);
+		glVertex3f(0.8, -0.8, -0.8);
+		glVertex3f(-0.8, -0.8, -0.0);
+		glVertex3f(-0.8, 0.8, -0.0);
+	glEnd();
+}
+
+// A convenience function for drawing a blue tetrahedron
+void drawBlueTetrahedron(void)
+{
+	// Draw a blue tetraheadron
+	glColor3f(0, 0, 1);
+	glBegin(GL_TRIANGLES);
+		glVertex3f(0.0, 1.6, 0.0);
+		glVertex3f(0.8, -0.4, 0.8);
+		glVertex3f(-0.8, -0.4, 0.8);
+
+		glVertex3f(0.0, 1.6, 0.0);
+		glVertex3f(0.8, -0.4, 0.8);
+		glVertex3f(0.0, -0.4, -0.8);
+
+		glVertex3f(0.0, 1.6, 0.0);
+		glVertex3f(0.0, -0.4, -0.8);
+		glVertex3f(-0.8, -0.4, 0.8);
+
+		glVertex3f(-0.8, -0.4, 0.8);
+		glVertex3f(0.8, -0.4, 0.8);
+		glVertex3f(0.0, -0.4, -0.8);
+	glEnd();
+}
+
+// A convenience function for drawing a green line
+void drawGreenLine(void)
+{
+	// Draw a green line
+	glColor3f(0, 1, 0);
+	glBegin(GL_LINES);
+		glVertex3f(1.8, 1.8, 0.0);
+		glVertex3f(0.1, 0.1, 0.0);
+	glEnd();
 }
 
 // Here's the main
