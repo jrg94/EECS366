@@ -372,45 +372,47 @@ void	mouseMotion(int x, int y)
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-    case 'q':                           /* Quit */
-		exit(1);
-		break;
-    case 'p':
-    case 'P':
-	// Toggle Projection Type (orthogonal, perspective)
-		if (PERSPECTIVE) {
-			// switch from perspective to orthogonal
-			PERSPECTIVE = OFF;
-		}
-		else {
-			// switch from orthogonal to perspective
-			PERSPECTIVE = ON;
-		}
-		break;
-	case 'a':
-		//Toggle Axes Display
-		if (AXES) {
-			//switch axes off
-			AXES = OFF;
-		}
-		else {
-			//switch axes on
-			AXES = ON;
-		}
-		break;
-	case 's':
-		//Toggle Object Display
-		if (OBJECT) {
-			//switch object off
-			OBJECT = OFF;
-		}
-		else {
-			//switch object back on
-			OBJECT = ON;
-		}
-		break;
-    default:
-		break;
+		// QUIT
+		case 'q':
+		case 'Q':
+			exit(0);
+			break;
+		// Toggle Projection type
+		case 'p':
+		case 'P':
+			if (PERSPECTIVE) {
+				// switch from perspective to orthogonal
+				PERSPECTIVE = OFF;
+			}
+			else {
+				// switch from orthogonal to perspective
+				PERSPECTIVE = ON;
+			}
+			break;
+		// Toggle axes
+		case 'a':
+			if (AXES) {
+				//switch axes off
+				AXES = OFF;
+			}
+			else {
+				//switch axes on
+				AXES = ON;
+			}
+			break;
+		// Toggle object
+		case 's':
+			if (OBJECT) {
+				//switch object off
+				OBJECT = OFF;
+			}
+			else {
+				//switch object back on
+				OBJECT = ON;
+			}
+			break;
+		default:
+			break;
     }
 
     //  Schedulea new display event
