@@ -147,7 +147,11 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="as3.cpp" />
+    <ClCompile Include="as3_funcs.cpp" />
+    <ClCompile Include="as3_main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="as3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

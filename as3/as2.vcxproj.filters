@@ -18,8 +18,16 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="as3.cpp">
+    <ClCompile Include="as3_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="as3_funcs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="as3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,10 +4,7 @@
  * Author: Evelyn Moss
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <GL\glut.h>
-#include <math.h>
+#include "as3.h"
 
 #define ON 1
 #define OFF 0
@@ -152,7 +149,7 @@ void meshReader (char *filename,int sign) {
  * redrawing (ie: overlapping window moves, resize, maximize)
  * You should redraw your polygons here
  */
-void	display(void) {
+void display(void) {
     // Clear the background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    
@@ -179,26 +176,6 @@ void	display(void) {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // Draw a blue tetraheadron
-    glColor3f(0,0,1);
-    glBegin(GL_TRIANGLES);
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(-0.8,-0.4,0.8);
-
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(0.0,-0.4,-0.8);
-
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.0,-0.4,-0.8);
-		glVertex3f(-0.8,-0.4,0.8);
-
-		glVertex3f(-0.8,-0.4,0.8);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(0.0,-0.4,-0.8);
-    glEnd();
-
     // Draw a green line
     glColor3f(0,1,0);
     glBegin(GL_LINES);
@@ -217,7 +194,7 @@ void	display(void) {
  * This function is called whenever the window is resized. 
  * Parameters are the new dimentions of the window
  */
-void	resize(int x,int y) {
+void resize(int x,int y) {
     glViewport(0,0,x,y);
     window_width = x;
     window_height = y;
@@ -238,7 +215,7 @@ void	resize(int x,int y) {
  * state is 1 for release 0 for press event
  * x and y are the location of the mouse (in window-relative coordinates)
  */
-void	mouseButton(int button,int state,int x,int y) {
+void mouseButton(int button,int state,int x,int y) {
     printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
 }
 
@@ -247,7 +224,7 @@ void	mouseButton(int button,int state,int x,int y) {
  * This function is called whenever the mouse is moved with a mouse button held down.
  * x and y are the location of the mouse (in window-relative coordinates)
  */
-void	mouseMotion(int x, int y) {
+void mouseMotion(int x, int y) {
 	printf("Mouse is at %d, %d\n", x,y);
 }
 
@@ -257,7 +234,7 @@ void	mouseMotion(int x, int y) {
  * key is the ASCII value of the key pressed
  * x and y are the location of the mouse
  */
-void	keyboard(unsigned char key, int x, int y) {
+void keyboard(unsigned char key, int x, int y) {
     switch(key) {
     case '':                           /* Quit */
 		exit(1);
@@ -297,28 +274,26 @@ void drawRedRectangle() {
 }
 
 /**
- * The main function
+ * A function for drawing a blue tetrahedron
  */
-int main(int argc, char* argv[]) {
-    // Initialize GLUT
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutCreateWindow("Assignment 2 Template (orthogonal)");
-    glutDisplayFunc(display);
-    glutReshapeFunc(resize);
-    glutMouseFunc(mouseButton);
-    glutMotionFunc(mouseMotion);
-    glutKeyboardFunc(keyboard);
+void drawBlueTetrahedron() {
+	// Draw a blue tetraheadron
+	glColor3f(0, 0, 1);
+		glBegin(GL_TRIANGLES);
+		glVertex3f(0.0, 1.6, 0.0);
+		glVertex3f(0.8, -0.4, 0.8);
+		glVertex3f(-0.8, -0.4, 0.8);
 
-    // Initialize GL
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-2.5,2.5,-2.5,2.5,-10000,10000);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glEnable(GL_DEPTH_TEST);
+		glVertex3f(0.0, 1.6, 0.0);
+		glVertex3f(0.8, -0.4, 0.8);
+		glVertex3f(0.0, -0.4, -0.8);
 
-    // Switch to main loop
-    glutMainLoop();
-    return 0;        
+		glVertex3f(0.0, 1.6, 0.0);
+		glVertex3f(0.0, -0.4, -0.8);
+		glVertex3f(-0.8, -0.4, 0.8);
+
+		glVertex3f(-0.8, -0.4, 0.8);
+		glVertex3f(0.8, -0.4, 0.8);
+		glVertex3f(0.0, -0.4, -0.8);
+	glEnd();
 }
