@@ -1,5 +1,7 @@
 /**
  * The solution to assignment 3
+ * Author: Jeremy Griffith
+ * Author: Evelyn Moss
  */
 
 #include <stdio.h>
@@ -175,15 +177,6 @@ void	display(void)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // Draw a red rectangle
-    glColor3f(1,0,0);
-	glBegin(GL_POLYGON);
-		glVertex3f(0.8,0.8,-0.8);
-		glVertex3f(0.8,-0.8,-0.8);
-		glVertex3f(-0.8,-0.8,-0.0);
-		glVertex3f(-0.8,0.8,-0.0);
-    glEnd();
-
     // Draw a blue tetraheadron
     glColor3f(0,0,1);
     glBegin(GL_TRIANGLES);
@@ -283,8 +276,23 @@ void	keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
+/**
+ * A function for drawing a red rectangle
+ */
+void drawRedRectangle() {
+	// Draw a red rectangle
+	glColor3f(1, 0, 0);
+		glBegin(GL_POLYGON);
+		glVertex3f(0.8, 0.8, -0.8);
+		glVertex3f(0.8, -0.8, -0.8);
+		glVertex3f(-0.8, -0.8, -0.0);
+		glVertex3f(-0.8, 0.8, -0.0);
+	glEnd();
+}
 
-// Here's the main
+/**
+ * The main function
+ */
 int main(int argc, char* argv[])
 {
     // Initialize GLUT
