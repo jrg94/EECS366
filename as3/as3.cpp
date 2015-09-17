@@ -1,5 +1,6 @@
-// The template code for Assignment 2 
-//
+/**
+ * The solution to assignment 3
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
