@@ -176,13 +176,6 @@ void display(void) {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // Draw a green line
-    glColor3f(0,1,0);
-    glBegin(GL_LINES);
-		glVertex3f(1.8,1.8,0.0);
-		glVertex3f(0.1,0.1,0.0);
-    glEnd();
-
     // (Note that the origin is lower left corner)
     // (Note also that the window spans (0,1) )
     // Finish drawing, update the frame buffer, and swap buffers
@@ -295,5 +288,17 @@ void drawBlueTetrahedron() {
 		glVertex3f(-0.8, -0.4, 0.8);
 		glVertex3f(0.8, -0.4, 0.8);
 		glVertex3f(0.0, -0.4, -0.8);
+	glEnd();
+}
+
+/**
+ * A function for drawing a green line
+ */
+void drawGreenLine() {
+	// Draw a green line
+	glColor3f(0, 1, 0);
+		glBegin(GL_LINES);
+		glVertex3f(1.8, 1.8, 0.0);
+		glVertex3f(0.1, 0.1, 0.0);
 	glEnd();
 }
