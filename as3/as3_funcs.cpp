@@ -24,6 +24,8 @@ typedef struct _faceStruct {
   int n1,n2,n3;
 } faceStruct;
 
+typedef float _4matrix[4][4]; // A 4x4 matrix for convenience
+
 int verts, faces, norms;    // Number of vertices, faces and normals in the system
 point *vertList, *normList; // Vertex and Normal Lists
 faceStruct *faceList;	    // Face List
@@ -73,7 +75,7 @@ void meshReader (char *filename,int sign) {
 
   fp = fopen(filename, "r");
 
-  // Read the veritces
+  // Read the vertices
   for(i = 0;i < verts;i++)
     {
       fscanf(fp,"%c %f %f %f\n",&letter,&x,&y,&z);
@@ -142,6 +144,70 @@ void meshReader (char *filename,int sign) {
 
 }
 
+
+/**
+ * Function for multiplying a matrix with a point/vector.  Requires
+ * matrix and point/vector being multiplied, as well as an indicator
+ * for whether the matrix is being multiplied by a point or a vector.  
+ * For 4x4 * 4x1 multiplications.
+ */
+point matrixMult(_4matrix mat, point mult, bool isPoint) {
+	//Performs matrix multiplication of the matrix and the point/vector.
+	point store; //stores result until it can be returned.
+	float x, y, z, w; //result in homogeneous coordinates
+	if (isPoint) {
+		w = 1;
+	}
+	else {
+		w = 0;
+	}
+	x = (mat[0][0] * mult.x) + (mat[1][0] * mult.y) + (mat[2][0] * mult.z) + (mat[3][0] * w);
+	y = (mat[0][1] * mult.x) + (mat[1][1] * mult.y) + (mat[2][1] * mult.z) + (mat[3][1] * w);
+	z = (mat[0][2] * mult.x) + (mat[1][2] * mult.y) + (mat[2][2] * mult.z) + (mat[3][2] * w);
+	store.x = x;
+	store.y = y;
+	store.z = z;
+	return store;
+}
+
+
+
+/**
+ * The translation function.  It is called whenever the object 
+ * is translated.  Requires a point to which the object is to be translated.
+ */
+void worldTranslate(point t) {
+	//Form the translation matrix
+	_4matrix translate;
+	//Start with a 3x3 identity matrix
+	for (int i = 0; i < 3; i++) { //row
+		for (int j = 0; j < 3; j++) { //column
+			if (i == j) {
+				translate[j][i] = 1;
+			}
+			else {
+				translate[j][i] = 0;
+			}
+		}
+	}
+	//Then add the translation vector to the last column
+	translate[3][0] = t.x;
+	translate[3][1] = t.y;
+	translate[3][2] = t.z;
+	//Finally fill in the bottom row with all 0s except in the last column, which is a 1
+	translate[0][3] = 0;
+	translate[1][3] = 0;
+	translate[2][3] = 0;
+	translate[3][3] = 1;
+
+	//Then multiply every point and normal by the translation vector
+	for (int i = 0; i < verts; i++) {
+		vertList[i] = matrixMult(translate, vertList[i], true);
+	}
+	for (int j = 0; j < norms;j++) {
+		normList[j] = matrixMult(translate, normList[j], false);
+	}
+}
 
 
 /**
