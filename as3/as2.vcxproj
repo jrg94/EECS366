@@ -22,8 +22,8 @@
     <ProjectGuid>{224EE356-E269-47FF-A8CC-F9E12D86367A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>as2</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <ProjectName>as3</ProjectName>
+    <WindowsTargetPlatformVersion>7</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

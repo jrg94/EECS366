@@ -4,7 +4,11 @@
  * Author: Evelyn Moss
  */
 
+#include <Windows.h>
 #include "as3.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <gl/glut.h>
 
 #define ON 1
 #define OFF 0
