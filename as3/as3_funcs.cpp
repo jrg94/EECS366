@@ -11,8 +11,11 @@
 
 // Global variables
 int window_width, window_height;    // Window dimensions
-int PERSPECTIVE = OFF;
+int PERSPECTIVE = OFF;				// The on/off flag for perspective viewing
 int AXES = ON;						// The on/off flag for axes
+int cam_rotate_flag = OFF;			// The on/off flag for camera rotation
+int cam_translate_flag = OFF;		// The on/off flag for camera translation
+int cam_zoom_flag = OFF;			// The on/off flag for camera zoom
 
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
@@ -276,6 +279,32 @@ void resize(int x,int y) {
  * x and y are the location of the mouse (in window-relative coordinates)
  */
 void mouseButton(int button,int state,int x,int y) {
+
+	// If left click is pressed, set rotate flag to 1
+	if (button == 0 && state == 0) {
+		cam_rotate_flag = ON;
+	}
+	// If left click is released, set rotate flag to 0
+	else if (button == 0 && state == 1) {
+		cam_rotate_flag = OFF;
+	}
+	// If mid click is pressed, set translate flag to 1
+	else if (button == 1 && state == 0) {
+		cam_translate_flag = ON;
+	}
+	// If mid click is released, set translate flag to 0
+	else if (button == 1 && state == 1) {
+		cam_translate_flag = OFF;
+	}
+	// If right click is pressed, set zoom flag to 1
+	else if (button == 2 && state == 0) {
+		cam_zoom_flag = ON;
+	}
+	// If right click is released, set zoom flag to 0
+	else if (button == 2 && state == 1) {
+		cam_zoom_flag = OFF;
+	}
+
     printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
 }
 
@@ -296,11 +325,13 @@ void mouseMotion(int x, int y) {
  */
 void keyboard(unsigned char key, int x, int y) {
     switch(key) {
-    case '':						// Exit failure
+    case '':
+		// Exit failure
 		exit(1);
 		break;
 	case 'q':							
-	case 'Q':						// Exit success
+	case 'Q':	
+		// Exit success
 		exit(0);
 		break;
 	case 'a':
@@ -316,10 +347,10 @@ void keyboard(unsigned char key, int x, int y) {
     case 'P':
 		// Toggle Projection Type (orthogonal, perspective)
 		if (PERSPECTIVE) {
-			// switch from perspective to orthogonal
+			// Switch from perspective to orthogonal
 			PERSPECTIVE = OFF;
 		} else {
-			// switch from orthogonal to perspective
+			// Switch from orthogonal to perspective
 			PERSPECTIVE = ON;
 		}
 		break;
