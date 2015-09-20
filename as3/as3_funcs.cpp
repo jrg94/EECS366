@@ -296,21 +296,29 @@ void mouseMotion(int x, int y) {
  */
 void keyboard(unsigned char key, int x, int y) {
     switch(key) {
-    case '':                           /* Quit */
+    case '':						// Exit failure
 		exit(1);
+		break;
+	case 'q':							
+	case 'Q':						// Exit success
+		exit(0);
 		break;
 	case 'a':
 	case 'A':
-		AXES = !AXES;
+		// Toggle axes
+		if (AXES) {
+			AXES = OFF;
+		} else {
+			AXES = ON;
+		}
 		break;
     case 'p':
     case 'P':
-	// Toggle Projection Type (orthogonal, perspective)
+		// Toggle Projection Type (orthogonal, perspective)
 		if (PERSPECTIVE) {
 			// switch from perspective to orthogonal
 			PERSPECTIVE = OFF;
-		}
-		else {
+		} else {
 			// switch from orthogonal to perspective
 			PERSPECTIVE = ON;
 		}
