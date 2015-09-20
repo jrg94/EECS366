@@ -22,6 +22,8 @@ int main(int argc, char* argv[]) {
 	glLoadIdentity();
 	glEnable(GL_DEPTH_TEST);
 
+	//Test object
+
 	// Switch to main loop
 	glutMainLoop();
 	return 0;

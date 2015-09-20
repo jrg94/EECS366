@@ -12,6 +12,10 @@
 
 #define ON 1
 #define OFF 0
+//Define the axes for easy reference
+#define xaxis 0
+#define yaxis 1
+#define zaxis 2
 
 // Global variables
 int window_width, window_height;    // Window dimensions
@@ -29,6 +33,9 @@ typedef struct _faceStruct {
 } faceStruct;
 
 typedef float _4matrix[4][4]; // A 4x4 matrix for convenience
+
+//Saves the origin of the object for use in figuring out translation and rotation
+point objectOrigin;
 
 int verts, faces, norms;    // Number of vertices, faces and normals in the system
 point *vertList, *normList; // Vertex and Normal Lists
@@ -180,7 +187,7 @@ point matrixMult(_4matrix mat, point mult, bool isPoint) {
  * The translation function.  It is called whenever the object 
  * is translated.  Requires a point to which the object is to be translated.
  */
-void worldTranslate(point t) {
+void translation(point t) {
 	//Form the translation matrix
 	_4matrix translate;
 	//Start with a 3x3 identity matrix
@@ -204,14 +211,96 @@ void worldTranslate(point t) {
 	translate[2][3] = 0;
 	translate[3][3] = 1;
 
-	//Then multiply every point and normal by the translation vector
+	//Then multiply every point by the translation matrix (vectors cannot be translated)
 	for (int i = 0; i < verts; i++) {
 		vertList[i] = matrixMult(translate, vertList[i], true);
 	}
-	for (int j = 0; j < norms;j++) {
-		normList[j] = matrixMult(translate, normList[j], false);
+
+	//Reset the object origin to match the new origin
+	objectOrigin.x = t.x;
+	objectOrigin.y = t.y;
+	objectOrigin.z = t.z;
+}
+
+/**
+ * The rotation function for the world coordinates.  It 
+ * is called only when the object is to be rotated based on the
+ * world coordinates.  Requires the axis to rotate around, the 
+ * degrees to rotate.
+ */
+void worldRotation(int axis, double degrees) {
+	//Form the rotation matrix
+	_4matrix rotate;
+	//Start with 3x3 rotation matrix
+	if (axis == xaxis) {
+		rotate[0][0] = 1;
+		rotate[0][1] = 0;
+		rotate[0][2] = 0;
+		rotate[1][0] = 0;
+		rotate[1][1] = cos(degrees);
+		rotate[1][2] = sin(degrees);
+		rotate[2][0] = 0;
+		rotate[2][1] = -sin(degrees);
+		rotate[2][2] = cos(degrees);
+	}
+	else if (axis == yaxis) {
+		rotate[0][0] = cos(degrees);
+		rotate[0][1] = 0;
+		rotate[0][2] = -sin(degrees);
+		rotate[1][0] = 0;
+		rotate[1][1] = 1;
+		rotate[1][2] = 0;
+		rotate[2][0] = sin(degrees);
+		rotate[2][1] = 0;
+		rotate[2][2] = cos(degrees);
+	}
+	else {
+		rotate[0][0] = cos(degrees);
+		rotate[0][1] = sin(degrees);
+		rotate[0][2] = 0;
+		rotate[1][0] = -sin(degrees);
+		rotate[1][1] = cos(degrees);
+		rotate[1][2] = 0;
+		rotate[2][0] = 0;
+		rotate[2][1] = 0;
+		rotate[2][2] = 1;
+	}
+	//Then fill in the rest with 0s, with a 1 in the bottom right
+	rotate[0][3] = 0;
+	rotate[1][3] = 0;
+	rotate[2][3] = 0;
+	rotate[3][0] = 0;
+	rotate[3][1] = 0;
+	rotate[3][2] = 0;
+	rotate[3][3] = 1;
+
+	//Then, multiply all points and normals by the rotation matrix
+	for (int i = 0; i < verts; i++) {
+		vertList[i] = matrixMult(rotate, vertList[i], true);
+	}
+	for (int j = 0; j < norms; j++) {
+		normList[j] = matrixMult(rotate, normList[j], false);
 	}
 }
+
+/**
+ * The scaling function.  It is called whenever the object in 
+ * question needs to be scaled.  Requires a size to scale to.
+ */
+void scale(int size) {
+	//Scale vertices and normals by the given size
+	for (int i = 0; i < verts; i++) {
+		vertList[i].x *= size;
+		vertList[i].y *= size;
+		vertList[i].z *= size;
+	}
+	for (int j = 0; j < norms; j++) {
+		normList[j].x *= size;
+		normList[j].y *= size;
+		normList[j].z *= size;
+	}
+}
+
 
 
 /**
@@ -298,11 +387,14 @@ void mouseMotion(int x, int y) {
  * x and y are the location of the mouse
  */
 void keyboard(unsigned char key, int x, int y) {
+	point t; //Used for translations
+	t.x = objectOrigin.x;
+	t.y = objectOrigin.y;
+	t.z = objectOrigin.z;
     switch(key) {
     case '':                           /* Quit */
 		exit(1);
 		break;
-    case 'p':
     case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
 		if (PERSPECTIVE) {
@@ -313,6 +405,68 @@ void keyboard(unsigned char key, int x, int y) {
 			// switch from orthogonal to perspective
 			PERSPECTIVE = ON;
 		}
+		break;
+	case '4':
+		//Translation in the negative x direction
+		t.x--;
+		translation(t);
+		break;
+	case '6':
+		//Translation in the positive x direction
+		t.x++;
+		translation(t);
+		break;
+	case '2':
+		//Translation in the negative y direction
+		t.y--;
+		translation(t);
+		break;
+	case '8':
+		//Translation in the positive y direction
+		t.y++;
+		translation(t);
+		break;
+	case '1':
+		//Translation in the negative z direction
+		t.z--;
+		translation(t);
+		break;
+	case '9':
+		//Translation in the positive z direction
+		t.z++;
+		translation(t);
+		break;
+	case '[':
+		//Negative rotation around the world's x axis
+		worldRotation(xaxis, -10);
+		break;
+	case ']':
+		//Positive rotation around the world's x axis
+		worldRotation(xaxis, 10);
+		break;
+	case ';':
+		//Negative rotation around the world's y axis
+		worldRotation(yaxis, -10);
+		break;
+	case '\'': //Make sure to test this thoroughly
+		//Positive rotation around the world's y axis
+		worldRotation(yaxis, 10);
+		break;
+	case '.':
+		//Negative rotation around the world's z axis
+		worldRotation(zaxis, -10);
+		break;
+	case '/':
+		//Positive rotation around the world's z axis
+		worldRotation(zaxis, 10);
+		break;
+	case '=':
+		//Decrease the size of the object
+		scale(.75);
+		break;
+	case '-':
+		//Increase the size of the object
+		scale(1.25);
 		break;
     default:
 		break;
@@ -372,3 +526,38 @@ void drawGreenLine() {
 		glVertex3f(0.1, 0.1, 0.0);
 	glEnd();
 }
+
+/**
+* The main function
+*/
+/*int main(int argc, char* argv[]) {
+	// Initialize GLUT
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	glutCreateWindow("Assignment 3");
+	glutDisplayFunc(display);
+	glutReshapeFunc(resize);
+	glutMouseFunc(mouseButton);
+	glutMotionFunc(mouseMotion);
+	glutKeyboardFunc(keyboard);
+
+	// Initialize GL
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-2.5, 2.5, -2.5, 2.5, -10000, 10000);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glEnable(GL_DEPTH_TEST);
+
+	//Initialize origin
+	objectOrigin.x = 0;
+	objectOrigin.y = 0;
+	objectOrigin.z = 0;
+
+	//Test object
+	drawBlueTetrahedron();
+
+	// Switch to main loop
+	glutMainLoop();
+	return 0;
+}*/
