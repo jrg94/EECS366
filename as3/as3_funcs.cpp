@@ -12,6 +12,7 @@
 // Global variables
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
+int AXES = ON;						// The on/off flag for axes
 
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
@@ -297,6 +298,10 @@ void keyboard(unsigned char key, int x, int y) {
     switch(key) {
     case '':                           /* Quit */
 		exit(1);
+		break;
+	case 'a':
+	case 'A':
+		AXES = !AXES;
 		break;
     case 'p':
     case 'P':
