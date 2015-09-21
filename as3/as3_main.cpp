@@ -1,6 +1,9 @@
 #include "as3.h"
 
 extern matrix4x4 transform;
+extern matrix4x4 viewTrans;
+extern point origin;
+extern point objectOrigin;
 
 /**
 * The main function
@@ -27,6 +30,13 @@ int main(int argc, char* argv[]) {
 	//Test object
 	meshReader("Objects\\helicopter.obj", 1);
 	matrixIdentity(transform);
+	matrixIdentity(viewTrans);
+	origin.x = 0;
+	origin.y = 0;
+	origin.z = 0;
+	objectOrigin.x = 0;
+	objectOrigin.y = 0;
+	objectOrigin.z = 0;
 
 	// Switch to main loop
 	glutMainLoop();

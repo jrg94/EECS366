@@ -28,7 +28,9 @@ int lasty = 0;	// Holds last y position
 
 //Saves the origin of the object for use in figuring out translation and rotation
 point objectOrigin;
+point origin;
 matrix4x4 transform;
+matrix4x4 viewTrans;
 
 int verts, faces, norms;    // Number of vertices, faces and normals in the system
 point *vertList, *normList; // Vertex and Normal Lists
@@ -306,9 +308,10 @@ void applyTransform() {
 		vertList[i] = multiplyMatrix(transform, vertList[i]);
 	}
 	for (int j = 0; j < norms; j++) {
-		multiplyMatrix(transform, normList[j]);
+		normList[j] = multiplyMatrix(transform, normList[j]);
 	}
 	objectOrigin = multiplyMatrix(transform, objectOrigin);
+	origin = multiplyMatrix(viewTrans, origin);
 }
 
 /**
@@ -336,13 +339,10 @@ void display(void) {
 	applyTransform();
 	drawObject(faceList, vertList);
 	matrixIdentity(transform);
+	matrixIdentity(viewTrans);
 
 	if (AXES) {
-		point orig;
-		orig.x = 0;
-		orig.y = 0;
-		orig.z = 0;
-		drawAxes(orig);
+		drawAxes(origin);
 	}
    
 	if (PERSPECTIVE) {
@@ -469,56 +469,17 @@ void camRotate(int x, int y) {
 
 void camTranslate(int x, int y) {
 
-	//float matrix[16];
-	
-	//matrix4x4 cam;
-	//glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
-	/*
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			cam[i][j] = matrix[(i * 4) + j];
-			printf("Model_view:%d,%d,%f\n", i, j, cam[i][j]);
-		}
-	}
-	
 	matrix4x4 transMat;
 
 	// Setup matrix with identity
 	matrixIdentity(transMat);
 
-	transMat[0][3] = x;
-	transMat[1][3] = y;
+	transMat[0][3] = x/100;
+	transMat[1][3] = y/100;
 	transMat[2][3] = 0;
 
-	mergeTransform(transMat, cam, false);
-
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			matrix[(i * 4) + j] = cam[i][j];
-		}
-	}*/
-
-	/*
-	matrix[0] = 1;
-	matrix[1] = 0;
-	matrix[2] = 0;
-	matrix[3] = x;
-	matrix[4] = 0;
-	matrix[5] = 1;
-	matrix[6] = 0;
-	matrix[7] = y;
-	matrix[8] = 0;
-	matrix[9] = 0;
-	matrix[10] = 1;
-	matrix[11] = 0;
-	matrix[12] = 0;
-	matrix[13] = 0;
-	matrix[14] = 0;
-	matrix[15] = 1;
-	*/
-
-	//glMultMatrixf(matrix);
-	//glLoadMatrixf(matrix);
+	mergeTransform(transMat, transform, true);
+	mergeTransform(transMat, viewTrans, true);
 }
 
 void camZoom(int y) {
@@ -534,11 +495,6 @@ void keyboard(unsigned char key, int x, int y) {
 	t.x = objectOrigin.x;
 	t.y = objectOrigin.y;
 	t.z = objectOrigin.z;
-
-	point orig;
-	orig.x = 0;
-	orig.y = 0;
-	orig.z = 0;
 
 	point ux;
 	ux.x = 1;
@@ -608,35 +564,53 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case '[':
 		// World -x rotation
-		rotateObject(orig, ux, -.1, true);
+		ux.x = origin.x + 1;
+		ux.y = origin.y;
+		ux.z = origin.z;
+		rotateObject(origin, ux, -.1, true);
 		break;
 	case ']':
 		// World +x rotation
-		rotateObject(orig, ux, .1, true);
+		ux.x = origin.x + 1;
+		ux.y = origin.y;
+		ux.z = origin.z;
+		rotateObject(origin, ux, .1, true);
 		break;
 	case ';':
 		// World -z rotation
-		rotateObject(orig, uy, -.1, true);
+		uy.x = origin.x;
+		uy.y = origin.y + 1;
+		uy.z = origin.z;
+		rotateObject(origin, uy, -.1, true);
 		break;
 	case '\'': 
 		// World +y rotation
-		rotateObject(orig, uy, .1, true);
+		uy.x = origin.x;
+		uy.y = origin.y + 1;
+		uy.z = origin.z;
+		rotateObject(origin, uy, .1, true);
 		break;
 	case '.':
 		// World -z rotation
-		rotateObject(orig, uz, -.1, true);
+		uz.x = origin.x;
+		uz.y = origin.y;
+		uz.z = origin.z + 1;
+		rotateObject(origin, uz, -.1, true);
 		break;
 	case '/':
 		// World +z rotation
-		rotateObject(orig, uz, .1, true);
+		uz.x = origin.x;
+		uz.y = origin.y;
+		uz.z = origin.z + 1;
+		rotateObject(origin, uz, .1, true);
 		break;
 	case '=':
 		// Decrease the size of the object
-		scaleObject(.5, .5, .5, orig, true);
+		scaleObject(.5, .5, .5, origin, true);
 		break;
 	case '-':
 		// Increase the size of the object
-		scaleObject(1.5, 1.5, 1.5, orig, true);
+		scaleObject(1.5, 1.5, 1.5, origin, true);
 		break;
 	case 'i':
 		// Local -x rotation
