@@ -474,8 +474,8 @@ void camTranslate(int x, int y) {
 	// Setup matrix with identity
 	matrixIdentity(transMat);
 
-	transMat[0][3] = x/100;
-	transMat[1][3] = y/100;
+	transMat[0][3] = x/100.0;
+	transMat[1][3] = y/100.0;
 	transMat[2][3] = 0;
 
 	mergeTransform(transMat, transform, true);
