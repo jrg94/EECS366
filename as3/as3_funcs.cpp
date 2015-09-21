@@ -23,6 +23,8 @@ int AXES = ON;						// The on/off flag for axes
 int cam_rotate_flag = OFF;			// The on/off flag for camera rotation
 int cam_translate_flag = OFF;		// The on/off flag for camera translation
 int cam_zoom_flag = OFF;			// The on/off flag for camera zoom
+int lastx = 0;	// Holds last x position
+int lasty = 0;	// Holds last y position
 
 //Saves the origin of the object for use in figuring out translation and rotation
 point objectOrigin;
@@ -434,10 +436,42 @@ void mouseButton(int button,int state,int x,int y) {
  * x and y are the location of the mouse (in window-relative coordinates)
  */
 void mouseMotion(int x, int y) {
+
+	int dirx;
+	int diry;
+
+	// dirx stores the difference between x and lastx
+	dirx = lastx - x;
+	// dir stores the differenc between y and last y
+	diry = y - lasty;
+
+	if (cam_rotate_flag) {
+		camRotate(dirx, diry);
+	}
+	else if (cam_translate_flag) {
+		camTranslate(dirx, diry);
+	}
+	else if (cam_zoom_flag) {
+		camZoom(diry);
+	}
+
+	lastx = x;
+	lasty = y;
+
 	printf("Mouse is at %d, %d\n", x,y);
 }
 
+void camRotate(int x, int y) {
 
+}
+
+void camTranslate(int x, int y) {
+
+}
+
+void camZoom(int y) {
+
+}
 /**
  * This function is called whenever there is a keyboard input
  * key is the ASCII value of the key pressed
@@ -497,47 +531,47 @@ void keyboard(unsigned char key, int x, int y) {
 		}
 		break;
 	case '4':
-		//Translation in the negative x direction
+		// World -x translation
 		translateObject(-1, 0, 0, true);
 		break;
 	case '6':
-		//Translation in the positive x direction
+		// World +x translation
 		translateObject(1, 0, 0, true);
 		break;
 	case '2':
-		//Translation in the negative y direction
+		// World -y translation
 		translateObject(0, -1, 0, true);
 		break;
 	case '8':
-		//Translation in the positive y direction
+		// World +y translation
 		translateObject(0, 1, 0, true);
 		break;
 	case '1':
-		//Translation in the negative z direction
+		// World -z translation
 		translateObject(0, 0, -1, true);
 		break;
 	case '9':
-		//Translation in the positive z direction
+		// World +z translation
 		translateObject(0, 0, 1, true);
 		break;
 	case '[':
-		//Negative rotation around the world's x axis
+		// World -x rotation
 		rotateObject(orig, ux, -.1, true);
 		break;
 	case ']':
-		//Positive rotation around the world's x axis
+		// World +x rotation
 		rotateObject(orig, ux, .1, true);
 		break;
 	case ';':
-		//Negative rotation around the world's y axis
+		// World -z rotation
 		rotateObject(orig, uy, -.1, true);
 		break;
 	case '\'': 
-		//Positive rotation around the world's y axis
+		// World +y rotation
 		rotateObject(orig, uy, .1, true);
 		break;
 	case '.':
-		// World +z rotation
+		// World -z rotation
 		rotateObject(orig, uz, -.1, true);
 		break;
 	case '/':

@@ -35,7 +35,9 @@ void mergeTransform(matrix4x4 m1, matrix4x4 m2, boolean world);
 point multiplyMatrix(matrix4x4 m, point v);
 void applyTransform();
 void matrixIdentity(matrix4x4 identityMatrix);
-
+void camRotate(int x, int y);
+void camTranslate(int x, int y);
+void camZoom(int y);
 
 
 
