@@ -267,7 +267,7 @@ void scaleObject(float x, float y, float z, point p, boolean world) {
 	// Force changes
 	mergeTransform(scale, transform, world);
 
-	checkTransform(transform, "TRANSFORM");
+	//checkTransform(transform, "TRANSFORM");
 
 }
 
@@ -464,9 +464,54 @@ void mouseMotion(int x, int y) {
 }
 
 void camRotate(int x, int y) {
+	/*matrix4x4 rot;
 
+	// Compute rotation variables
+	float length = sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y) + (p2.z - p1.z) * (p2.z - p1.z));
+	float cosA = cosf(degrees);
+	float oneC = 1 - cosA;
+	float sinA = sinf(degrees);
+	float x = (p2.x - p1.x) / length;
+	float y = (p2.y - p1.y) / length;
+	float z = (p2.z - p1.z) / length;
+
+	// Initialize rotation matrix
+	matrixIdentity(rot);
+
+	// Fill rotation matrix
+	rot[0][0] = x*x*oneC + cosA;
+	rot[0][1] = x*y*oneC - z*sinA;
+	rot[0][2] = x*z*oneC + y*sinA;
+	rot[1][0] = y*x*oneC + z*sinA;
+	rot[1][1] = y*y*oneC + cosA;
+	rot[1][2] = y*z*oneC - x*sinA;
+	rot[2][0] = z*x*oneC - y*sinA;
+	rot[2][1] = z*y*oneC + x*sinA;
+	rot[2][2] = z*z*oneC + cosA;
+
+	// Move object to origin
+	if (world) {
+		translateObject(-(p1.x), -(p1.y), -(p1.z), world);
+	}
+	else {
+		translateObject(p1.x, p1.y, p1.z, world);
+	}
+
+	// Force changes on transform
+	mergeTransform(rot, transform, world);
+
+	// Move object back
+	if (world) {
+		translateObject(p1.x, p1.y, p1.z, world);
+	}
+	else {
+		translateObject(-(p1.x), -(p1.y), -(p1.z), world);
+	}*/
 }
 
+/**
+ * Treats the camera like a person walking side-to-side, up/down
+ */
 void camTranslate(int x, int y) {
 
 	matrix4x4 transMat;
@@ -478,13 +523,32 @@ void camTranslate(int x, int y) {
 	transMat[1][3] = y/100.0;
 	transMat[2][3] = 0;
 
-	mergeTransform(transMat, transform, true);
-	mergeTransform(transMat, viewTrans, true);
+	mergeTransform(transMat, transform, false);
+	mergeTransform(transMat, viewTrans, false);
 }
 
 void camZoom(int y) {
+	matrix4x4 scale;
+	float zoom;
 
+	zoom = 1 + y / 1000.0;
+
+	// Initialize the scale matrix
+	matrixIdentity(scale);
+
+	// Populate scale matrix
+	scale[0][0] = zoom;
+	scale[0][3] = (1 - zoom) * origin.x;
+	scale[1][1] = zoom;
+	scale[1][3] = (1 - zoom) * origin.y;
+	scale[2][2] = zoom;
+	scale[2][3] = (1 - zoom) * origin.z;
+
+	// Force changes
+	mergeTransform(scale, transform, true);
+	//mergeTransform(scale, viewTrans, true);
 }
+
 /**
  * This function is called whenever there is a keyboard input
  * key is the ASCII value of the key pressed
