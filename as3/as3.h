@@ -25,6 +25,7 @@ void resize(int x, int y);
 void mouseButton(int button, int state, int x, int y);
 void mouseMotion(int x, int y);
 void keyboard(unsigned char key, int x, int y);
-void draw(faceStruct * faceList, point * vertList);
+void drawAxes(void);
+void drawObject(faceStruct * faceList, point * vertList);
 
 

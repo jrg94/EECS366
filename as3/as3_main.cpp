@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);
 
 	//Test object
-	meshReader("Objects\\helicopter.obj", 0);
+	meshReader("Objects\\helicopter.obj", 1);
 
 	// Switch to main loop
 	glutMainLoop();

@@ -305,7 +305,11 @@ void display(void) {
     // Clear the background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	draw(faceList, vertList);
+	drawObject(faceList, vertList);
+
+	if (AXES) {
+		drawAxes();
+	}
    
 	if (PERSPECTIVE) {
 		// Perpective Projection 
@@ -413,7 +417,7 @@ void keyboard(unsigned char key, int x, int y) {
 	t.y = objectOrigin.y;
 	t.z = objectOrigin.z;
     switch(key) {
-    	case '':
+    case '':
 		// Exit failure
 		exit(1);
 		break;
@@ -471,27 +475,27 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case '[':
 		//Negative rotation around the world's x axis
-		worldRotation(xaxis, -10);
+		worldRotation(xaxis, -1);
 		break;
 	case ']':
 		//Positive rotation around the world's x axis
-		worldRotation(xaxis, 10);
+		worldRotation(xaxis, 1);
 		break;
 	case ';':
 		//Negative rotation around the world's y axis
-		worldRotation(yaxis, -10);
+		worldRotation(yaxis, -1);
 		break;
 	case '\'': //Make sure to test this thoroughly
 		//Positive rotation around the world's y axis
-		worldRotation(yaxis, 10);
+		worldRotation(yaxis, 1);
 		break;
 	case '.':
 		//Negative rotation around the world's z axis
-		worldRotation(zaxis, -10);
+		worldRotation(zaxis, -1);
 		break;
 	case '/':
 		//Positive rotation around the world's z axis
-		worldRotation(zaxis, 10);
+		worldRotation(zaxis, 1);
 		break;
 	case '=':
 		//Decrease the size of the object
@@ -515,7 +519,7 @@ void keyboard(unsigned char key, int x, int y) {
 void drawRedRectangle() {
 	// Draw a red rectangle
 	glColor3f(1, 0, 0);
-		glBegin(GL_POLYGON);
+	glBegin(GL_POLYGON);
 		glVertex3f(0.8, 0.8, -0.8);
 		glVertex3f(0.8, -0.8, -0.8);
 		glVertex3f(-0.8, -0.8, -0.0);
@@ -529,7 +533,7 @@ void drawRedRectangle() {
 void drawBlueTetrahedron() {
 	// Draw a blue tetraheadron
 	glColor3f(0, 0, 1);
-		glBegin(GL_TRIANGLES);
+	glBegin(GL_TRIANGLES);
 		glVertex3f(0.0, 1.6, 0.0);
 		glVertex3f(0.8, -0.4, 0.8);
 		glVertex3f(-0.8, -0.4, 0.8);
@@ -561,18 +565,56 @@ void drawGreenLine() {
 }
 
 /**
+* A convenience function for drawing the axes
+*/
+void drawAxes(void)
+{
+	glColor3f(0.5, 0.5, 0.5);
+	glBegin(GL_LINES);
+		glColor3f(0.5, 0.0, 0.0);
+		glVertex3f(0, 0.0, 0.0);
+		glVertex3f(2.0, 0.0, 0.0);
+
+		glColor3f(0.0, 0.5, 0.0);
+		glVertex3f(0.0, 2.0, 0.0);
+		glVertex3f(0.0, 0, 0.0);
+
+		glColor3f(0.0, 0.0, 0.5);
+		glVertex3f(0.0, 0.0, 0);
+		glVertex3f(0.0, 0.0, 2.0);
+	glEnd();
+}
+
+/**
  * A function for drawing the vertex list
  */
-void draw(faceStruct * faceList, point * vertList) {
+void drawObject(faceStruct * faceList, point * vertList) {
 	int i;
 
 	glColor3f(0, 0, 1);
-		glBegin(GL_TRIANGLES);
+	glBegin(GL_TRIANGLES);
+		// Uses the face list to generate triangular faces
 		for (i = 0; i < faces; i++) {
 			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
 			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
 			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
 		}
+	glEnd();
+
+	// Draws the axes based on the object origin
+	glColor3f(0.5, 0.5, 0.5);
+	glBegin(GL_LINES);
+		glColor3f(0.5, 0.0, 0.0);
+		glVertex3f(objectOrigin.x, objectOrigin.y, objectOrigin.z);
+		glVertex3f(objectOrigin.x + 2.0, objectOrigin.y, objectOrigin.z);
+
+		glColor3f(0.0, 0.5, 0.0);
+		glVertex3f(objectOrigin.x, objectOrigin.y, objectOrigin.z);
+		glVertex3f(objectOrigin.x, objectOrigin.y + 2.0, objectOrigin.z);
+
+		glColor3f(0.0, 0.0, 0.5);
+		glVertex3f(objectOrigin.x, objectOrigin.y, objectOrigin.z);
+		glVertex3f(objectOrigin.x, objectOrigin.y, objectOrigin.z + 2.0);
 	glEnd();
 }
 
