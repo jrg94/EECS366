@@ -4,7 +4,6 @@
  * Author: Evelyn Moss
  */
 
-#include <Windows.h>
 #include "as3.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -181,7 +180,7 @@ void checkTransform(matrix4x4 test, char * name) {
 /**
  * Modifies current transform with a translation
  */
-void translateObject(float tx, float ty, float tz) {
+void translateObject(float tx, float ty, float tz, boolean world) {
 	matrix4x4 transMat;
 
 	// Setup matrix with identity
@@ -191,14 +190,13 @@ void translateObject(float tx, float ty, float tz) {
 	transMat[1][3] = ty;
 	transMat[2][3] = tz;
 
-	// Multiply transform matrix by this matrix
-	mergeTransform(transMat, transform);
+	mergeTransform(transMat, transform, world);
 }
 
 /**
  * Modifies current transform with a translation
  */
-void rotateObject(point p1, point p2, float degrees) {
+void rotateObject(point p1, point p2, float degrees, boolean world) {
 	matrix4x4 rot;
 
 	// Compute rotation variables
@@ -209,9 +207,6 @@ void rotateObject(point p1, point p2, float degrees) {
 	float x = (p2.x - p1.x) / length;
 	float y = (p2.y - p1.y) / length;
 	float z = (p2.z - p1.z) / length; 
-
-	// Move object to origin
-	translateObject(-(p1.x), -(p1.y), -(p1.z));
 
 	// Initialize rotation matrix
 	matrixIdentity(rot);
@@ -227,14 +222,17 @@ void rotateObject(point p1, point p2, float degrees) {
 	rot[2][1] = z*y*oneC + x*sinA;
 	rot[2][2] = z*z*oneC + cosA;
 
+	// Move object to origin
+	translateObject(-(p1.x), -(p1.y), -(p1.z), world);
+
 	// Force changes on transform
-	mergeTransform(rot, transform);
+	mergeTransform(rot, transform, world); 
 
 	// Move object back 
-	translateObject(p1.x, p1.y, p1.z);
+	translateObject(p1.x, p1.y, p1.z, world);
 }
 
-void scaleObject(float x, float y, float z, point p) {
+void scaleObject(float x, float y, float z, point p, boolean world) {
 	matrix4x4 scale;
 
 	// Initialize the scale matrix
@@ -253,7 +251,7 @@ void scaleObject(float x, float y, float z, point p) {
 	printf("%f\n", p.z);
 
 	// Force changes
-	mergeTransform(scale, transform);
+	mergeTransform(scale, transform, world);
 
 	checkTransform(transform, "TRANSFORM");
 
@@ -262,13 +260,22 @@ void scaleObject(float x, float y, float z, point p) {
 /**
  * Multiplies m2 by m1
  */
-void mergeTransform(matrix4x4 m1, matrix4x4 m2) {
+void mergeTransform(matrix4x4 m1, matrix4x4 m2, boolean world) {
 	int row, col;
 	matrix4x4 temp;
 
-	for (row = 0; row < 4; row++) {
-		for (col = 0; col < 4; col++) {
-			temp[row][col] = m1[row][0] * m2[0][col] + m1[row][1] * m2[1][col] + m1[row][2] * m2[2][col] + m1[row][3] * m2[3][col];
+	if (world) {
+		for (row = 0; row < 4; row++) {
+			for (col = 0; col < 4; col++) {
+				temp[row][col] = m1[row][0] * m2[0][col] + m1[row][1] * m2[1][col] + m1[row][2] * m2[2][col] + m1[row][3] * m2[3][col];
+			}
+		}
+	}
+	else {
+		for (row = 0; row < 4; row++) {
+			for (col = 0; col < 4; col++) {
+				temp[row][col] = m2[row][0] * m1[0][col] + m2[row][1] * m1[1][col] + m2[row][2] * m1[2][col] + m2[row][3] * m1[3][col];
+			}
 		}
 	}
 
@@ -480,60 +487,60 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case '4':
 		//Translation in the negative x direction
-		translateObject(-1, 0, 0);
+		translateObject(-1, 0, 0, true);
 		break;
 	case '6':
 		//Translation in the positive x direction
-		translateObject(1, 0, 0);
+		translateObject(1, 0, 0, true);
 		break;
 	case '2':
 		//Translation in the negative y direction
-		translateObject(0, -1, 0);
+		translateObject(0, -1, 0, true);
 		break;
 	case '8':
 		//Translation in the positive y direction
-		translateObject(0, 1, 0);
+		translateObject(0, 1, 0, true);
 		break;
 	case '1':
 		//Translation in the negative z direction
-		translateObject(0, 0, -1);
+		translateObject(0, 0, -1, true);
 		break;
 	case '9':
 		//Translation in the positive z direction
-		translateObject(0, 0, 1);
+		translateObject(0, 0, 1, true);
 		break;
 	case '[':
 		//Negative rotation around the world's x axis
-		rotateObject(orig, ux, -.1);
+		rotateObject(orig, ux, -.1, true);
 		break;
 	case ']':
 		//Positive rotation around the world's x axis
-		rotateObject(orig, ux, .1);
+		rotateObject(orig, ux, .1, true);
 		break;
 	case ';':
 		//Negative rotation around the world's y axis
-		rotateObject(orig, uy, -.1);
+		rotateObject(orig, uy, -.1, true);
 		break;
 	case '\'': //Make sure to test this thoroughly
 		//Positive rotation around the world's y axis
-		rotateObject(orig, uy, .1);
+		rotateObject(orig, uy, .1, true);
 		break;
 	case '.':
 		//Negative rotation around the world's z axis
 		//worldRotation(zaxis, -1);
-		rotateObject(orig, uz, -.1);
+		rotateObject(orig, uz, -.1, true);
 		break;
 	case '/':
 		//Positive rotation around the world's z axis
-		rotateObject(orig, uz, .1);
+		rotateObject(orig, uz, .1, true);
 		break;
 	case '=':
 		//Decrease the size of the object
-		scaleObject(.5, .5, .5, orig);
+		scaleObject(.5, .5, .5, orig, true);
 		break;
 	case '-':
 		//Increase the size of the object
-		scaleObject(1.5, 1.5, 1.5, orig);
+		scaleObject(1.5, 1.5, 1.5, orig, true);
 		break;
     default:
 		break;

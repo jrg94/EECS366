@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL\glut.h>
@@ -30,7 +31,7 @@ void mouseMotion(int x, int y);
 void keyboard(unsigned char key, int x, int y);
 void drawAxes(point origin);
 void drawObject(faceStruct * faceList, point * vertList);
-void mergeTransform(matrix4x4 m1, matrix4x4 m2);
+void mergeTransform(matrix4x4 m1, matrix4x4 m2, boolean world);
 point multiplyMatrix(matrix4x4 m, point v);
 void applyTransform();
 void matrixIdentity(matrix4x4 identityMatrix);
