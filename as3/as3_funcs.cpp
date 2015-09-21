@@ -25,17 +25,6 @@ int cam_rotate_flag = OFF;			// The on/off flag for camera rotation
 int cam_translate_flag = OFF;		// The on/off flag for camera translation
 int cam_zoom_flag = OFF;			// The on/off flag for camera zoom
 
-// Vertex and Face data structure sued in the mesh reader
-// Feel free to change them
-typedef struct _point {
-  float x,y,z;
-} point;
-
-typedef struct _faceStruct {
-  int v1,v2,v3;
-  int n1,n2,n3;
-} faceStruct;
-
 typedef float _4matrix[4][4]; // A 4x4 matrix for convenience
 
 //Saves the origin of the object for use in figuring out translation and rotation
@@ -315,6 +304,8 @@ void scale(int size) {
 void display(void) {
     // Clear the background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	draw(faceList, vertList);
    
 	if (PERSPECTIVE) {
 		// Perpective Projection 
@@ -438,7 +429,7 @@ void keyboard(unsigned char key, int x, int y) {
 			AXES = ON;
 		}
 		break;
-    	case 'P':
+	case 'p':
 		// Toggle Projection Type (orthogonal, perspective)
 		if (PERSPECTIVE) {
 			// Switch from perspective to orthogonal
@@ -566,6 +557,22 @@ void drawGreenLine() {
 		glBegin(GL_LINES);
 		glVertex3f(1.8, 1.8, 0.0);
 		glVertex3f(0.1, 0.1, 0.0);
+	glEnd();
+}
+
+/**
+ * A function for drawing the vertex list
+ */
+void draw(faceStruct * faceList, point * vertList) {
+	int i;
+
+	glColor3f(0, 0, 1);
+		glBegin(GL_TRIANGLES);
+		for (i = 0; i < faces; i++) {
+			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
+			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
+			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
+		}
 	glEnd();
 }
 
