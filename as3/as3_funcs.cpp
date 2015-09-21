@@ -223,13 +223,23 @@ void rotateObject(point p1, point p2, float degrees, boolean world) {
 	rot[2][2] = z*z*oneC + cosA;
 
 	// Move object to origin
-	translateObject(-(p1.x), -(p1.y), -(p1.z), world);
+	if (world) {
+		translateObject(-(p1.x), -(p1.y), -(p1.z), world);
+	}
+	else {
+		translateObject(p1.x, p1.y, p1.z, world);
+	}
 
 	// Force changes on transform
 	mergeTransform(rot, transform, world); 
 
-	// Move object back 
-	translateObject(p1.x, p1.y, p1.z, world);
+	// Move object back
+	if (world) {
+		translateObject(p1.x, p1.y, p1.z, world);
+	} 
+	else {
+		translateObject(-(p1.x), -(p1.y), -(p1.z), world);
+	}
 }
 
 void scaleObject(float x, float y, float z, point p, boolean world) {
@@ -544,11 +554,17 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'i':
 		// Local -x rotation
-		rotateObject(orig, ux, -.1, false);
+		ux.x = objectOrigin.x + 1;
+		ux.y = objectOrigin.y;
+		ux.z = objectOrigin.z;
+		rotateObject(objectOrigin, ux, -.1, false);
 		break;
 	case 'o':
 		// Local +x rotation
-		rotateObject(orig, ux, .1, false);
+		ux.x = objectOrigin.x + 1;
+		ux.y = objectOrigin.y;
+		ux.z = objectOrigin.z;
+		rotateObject(objectOrigin, ux, .1, false);
 		break;
     default:
 		break;
