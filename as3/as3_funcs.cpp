@@ -25,10 +25,9 @@ int cam_rotate_flag = OFF;			// The on/off flag for camera rotation
 int cam_translate_flag = OFF;		// The on/off flag for camera translation
 int cam_zoom_flag = OFF;			// The on/off flag for camera zoom
 
-typedef float _4matrix[4][4]; // A 4x4 matrix for convenience
-
 //Saves the origin of the object for use in figuring out translation and rotation
 point objectOrigin;
+matrix4x4 transform;
 
 int verts, faces, norms;    // Number of vertices, faces and normals in the system
 point *vertList, *normList; // Vertex and Normal Lists
@@ -148,153 +147,162 @@ void meshReader (char *filename,int sign) {
 
 }
 
-
 /**
- * Function for multiplying a matrix with a point/vector.  Requires
- * matrix and point/vector being multiplied, as well as an indicator
- * for whether the matrix is being multiplied by a point or a vector.  
- * For 4x4 * 4x1 multiplications.
+ * Generates a 4x4 identity matrix
  */
-point matrixMult(_4matrix mat, point mult, bool isPoint) {
-	//Performs matrix multiplication of the matrix and the point/vector.
-	point store; //stores result until it can be returned.
-	float x, y, z, w; //result in homogeneous coordinates
-	if (isPoint) {
-		w = 1;
-	}
-	else {
-		w = 0;
-	}
-	x = (mat[0][0] * mult.x) + (mat[1][0] * mult.y) + (mat[2][0] * mult.z) + (mat[3][0] * w);
-	y = (mat[0][1] * mult.x) + (mat[1][1] * mult.y) + (mat[2][1] * mult.z) + (mat[3][1] * w);
-	z = (mat[0][2] * mult.x) + (mat[1][2] * mult.y) + (mat[2][2] * mult.z) + (mat[3][2] * w);
-	store.x = x;
-	store.y = y;
-	store.z = z;
-	return store;
-}
+void matrixIdentity(matrix4x4 identityMatrix) {
+	//float temp[4][4] = { {1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1} };
+	int row, col;
 
-
-
-/**
- * The translation function.  It is called whenever the object 
- * is translated.  Requires a point to which the object is to be translated.
- */
-void translation(point t) {
-	//Form the translation matrix
-	_4matrix translate;
-	//Start with a 3x3 identity matrix
-	for (int i = 0; i < 3; i++) { //row
-		for (int j = 0; j < 3; j++) { //column
-			if (i == j) {
-				translate[j][i] = 1;
+	for (row = 0; row < 4; row++) {
+		for (col = 0; col < 4; col++) {
+			if (col == row) {
+				identityMatrix[row][col] = 1.0;
 			}
 			else {
-				translate[j][i] = 0;
+				identityMatrix[row][col] = 0.0;
 			}
 		}
 	}
-	//Then add the translation vector to the last column
-	translate[3][0] = t.x;
-	translate[3][1] = t.y;
-	translate[3][2] = t.z;
-	//Finally fill in the bottom row with all 0s except in the last column, which is a 1
-	translate[0][3] = 0;
-	translate[1][3] = 0;
-	translate[2][3] = 0;
-	translate[3][3] = 1;
-
-	//Then multiply every point by the translation matrix (vectors cannot be translated)
-	for (int i = 0; i < verts; i++) {
-		vertList[i] = matrixMult(translate, vertList[i], true);
-	}
-
-	//Reset the object origin to match the new origin
-	objectOrigin.x = t.x;
-	objectOrigin.y = t.y;
-	objectOrigin.z = t.z;
 }
 
 /**
- * The rotation function for the world coordinates.  It 
- * is called only when the object is to be rotated based on the
- * world coordinates.  Requires the axis to rotate around, the 
- * degrees to rotate.
+ * A debug function to peek at a matrix
  */
-void worldRotation(int axis, double degrees) {
-	//Form the rotation matrix
-	_4matrix rotate;
-	//Start with 3x3 rotation matrix
-	if (axis == xaxis) {
-		rotate[0][0] = 1;
-		rotate[0][1] = 0;
-		rotate[0][2] = 0;
-		rotate[1][0] = 0;
-		rotate[1][1] = cos(degrees);
-		rotate[1][2] = sin(degrees);
-		rotate[2][0] = 0;
-		rotate[2][1] = -sin(degrees);
-		rotate[2][2] = cos(degrees);
-	}
-	else if (axis == yaxis) {
-		rotate[0][0] = cos(degrees);
-		rotate[0][1] = 0;
-		rotate[0][2] = -sin(degrees);
-		rotate[1][0] = 0;
-		rotate[1][1] = 1;
-		rotate[1][2] = 0;
-		rotate[2][0] = sin(degrees);
-		rotate[2][1] = 0;
-		rotate[2][2] = cos(degrees);
-	}
-	else {
-		rotate[0][0] = cos(degrees);
-		rotate[0][1] = sin(degrees);
-		rotate[0][2] = 0;
-		rotate[1][0] = -sin(degrees);
-		rotate[1][1] = cos(degrees);
-		rotate[1][2] = 0;
-		rotate[2][0] = 0;
-		rotate[2][1] = 0;
-		rotate[2][2] = 1;
-	}
-	//Then fill in the rest with 0s, with a 1 in the bottom right
-	rotate[0][3] = 0;
-	rotate[1][3] = 0;
-	rotate[2][3] = 0;
-	rotate[3][0] = 0;
-	rotate[3][1] = 0;
-	rotate[3][2] = 0;
-	rotate[3][3] = 1;
-
-	//Then, multiply all points and normals by the rotation matrix
-	for (int i = 0; i < verts; i++) {
-		vertList[i] = matrixMult(rotate, vertList[i], true);
-	}
-	for (int j = 0; j < norms; j++) {
-		normList[j] = matrixMult(rotate, normList[j], false);
+void checkTransform(matrix4x4 test, char * name) {
+	int row, col;
+	for (row = 0; row < 4; row++) {
+		for (col = 0; col < 4; col++) {
+			printf("%s:%d,%d: %f\n", name, row, col, test[row][col]);
+		}
 	}
 }
 
 /**
- * The scaling function.  It is called whenever the object in 
- * question needs to be scaled.  Requires a size to scale to.
+ * Modifies current transform with a translation
  */
-void scale(int size) {
-	//Scale vertices and normals by the given size
-	for (int i = 0; i < verts; i++) {
-		vertList[i].x *= size;
-		vertList[i].y *= size;
-		vertList[i].z *= size;
+void translateObject(float tx, float ty, float tz) {
+	matrix4x4 transMat;
+
+	// Setup matrix with identity
+	matrixIdentity(transMat);
+
+	transMat[0][3] = tx;
+	transMat[1][3] = ty;
+	transMat[2][3] = tz;
+
+	// Multiply transform matrix by this matrix
+	mergeTransform(transMat, transform);
+}
+
+/**
+ * Modifies current transform with a translation
+ */
+void rotateObject(point p1, point p2, float degrees) {
+	matrix4x4 rot;
+
+	// Compute rotation variables
+	float length = sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y) + (p2.z - p1.z) * (p2.z - p1.z));
+	float cosA = cosf(degrees);
+	float oneC = 1 - cosA;
+	float sinA = sinf(degrees);
+	float x = (p2.x - p1.x) / length;
+	float y = (p2.y - p1.y) / length;
+	float z = (p2.z - p1.z) / length; 
+
+	// Move object to origin
+	translateObject(-(p1.x), -(p1.y), -(p1.z));
+
+	// Initialize rotation matrix
+	matrixIdentity(rot);
+
+	// Fill rotation matrix
+	rot[0][0] = x*x*oneC + cosA;
+	rot[0][1] = x*y*oneC - z*sinA;
+	rot[0][2] = x*z*oneC + y*sinA;
+	rot[1][0] = y*x*oneC + z*sinA;
+	rot[1][1] = y*y*oneC + cosA;
+	rot[1][2] = y*z*oneC - x*sinA;
+	rot[2][0] = z*x*oneC - y*sinA;
+	rot[2][1] = z*y*oneC + x*sinA;
+	rot[2][2] = z*z*oneC + cosA;
+
+	// Force changes on transform
+	mergeTransform(rot, transform);
+
+	// Move object back 
+	translateObject(p1.x, p1.y, p1.z);
+}
+
+void scaleObject(float x, float y, float z, point p) {
+	matrix4x4 scale;
+
+	// Initialize the scale matrix
+	matrixIdentity(scale);
+
+	checkTransform(transform, "TRANSFORM");
+
+	// Populate scale matrix
+	scale[0][0] = x;
+	scale[0][3] = (1 - x) * p.x;
+	scale[1][1] = y;
+	scale[1][3] = (1 - y) * p.y;
+	scale[2][2] = z;
+	scale[2][3] = (1 - z) * p.z;
+
+	printf("%f\n", p.z);
+
+	// Force changes
+	mergeTransform(scale, transform);
+
+	checkTransform(transform, "TRANSFORM");
+
+}
+
+/**
+ * Multiplies m2 by m1
+ */
+void mergeTransform(matrix4x4 m1, matrix4x4 m2) {
+	int row, col;
+	matrix4x4 temp;
+
+	for (row = 0; row < 4; row++) {
+		for (col = 0; col < 4; col++) {
+			temp[row][col] = m1[row][0] * m2[0][col] + m1[row][1] * m2[1][col] + m1[row][2] * m2[2][col] + m1[row][3] * m2[3][col];
+		}
 	}
-	for (int j = 0; j < norms; j++) {
-		normList[j].x *= size;
-		normList[j].y *= size;
-		normList[j].z *= size;
+
+	for (row = 0; row < 4; row++) {
+		for (col = 0; col < 4; col++) {
+			m2[row][col] = temp[row][col];
+		}
 	}
 }
 
+/**
+ * A function which performs the transformation on the vertex set
+ */
+void applyTransform() {
+	for (int i = 0; i < verts; i++) {
+		vertList[i] = multiplyMatrix(transform, vertList[i]);
+	}
+	for (int j = 0; j < norms; j++) {
+		multiplyMatrix(transform, normList[j]);
+	}
+}
 
+/**
+ * Multiplies the input point v by the transformation matrix m
+ */
+point multiplyMatrix(matrix4x4 m, point v) {
+	point temp;
+	//printf("%f,%f,%f\n", v.x, v.y, v.z);
+	temp.x = (m[0][0] * v.x) + (m[0][1] * v.y) + (m[0][2] * v.z) + m[0][3];
+	temp.y = (m[1][0] * v.x) + (m[1][1] * v.y) + (m[1][2] * v.z) + m[1][3];
+	temp.z = (m[2][0] * v.x) + (m[2][1] * v.y) + (m[2][2] * v.z) + m[2][3];
+	//printf("%f,%f,%f\n", temp.x, temp.y, temp.z);
+	return temp;
+}
 
 /**
  * The display function. It is called whenever the window needs
@@ -305,10 +313,16 @@ void display(void) {
     // Clear the background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	applyTransform();
 	drawObject(faceList, vertList);
+	matrixIdentity(transform);
 
 	if (AXES) {
-		drawAxes();
+		point orig;
+		orig.x = 0;
+		orig.y = 0;
+		orig.z = 0;
+		drawAxes(orig);
 	}
    
 	if (PERSPECTIVE) {
@@ -412,10 +426,31 @@ void mouseMotion(int x, int y) {
  * x and y are the location of the mouse
  */
 void keyboard(unsigned char key, int x, int y) {
-	point t; //Used for translations
-	t.x = objectOrigin.x;
-	t.y = objectOrigin.y;
-	t.z = objectOrigin.z;
+	//point t; //Used for translations
+	//t.x = objectOrigin.x;
+	//t.y = objectOrigin.y;
+	//t.z = objectOrigin.z;
+
+	point orig;
+	orig.x = 0;
+	orig.y = 0;
+	orig.z = 0;
+
+	point ux;
+	ux.x = 1;
+	ux.y = 0;
+	ux.z = 0;
+
+	point uy;
+	uy.y = 1;
+	uy.x = 0;
+	uy.z = 0;
+
+	point uz;
+	uz.z = 1;
+	uz.x = 0;
+	uz.y = 0;
+
     switch(key) {
     case '':
 		// Exit failure
@@ -445,65 +480,60 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case '4':
 		//Translation in the negative x direction
-		t.x--;
-		translation(t);
+		translateObject(-1, 0, 0);
 		break;
 	case '6':
 		//Translation in the positive x direction
-		t.x++;
-		translation(t);
+		translateObject(1, 0, 0);
 		break;
 	case '2':
 		//Translation in the negative y direction
-		t.y--;
-		translation(t);
+		translateObject(0, -1, 0);
 		break;
 	case '8':
 		//Translation in the positive y direction
-		t.y++;
-		translation(t);
+		translateObject(0, 1, 0);
 		break;
 	case '1':
 		//Translation in the negative z direction
-		t.z--;
-		translation(t);
+		translateObject(0, 0, -1);
 		break;
 	case '9':
 		//Translation in the positive z direction
-		t.z++;
-		translation(t);
+		translateObject(0, 0, 1);
 		break;
 	case '[':
 		//Negative rotation around the world's x axis
-		worldRotation(xaxis, -1);
+		rotateObject(orig, ux, -.1);
 		break;
 	case ']':
 		//Positive rotation around the world's x axis
-		worldRotation(xaxis, 1);
+		rotateObject(orig, ux, .1);
 		break;
 	case ';':
 		//Negative rotation around the world's y axis
-		worldRotation(yaxis, -1);
+		rotateObject(orig, uy, -.1);
 		break;
 	case '\'': //Make sure to test this thoroughly
 		//Positive rotation around the world's y axis
-		worldRotation(yaxis, 1);
+		rotateObject(orig, uy, .1);
 		break;
 	case '.':
 		//Negative rotation around the world's z axis
-		worldRotation(zaxis, -1);
+		//worldRotation(zaxis, -1);
+		rotateObject(orig, uz, -.1);
 		break;
 	case '/':
 		//Positive rotation around the world's z axis
-		worldRotation(zaxis, 1);
+		rotateObject(orig, uz, .1);
 		break;
 	case '=':
 		//Decrease the size of the object
-		scale(.75);
+		scaleObject(.5, .5, .5, orig);
 		break;
 	case '-':
 		//Increase the size of the object
-		scale(1.25);
+		scaleObject(1.5, 1.5, 1.5, orig);
 		break;
     default:
 		break;
@@ -567,21 +597,20 @@ void drawGreenLine() {
 /**
 * A convenience function for drawing the axes
 */
-void drawAxes(void)
-{
+void drawAxes(point origin) {
 	glColor3f(0.5, 0.5, 0.5);
 	glBegin(GL_LINES);
 		glColor3f(0.5, 0.0, 0.0);
-		glVertex3f(0, 0.0, 0.0);
-		glVertex3f(2.0, 0.0, 0.0);
+		glVertex3f(origin.x, origin.y, origin.z);
+		glVertex3f(origin.x + 2.0, origin.y, origin.z);
 
 		glColor3f(0.0, 0.5, 0.0);
-		glVertex3f(0.0, 2.0, 0.0);
-		glVertex3f(0.0, 0, 0.0);
+		glVertex3f(origin.x, origin.y, origin.z);
+		glVertex3f(origin.x, origin.y + 2.0, origin.z);
 
 		glColor3f(0.0, 0.0, 0.5);
-		glVertex3f(0.0, 0.0, 0);
-		glVertex3f(0.0, 0.0, 2.0);
+		glVertex3f(origin.x, origin.y, origin.z);
+		glVertex3f(origin.x, origin.y, origin.z + 2.0);
 	glEnd();
 }
 
@@ -601,21 +630,10 @@ void drawObject(faceStruct * faceList, point * vertList) {
 		}
 	glEnd();
 
-	// Draws the axes based on the object origin
-	glColor3f(0.5, 0.5, 0.5);
-	glBegin(GL_LINES);
-		glColor3f(0.5, 0.0, 0.0);
-		glVertex3f(objectOrigin.x, objectOrigin.y, objectOrigin.z);
-		glVertex3f(objectOrigin.x + 2.0, objectOrigin.y, objectOrigin.z);
-
-		glColor3f(0.0, 0.5, 0.0);
-		glVertex3f(objectOrigin.x, objectOrigin.y, objectOrigin.z);
-		glVertex3f(objectOrigin.x, objectOrigin.y + 2.0, objectOrigin.z);
-
-		glColor3f(0.0, 0.0, 0.5);
-		glVertex3f(objectOrigin.x, objectOrigin.y, objectOrigin.z);
-		glVertex3f(objectOrigin.x, objectOrigin.y, objectOrigin.z + 2.0);
-	glEnd();
+	if (AXES) {
+		// Draws the axes based on the object origin
+		drawAxes(objectOrigin);
+	}
 }
 
 /**
@@ -651,4 +669,151 @@ void drawObject(faceStruct * faceList, point * vertList) {
 	// Switch to main loop
 	glutMainLoop();
 	return 0;
+}*/
+
+/**
+* Function for multiplying a matrix with a point/vector.  Requires
+* matrix and point/vector being multiplied, as well as an indicator
+* for whether the matrix is being multiplied by a point or a vector.
+* For 4x4 * 4x1 multiplications.
+*/
+/*
+point matrixMult(matrix4x4 mat, point mult, bool isPoint) {
+	//Performs matrix multiplication of the matrix and the point/vector.
+	point store; //stores result until it can be returned.
+	float x, y, z, w; //result in homogeneous coordinates
+	if (isPoint) {
+		w = 1;
+	}
+	else {
+		w = 0;
+	}
+	x = (mat[0][0] * mult.x) + (mat[1][0] * mult.y) + (mat[2][0] * mult.z) + (mat[3][0] * w);
+	y = (mat[0][1] * mult.x) + (mat[1][1] * mult.y) + (mat[2][1] * mult.z) + (mat[3][1] * w);
+	z = (mat[0][2] * mult.x) + (mat[1][2] * mult.y) + (mat[2][2] * mult.z) + (mat[3][2] * w);
+	store.x = x;
+	store.y = y;
+	store.z = z;
+	return store;
+}*/
+
+/**
+* The translation function.  It is called whenever the object
+* is translated.  Requires a point to which the object is to be translated.
+*/
+/*
+void translation(point t) {
+	//Form the translation matrix
+	matrix4x4 translate;
+	//Start with a 3x3 identity matrix
+	for (int i = 0; i < 3; i++) { //row
+		for (int j = 0; j < 3; j++) { //column
+			if (i == j) {
+				translate[j][i] = 0;
+			}
+			else {
+				translate[j][i] = 0;
+			}
+		}
+	}
+	//Then add the translation vector to the last column
+	translate[3][0] = t.x;
+	translate[3][1] = t.y;
+	translate[3][2] = t.z;
+	//Finally fill in the bottom row with all 0s except in the last column, which is a 1
+	translate[0][3] = 0;
+	translate[1][3] = 0;
+	translate[2][3] = 0;
+	translate[3][3] = 1;
+
+	//Then multiply every point by the translation matrix (vectors cannot be translated)
+	for (int i = 0; i < verts; i++) {
+		vertList[i] = matrixMult(translate, vertList[i], true);
+	}
+
+	//Reset the object origin to match the new origin
+	objectOrigin.x = t.x;
+	objectOrigin.y = t.y;
+	objectOrigin.z = t.z;
+}*/
+
+/**
+* The rotation function for the world coordinates.  It
+* is called only when the object is to be rotated based on the
+* world coordinates.  Requires the axis to rotate around, the
+* degrees to rotate.
+*/
+/*
+void worldRotation(int axis, double degrees) {
+	//Form the rotation matrix
+	matrix4x4 rotate;
+	//Start with 3x3 rotation matrix
+	if (axis == xaxis) {
+		rotate[0][0] = 1;
+		rotate[0][1] = 0;
+		rotate[0][2] = 0;
+		rotate[1][0] = 0;
+		rotate[1][1] = cos(degrees);
+		rotate[1][2] = sin(degrees);
+		rotate[2][0] = 0;
+		rotate[2][1] = -sin(degrees);
+		rotate[2][2] = cos(degrees);
+	}
+	else if (axis == yaxis) {
+		rotate[0][0] = cos(degrees);
+		rotate[0][1] = 0;
+		rotate[0][2] = -sin(degrees);
+		rotate[1][0] = 0;
+		rotate[1][1] = 1;
+		rotate[1][2] = 0;
+		rotate[2][0] = sin(degrees);
+		rotate[2][1] = 0;
+		rotate[2][2] = cos(degrees);
+	}
+	else {
+		rotate[0][0] = cos(degrees);
+		rotate[0][1] = sin(degrees);
+		rotate[0][2] = 0;
+		rotate[1][0] = -sin(degrees);
+		rotate[1][1] = cos(degrees);
+		rotate[1][2] = 0;
+		rotate[2][0] = 0;
+		rotate[2][1] = 0;
+		rotate[2][2] = 1;
+	}
+	//Then fill in the rest with 0s, with a 1 in the bottom right
+	rotate[0][3] = 0;
+	rotate[1][3] = 0;
+	rotate[2][3] = 0;
+	rotate[3][0] = 0;
+	rotate[3][1] = 0;
+	rotate[3][2] = 0;
+	rotate[3][3] = 1;
+
+	//Then, multiply all points and normals by the rotation matrix
+	for (int i = 0; i < verts; i++) {
+		vertList[i] = matrixMult(rotate, vertList[i], true);
+	}
+	for (int j = 0; j < norms; j++) {
+		normList[j] = matrixMult(rotate, normList[j], false);
+	}
+}*/
+
+/**
+* The scaling function.  It is called whenever the object in
+* question needs to be scaled.  Requires a size to scale to.
+*/
+/*
+void scale(int size) {
+	//Scale vertices and normals by the given size
+	for (int i = 0; i < verts; i++) {
+		vertList[i].x *= size;
+		vertList[i].y *= size;
+		vertList[i].z *= size;
+	}
+	for (int j = 0; j < norms; j++) {
+		normList[j].x *= size;
+		normList[j].y *= size;
+		normList[j].z *= size;
+	}
 }*/

@@ -18,6 +18,9 @@ typedef struct _faceStruct {
 	int n1, n2, n3;
 } faceStruct;
 
+// A 4x4 matrix for convenience
+typedef float matrix4x4[4][4];
+
 // Functions
 void meshReader(char *filename, int sign);
 void display(void);
@@ -25,7 +28,13 @@ void resize(int x, int y);
 void mouseButton(int button, int state, int x, int y);
 void mouseMotion(int x, int y);
 void keyboard(unsigned char key, int x, int y);
-void drawAxes(void);
+void drawAxes(point origin);
 void drawObject(faceStruct * faceList, point * vertList);
+void mergeTransform(matrix4x4 m1, matrix4x4 m2);
+point multiplyMatrix(matrix4x4 m, point v);
+void applyTransform();
+void matrixIdentity(matrix4x4 identityMatrix);
+
+
 
 

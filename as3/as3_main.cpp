@@ -1,5 +1,7 @@
 #include "as3.h"
 
+extern matrix4x4 transform;
+
 /**
 * The main function
 */
@@ -24,6 +26,7 @@ int main(int argc, char* argv[]) {
 
 	//Test object
 	meshReader("Objects\\helicopter.obj", 1);
+	matrixIdentity(transform);
 
 	// Switch to main loop
 	glutMainLoop();
