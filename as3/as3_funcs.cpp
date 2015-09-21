@@ -296,6 +296,7 @@ void applyTransform() {
 	for (int j = 0; j < norms; j++) {
 		multiplyMatrix(transform, normList[j]);
 	}
+	objectOrigin = multiplyMatrix(transform, objectOrigin);
 }
 
 /**
@@ -433,10 +434,10 @@ void mouseMotion(int x, int y) {
  * x and y are the location of the mouse
  */
 void keyboard(unsigned char key, int x, int y) {
-	//point t; //Used for translations
-	//t.x = objectOrigin.x;
-	//t.y = objectOrigin.y;
-	//t.z = objectOrigin.z;
+	point t;
+	t.x = objectOrigin.x;
+	t.y = objectOrigin.y;
+	t.z = objectOrigin.z;
 
 	point orig;
 	orig.x = 0;
