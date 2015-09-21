@@ -464,8 +464,9 @@ void mouseMotion(int x, int y) {
 }
 
 void camRotate(int x, int y) {
-	/*matrix4x4 rot;
+	matrix4x4 rot;
 
+	/*
 	// Compute rotation variables
 	float length = sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y) + (p2.z - p1.z) * (p2.z - p1.z));
 	float cosA = cosf(degrees);
@@ -527,6 +528,9 @@ void camTranslate(int x, int y) {
 	mergeTransform(transMat, viewTrans, false);
 }
 
+/**
+ * Treats the camera like a person turning their head
+ */
 void camZoom(int y) {
 	matrix4x4 scale;
 	float zoom;
