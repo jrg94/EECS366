@@ -354,7 +354,7 @@ void display(void) {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		// Set the camera position, orientation and target
-		gluLookAt(0, 0, 5, 0, 0, 0, 0, 1, 0);
+		//gluLookAt(0, 0, 5, 0, 0, 0, 0, 1, 0);
 	}
 	else {
 		// Orthogonal Projection 
@@ -458,6 +458,8 @@ void mouseMotion(int x, int y) {
 	lastx = x;
 	lasty = y;
 
+	glutPostRedisplay();
+
 	printf("Mouse is at %d, %d\n", x,y);
 }
 
@@ -467,6 +469,56 @@ void camRotate(int x, int y) {
 
 void camTranslate(int x, int y) {
 
+	//float matrix[16];
+	
+	//matrix4x4 cam;
+	//glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+	/*
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			cam[i][j] = matrix[(i * 4) + j];
+			printf("Model_view:%d,%d,%f\n", i, j, cam[i][j]);
+		}
+	}
+	
+	matrix4x4 transMat;
+
+	// Setup matrix with identity
+	matrixIdentity(transMat);
+
+	transMat[0][3] = x;
+	transMat[1][3] = y;
+	transMat[2][3] = 0;
+
+	mergeTransform(transMat, cam, false);
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			matrix[(i * 4) + j] = cam[i][j];
+		}
+	}*/
+
+	/*
+	matrix[0] = 1;
+	matrix[1] = 0;
+	matrix[2] = 0;
+	matrix[3] = x;
+	matrix[4] = 0;
+	matrix[5] = 1;
+	matrix[6] = 0;
+	matrix[7] = y;
+	matrix[8] = 0;
+	matrix[9] = 0;
+	matrix[10] = 1;
+	matrix[11] = 0;
+	matrix[12] = 0;
+	matrix[13] = 0;
+	matrix[14] = 0;
+	matrix[15] = 1;
+	*/
+
+	//glMultMatrixf(matrix);
+	//glLoadMatrixf(matrix);
 }
 
 void camZoom(int y) {
