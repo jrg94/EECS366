@@ -521,26 +521,33 @@ void keyboard(unsigned char key, int x, int y) {
 		//Negative rotation around the world's y axis
 		rotateObject(orig, uy, -.1, true);
 		break;
-	case '\'': //Make sure to test this thoroughly
+	case '\'': 
 		//Positive rotation around the world's y axis
 		rotateObject(orig, uy, .1, true);
 		break;
 	case '.':
-		//Negative rotation around the world's z axis
-		//worldRotation(zaxis, -1);
+		// World +z rotation
 		rotateObject(orig, uz, -.1, true);
 		break;
 	case '/':
-		//Positive rotation around the world's z axis
+		// World +z rotation
 		rotateObject(orig, uz, .1, true);
 		break;
 	case '=':
-		//Decrease the size of the object
+		// Decrease the size of the object
 		scaleObject(.5, .5, .5, orig, true);
 		break;
 	case '-':
-		//Increase the size of the object
+		// Increase the size of the object
 		scaleObject(1.5, 1.5, 1.5, orig, true);
+		break;
+	case 'i':
+		// Local -x rotation
+		rotateObject(orig, ux, -.1, false);
+		break;
+	case 'o':
+		// Local +x rotation
+		rotateObject(orig, ux, .1, false);
 		break;
     default:
 		break;
