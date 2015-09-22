@@ -465,8 +465,10 @@ void mouseMotion(int x, int y) {
 
 void camRotate(int x, int y) {
 	matrix4x4 rot;
-
-	/*
+	//To rotate the camera, must rotate the scene by the inverse of the camera rotation instead.
+	//The inverse of a rotaion matrix is its transpose.
+	//Must be performed on "center of world" as well.
+	
 	// Compute rotation variables
 	float length = sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y) + (p2.z - p1.z) * (p2.z - p1.z));
 	float cosA = cosf(degrees);
@@ -481,13 +483,13 @@ void camRotate(int x, int y) {
 
 	// Fill rotation matrix
 	rot[0][0] = x*x*oneC + cosA;
-	rot[0][1] = x*y*oneC - z*sinA;
-	rot[0][2] = x*z*oneC + y*sinA;
-	rot[1][0] = y*x*oneC + z*sinA;
+	rot[1][0] = x*y*oneC - z*sinA;
+	rot[2][0] = x*z*oneC + y*sinA;
+	rot[0][1] = y*x*oneC + z*sinA;
 	rot[1][1] = y*y*oneC + cosA;
-	rot[1][2] = y*z*oneC - x*sinA;
-	rot[2][0] = z*x*oneC - y*sinA;
-	rot[2][1] = z*y*oneC + x*sinA;
+	rot[2][1] = y*z*oneC - x*sinA;
+	rot[0][2] = z*x*oneC - y*sinA;
+	rot[1][2] = z*y*oneC + x*sinA;
 	rot[2][2] = z*z*oneC + cosA;
 
 	// Move object to origin
@@ -507,7 +509,7 @@ void camRotate(int x, int y) {
 	}
 	else {
 		translateObject(-(p1.x), -(p1.y), -(p1.z), world);
-	}*/
+	}
 }
 
 /**
