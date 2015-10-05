@@ -7,6 +7,8 @@
 
 using namespace std;
 
+void matrixIdentity(float identityMatrix[16]);
+
 Vertex::Vertex()
 {
 	x = y = z = 0;
@@ -279,6 +281,9 @@ Camera::Camera()
 	NearPlane = 2.0;
 	ViewPlane = 10.0;
 
+	matrixIdentity(ViewingMatrix);
+	matrixIdentity(ProjectionMatrix);
+
 	LookAt();
 }
 
@@ -340,7 +345,6 @@ void Camera::EnforceVectors()
 // Calculate the new perspective projection matrix
 void Camera::Perspective()
 {
-	//ADD YOUR CODE HERE!!
 	float pers[16];
 	float temp[16];
 
@@ -364,6 +368,8 @@ void Camera::Perspective()
 	pers[13] = 0;
 	pers[14] = -1;
 	pers[15] = Position.z;
+
+	matrixIdentity(ProjectionMatrix);
 
 	// Duplicates projection matrix
 	for (int i = 0; i < 16; i++)
@@ -402,15 +408,14 @@ void Camera::LookAt()
 						n.i, n.j, n.k, 0,
 		                0, 0, 0, 1};
 
-	// Duplicates viewing matrix
-	for (int i = 0; i < 16; i++)
-		temp[i] = ViewingMatrix[i];
+	matrixIdentity(temp);
 
 	for (int x = 0; x < 4; x++) {
 		for (int y = 0; y < 4; y++) {
 			float sum = 0.0;
 			for (int z = 0; z < 4; z++) {
 				sum += temp[4 * x + z] * lookAt[4 * z + y];
+				printf("Sum = %f\n", sum);
 				ViewingMatrix[4 * x + y] = sum;
 			}
 		}
