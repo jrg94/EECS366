@@ -336,7 +336,7 @@ int main(int argc, char* argv[])
 {
     pDisplayScene = new Scene;
 	//YOU MAY ENTER YOUR OWN SCENE FILE OR PASS IT AS AN ARGUMENT TO THE PROGRAM
-	pDisplayScene->Load("scene2.dat");
+	pDisplayScene->Load("scene1.dat");
 	pDisplayCamera = new Camera;
 	pDisplayCamera->ViewWidth = (float)WindowWidth/32;
 	pDisplayCamera->ViewHeight = (float)WindowHeight/32;

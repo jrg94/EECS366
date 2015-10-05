@@ -341,14 +341,50 @@ void Camera::EnforceVectors()
 void Camera::Perspective()
 {
 	//ADD YOUR CODE HERE!!
-	
+	float pers[16];
+	float temp[16];
+
+	// Row 0
+	pers[0] = Position.z - ViewPlane;
+	pers[1] = 0;
+	pers[2] = -Position.x;
+	pers[3] = Position.x * Position.z;
+	// Row 1
+	pers[4] = 0;
+	pers[5] = Position.z - ViewPlane;
+	pers[6] = -Position.y;
+	pers[7] = Position.y * Position.z;
+	// Row 2
+	pers[8] = 0;
+	pers[9] = 0;
+	pers[10] = (NearPlane + FarPlane)/(NearPlane - FarPlane); // Sz
+	pers[11] = (2 * NearPlane * FarPlane)/(NearPlane - FarPlane); // Tz
+	// Row 3
+	pers[12] = 0;
+	pers[13] = 0;
+	pers[14] = -1;
+	pers[15] = Position.z;
+
+	// Duplicates projection matrix
+	for (int i = 0; i < 16; i++)
+		temp[i] = ProjectionMatrix[i];
+
+	for (int x = 0; x < 4; x++) {
+		for (int y = 0; y < 4; y++) {
+			float sum = 0.0;
+			for (int z = 0; z < 4; z++) {
+				sum += temp[4 * x + z] * pers[4 * z + y];
+				ProjectionMatrix[4 * x + y] = sum;
+			}
+		}
+	}
 }
 
 // Calculate the new orthographic projection matrix
 void Camera::Orthographic()
 {
 	//ADD YOUR CODE HERE!!
-	
+
 }
 
 // Calculate the new viewing transform matrix
