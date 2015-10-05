@@ -165,6 +165,18 @@ void DisplayFunc()
 		{
 			//ADD YOUR CODE HERE: Draw the bounding boxes
 
+			glColor3f(0, 1, 0);
+			
+			// Transform each vertex
+			for (int j = 0; j < 8; j++) {
+				Vertex v = pDisplayScene->pObjectList[i].pBoundingBox[j];
+
+				temp = Transform(pDisplayScene->pObjectList[i].ModelMatrix, v);
+				temp2 = Transform(pDisplayCamera->ViewingMatrix, temp);
+				v = Transform(pDisplayCamera->ProjectionMatrix, temp2);
+			}
+
+
 		} 
 	}
 
@@ -301,9 +313,9 @@ void KeyboardFunc(unsigned char key, int x, int y)
 	case 'p':
 		PerspectiveMode = !PerspectiveMode;
 		if(PerspectiveMode)
-			glutSetWindowTitle("Assignment 5 (Perspective)");
+			glutSetWindowTitle("Assignment 4 (Perspective)");
 		else
-			glutSetWindowTitle("Assignment 5 (Orthogonal)");
+			glutSetWindowTitle("Assignment 4 (Orthogonal)");
 		break;
 	case 'Q':
 	case 'q':

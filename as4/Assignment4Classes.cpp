@@ -73,7 +73,7 @@ void Object::Load(char* file, float s, float rx, float ry, float rz,
 
 	// Load and create the faces and vertices
 	int CurrentVertex = 0, CurrentFace = 0;
-	float MinimumX, MaximumX, MinimumY, MaximumY, MinimumZ, MaximumZ;
+	float MinimumX = 0, MaximumX = 0, MinimumY = 0, MaximumY = 0, MinimumZ = 0, MaximumZ = 0;
 	while(!feof(pObjectFile))
 	{
 		fscanf(pObjectFile, "%c %f %f %f\n", &DataType, &a, &b, &c);
@@ -84,6 +84,26 @@ void Object::Load(char* file, float s, float rx, float ry, float rz,
 			pVertexList[CurrentVertex].z = c;
 
 			//ADD YOUR CODE HERE :Track maximum and minimum coordinates for use in bounding boxes
+			if (a < MinimumX) {
+				MinimumX = a;
+			}
+			else if (a >= MaximumX) {
+				MaximumX = a;
+			}
+
+			if (b < MinimumY) {
+				MinimumY = b;
+			}
+			else if (b >= MaximumY) {
+				MaximumY = b;
+			}
+
+			if (c < MinimumZ) {
+				MinimumZ = c;
+			}
+			else if (c >= MaximumZ) {
+				MaximumZ = c;
+			}
 
 			CurrentVertex++;
 		}
@@ -98,7 +118,29 @@ void Object::Load(char* file, float s, float rx, float ry, float rz,
 	}
 
 	//ADD YOUR CODE HERE: Initialize the bounding box vertices
+	pBoundingBox = new Vertex[8];
+	printf("x:%f,y:%f,z:%f\n", MinimumX, MinimumY, MinimumZ);
 
+	for (int i = 0; i < 8; i++) {
+		float tempX = MinimumX;
+		float tempY = MinimumY;
+		float tempZ = MinimumZ;
+		// 1, 3, 5, 7
+		if (i % 2 == 1) {
+			tempX = MaximumX;
+		}
+		// 2, 3, 6, 7
+		if (i == 2 || i == 3 || i == 6 || i ==7) {
+			tempY = MaximumY;
+		}
+		// 4, 5, 6, 7
+		if (i > 3) {
+			tempZ = MaximumZ;
+		}
+		pBoundingBox[i].x = tempX;
+		pBoundingBox[i].y = tempY;
+		pBoundingBox[i].z = tempZ;
+	}
 	
 	// Apply the initial transformations in order
 	LocalScale(s);
@@ -274,12 +316,12 @@ Camera::Camera()
 	v.i = 0; v.j = 0; v.k = 1;
 	EnforceVectors();
 
-	ViewWidth = 8.0;
-	ViewHeight = 8.0;
+	ViewWidth = 12.0;
+	ViewHeight = 12.0;
 
 	FarPlane = 10.0;
 	NearPlane = 2.0;
-	ViewPlane = 10.0;
+	ViewPlane = 8.0;
 
 	matrixIdentity(ViewingMatrix);
 	matrixIdentity(ProjectionMatrix);
@@ -412,7 +454,6 @@ void Camera::Orthographic()
 void Camera::LookAt()
 {
 	// Postmultiply a lookat matrix with the current viewing matrix
-	// THIS IS CAUSING A WRAPAROUND
 	
 	float lookAt[16] = {u.i, u.j, u.k, 0,
 						v.i, v.j, v.k, 0,
