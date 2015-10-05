@@ -35,6 +35,7 @@ public:
 	Vertex* pVertexList;
 	int VertexCount;
 	Face* pFaceList;
+	Face* pBoxFaceList;
 	int FaceCount;
 	float ModelMatrix[16];
 };

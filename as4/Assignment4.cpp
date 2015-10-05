@@ -34,22 +34,37 @@ bool Intersects(Vertex v1, Vertex v2, Vertex v3, Vertex start, Vertex end) {
 	//CANNOT FINISH WITH BATTERY POWER
 	Vertex A, B, C, W1, D;
 	int w,s;
+	// Initialize A
 	A.x = start.x - v3.x;
 	A.y = start.y - v3.y;
 	A.z = start.z - v3.z;
+	// Initialize B
 	B.x = v1.x - v3.x;
 	B.y = v1.y - v3.y;
 	B.z = v1.z - v3.z;
+	// Initialize C
 	C.x = v2.x - v3.x;
 	C.y = v2.y - v3.y;
 	C.z = v2.z - v3.z;
-	//W1 = B x C
+	// Initialize W1 = B x C
+	W1.x = B.y * C.z - B.z * C.y;
+	W1.y = B.z * C.x - B.x * C.z;
+	W1.z = B.x * C.y - B.y * C.x;
+	// Initialize w
 	w = A.x * W1.x + A.y * W1.y + A.z * W1.z;
+	// Initialize D
 	D.x = end.x - v3.x;
 	D.y = end.y - v3.y;
 	D.z = end.z - v3.z;
+	// Initialize s
 	s = D.x * W1.x + D.y * W1.y + D.z * W1.z;
 
+	if (w < 0.0 || w + s > 1.0) {
+		return false;
+	}
+	else {
+		return true;
+	}
 }
 
 
@@ -189,16 +204,26 @@ void DisplayFunc()
 
 			glColor3f(0, 1, 0);
 			
-			// Transform each vertex
-			for (int j = 0; j < 8; j++) {
-				Vertex v = pDisplayScene->pObjectList[i].pBoundingBox[j];
+			// Builds each face of the bunding boxes
+			for (int j = 0; j < 12; j++) {
+				input = new Vertex[3];
+				input[0] = pDisplayScene->pObjectList[i].pBoundingBox[pDisplayScene->pObjectList[i].pBoxFaceList[j].v1];
+				input[1] = pDisplayScene->pObjectList[i].pBoundingBox[pDisplayScene->pObjectList[i].pBoxFaceList[j].v2];
+				input[2] = pDisplayScene->pObjectList[i].pBoundingBox[pDisplayScene->pObjectList[i].pBoxFaceList[j].v3];
 
-				temp = Transform(pDisplayScene->pObjectList[i].ModelMatrix, v);
-				temp2 = Transform(pDisplayCamera->ViewingMatrix, temp);
-				v = Transform(pDisplayCamera->ProjectionMatrix, temp2);
+				for (int k = 0; k<3; k++) {
+					temp = Transform(pDisplayScene->pObjectList[i].ModelMatrix, input[k]);
+					temp2 = Transform(pDisplayCamera->ViewingMatrix, temp);
+					input[k] = Transform(pDisplayCamera->ProjectionMatrix, temp2);
+				}
+
+				glBegin(GL_POLYGON);
+				for (int k = 0; k < 3; k++)
+					glVertex2f(input[k].x / input[k].h, input[k].y / input[k].h);
+				glEnd();
+
 			}
-
-
+			
 		} 
 	}
 
@@ -239,8 +264,14 @@ void MouseFunc(int button,int state,int x,int y)
 		end.z = 1000; //Need a better value here
 		//Test against all faces of all objects?
 		for (int i = 0; i < pDisplayScene->ObjectCount; i++) {
-			for (int j = 0; j < pDisplayScene->pObjectList->FaceCount; j++) {
-
+			for (int j = 0; j < 12; j++) {
+				Face test = pDisplayScene->pObjectList[i].pBoxFaceList[j];
+				Vertex x = pDisplayScene->pObjectList[i].pBoundingBox[test.v1];
+				Vertex y = pDisplayScene->pObjectList[i].pBoundingBox[test.v2];
+				Vertex z = pDisplayScene->pObjectList[i].pBoundingBox[test.v3];
+				if (Intersects(x, y, z, start, end)) {
+					SelectedObject = i;
+				}
 			}
 		}
 

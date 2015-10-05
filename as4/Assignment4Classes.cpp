@@ -141,6 +141,62 @@ void Object::Load(char* file, float s, float rx, float ry, float rz,
 		pBoundingBox[i].y = tempY;
 		pBoundingBox[i].z = tempZ;
 	}
+
+	pBoxFaceList = new Face[12];
+
+	// 0123
+	pBoxFaceList[0].v1 = 0;
+	pBoxFaceList[0].v2 = 1;
+	pBoxFaceList[0].v3 = 2;
+
+	pBoxFaceList[1].v1 = 1;
+	pBoxFaceList[1].v2 = 2;
+	pBoxFaceList[1].v3 = 3;
+
+	// 2367
+	pBoxFaceList[2].v1 = 2;
+	pBoxFaceList[2].v2 = 3;
+	pBoxFaceList[2].v3 = 6;
+
+	pBoxFaceList[3].v1 = 3;
+	pBoxFaceList[3].v2 = 6;
+	pBoxFaceList[3].v3 = 7;
+
+	// 0145
+	pBoxFaceList[4].v1 = 0;
+	pBoxFaceList[4].v2 = 1;
+	pBoxFaceList[4].v3 = 4;
+
+	pBoxFaceList[5].v1 = 1;
+	pBoxFaceList[5].v2 = 4;
+	pBoxFaceList[5].v3 = 5;
+
+	// 0246
+	pBoxFaceList[6].v1 = 0;
+	pBoxFaceList[6].v2 = 2;
+	pBoxFaceList[6].v3 = 4;
+
+	pBoxFaceList[7].v1 = 2;
+	pBoxFaceList[7].v2 = 4;
+	pBoxFaceList[7].v3 = 6;
+
+	// 1357
+	pBoxFaceList[8].v1 = 1;
+	pBoxFaceList[8].v2 = 3;
+	pBoxFaceList[8].v3 = 5;
+
+	pBoxFaceList[9].v1 = 3;
+	pBoxFaceList[9].v2 = 5;
+	pBoxFaceList[9].v3 = 7;
+
+	// 4567
+	pBoxFaceList[10].v1 = 4;
+	pBoxFaceList[10].v2 = 5;
+	pBoxFaceList[10].v3 = 6;
+
+	pBoxFaceList[11].v1 = 5;
+	pBoxFaceList[11].v2 = 6;
+	pBoxFaceList[11].v3 = 7;
 	
 	// Apply the initial transformations in order
 	LocalScale(s);
