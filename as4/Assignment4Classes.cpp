@@ -346,7 +346,6 @@ void Camera::EnforceVectors()
 void Camera::Perspective()
 {
 	float pers[16];
-	float temp[16];
 
 	// Row 0
 	pers[0] = Position.z - ViewPlane;
@@ -369,28 +368,31 @@ void Camera::Perspective()
 	pers[14] = -1;
 	pers[15] = Position.z;
 
-	matrixIdentity(ProjectionMatrix);
-
-	// Duplicates projection matrix
-	for (int i = 0; i < 16; i++)
-		temp[i] = ProjectionMatrix[i];
-
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			float sum = 0.0;
-			for (int z = 0; z < 4; z++) {
-				sum += temp[4 * x + z] * pers[4 * z + y];
-				ProjectionMatrix[4 * x + y] = sum;
-			}
-		}
+	for (int i = 0; i < 16; i++) {
+		ProjectionMatrix[i] = pers[i];
 	}
+
 }
 
 // Calculate the new orthographic projection matrix
 void Camera::Orthographic()
 {
-	//ADD YOUR CODE HERE!!
+	float orth[16];
+	float temp[16];
 
+	matrixIdentity(temp);
+	matrixIdentity(orth);
+	temp[10] = 0;
+
+	for (int x = 0; x < 4; x++) {
+		for (int y = 0; y < 4; y++) {
+			float sum = 0.0;
+			for (int z = 0; z < 4; z++) {
+				sum += temp[4 * x + z] * orth[4 * z + y];
+				ProjectionMatrix[4 * x + y] = sum;
+			}
+		}
+	}
 }
 
 // Calculate the new viewing transform matrix
@@ -400,25 +402,14 @@ void Camera::LookAt()
 	// n = N/|N|
 	// u = V x n / |V x n|
 	// v = n x u 
-
-	float temp[16];
 	
 	float lookAt[16] = {u.i, u.j, u.k, 0,
 						v.i, v.j, v.k, 0,
 						n.i, n.j, n.k, 0,
 		                0, 0, 0, 1};
 
-	matrixIdentity(temp);
-
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			float sum = 0.0;
-			for (int z = 0; z < 4; z++) {
-				sum += temp[4 * x + z] * lookAt[4 * z + y];
-				printf("Sum = %f\n", sum);
-				ViewingMatrix[4 * x + y] = sum;
-			}
-		}
+	for (int i = 0; i < 16; i++) {
+		ViewingMatrix[i] = lookAt[i];
 	}
 }
 
