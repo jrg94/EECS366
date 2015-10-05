@@ -30,6 +30,28 @@ int WindowWidth = 300, WindowHeight = 300;
 Scene* pDisplayScene;
 Camera* pDisplayCamera;
 
+bool Intersects(Vertex v1, Vertex v2, Vertex v3, Vertex start, Vertex end) {
+	//CANNOT FINISH WITH BATTERY POWER
+	Vertex A, B, C, W1, D;
+	int w,s;
+	A.x = start.x - v3.x;
+	A.y = start.y - v3.y;
+	A.z = start.z - v3.z;
+	B.x = v1.x - v3.x;
+	B.y = v1.y - v3.y;
+	B.z = v1.z - v3.z;
+	C.x = v2.x - v3.x;
+	C.y = v2.y - v3.y;
+	C.z = v2.z - v3.z;
+	//W1 = B x C
+	w = A.x * W1.x + A.y * W1.y + A.z * W1.z;
+	D.x = end.x - v3.x;
+	D.y = end.y - v3.y;
+	D.z = end.z - v3.z;
+	s = D.x * W1.x + D.y * W1.y + D.z * W1.z;
+
+}
+
 
 void DisplayFunc()
 {
@@ -207,6 +229,20 @@ void MouseFunc(int button,int state,int x,int y)
 	{
 		// Select a new object with (x,y) 
 		//ADD YOUR CODE HERE: Select a new object by intersecting the selection ray
+		//Ray being cast, going from (x,y,0)->(x,y,"not quite infinity")
+		Vertex start, end;
+		start.x = x;
+		start.y = y;
+		start.z = 0;
+		end.x = x;
+		end.y = y;
+		end.z = 1000; //Need a better value here
+		//Test against all faces of all objects?
+		for (int i = 0; i < pDisplayScene->ObjectCount; i++) {
+			for (int j = 0; j < pDisplayScene->pObjectList->FaceCount; j++) {
+
+			}
+		}
 
 		glutPostRedisplay();
 	}
