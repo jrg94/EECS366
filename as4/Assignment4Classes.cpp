@@ -314,6 +314,9 @@ void Camera::MoveView(float d)
 // Set (and normalize) the camera vectors based on the viewing angles
 void Camera::EnforceVectors()
 {
+	// n = N/|N|
+	// u = V x n / |V x n|
+	// v = n x u 
 	float magnitude;
 	Vector temp;
 
@@ -346,7 +349,7 @@ void Camera::EnforceVectors()
 void Camera::Perspective()
 {
 	float pers[16];
-
+	
 	// Row 0
 	pers[0] = Position.z - ViewPlane;
 	pers[1] = 0;
@@ -378,20 +381,30 @@ void Camera::Perspective()
 void Camera::Orthographic()
 {
 	float orth[16];
-	float temp[16];
 
-	matrixIdentity(temp);
-	matrixIdentity(orth);
-	temp[10] = 0;
+	// Row 0
+	orth[0] = 1; 
+	orth[1] = 0;
+	orth[2] = 0;
+	orth[3] = 0; 
+	// Row 1
+	orth[4] = 0;
+	orth[5] = 1; 
+	orth[6] = 0;
+	orth[7] = 0; 
+	// Row 2
+	orth[8] = 0;
+	orth[9] = 0;
+	orth[10] = 0; 
+	orth[11] = 0; 
+	// Row 3
+	orth[12] = 0;
+	orth[13] = 0;
+	orth[14] = 0;
+	orth[15] = 1; 
 
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			float sum = 0.0;
-			for (int z = 0; z < 4; z++) {
-				sum += temp[4 * x + z] * orth[4 * z + y];
-				ProjectionMatrix[4 * x + y] = sum;
-			}
-		}
+	for (int i = 0; i < 16; i++) {
+		ProjectionMatrix[i] = orth[i];
 	}
 }
 
@@ -399,9 +412,7 @@ void Camera::Orthographic()
 void Camera::LookAt()
 {
 	// Postmultiply a lookat matrix with the current viewing matrix
-	// n = N/|N|
-	// u = V x n / |V x n|
-	// v = n x u 
+	// THIS IS CAUSING A WRAPAROUND
 	
 	float lookAt[16] = {u.i, u.j, u.k, 0,
 						v.i, v.j, v.k, 0,
