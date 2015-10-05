@@ -348,14 +348,37 @@ void Camera::Perspective()
 void Camera::Orthographic()
 {
 	//ADD YOUR CODE HERE!!
+	
 }
 
 // Calculate the new viewing transform matrix
 void Camera::LookAt()
 {
-	//ADD YOUR CODE HERE!!
-	
+	// Postmultiply a lookat matrix with the current viewing matrix
+	// n = N/|N|
+	// u = V x n / |V x n|
+	// v = n x u 
 
+	float temp[16];
+	
+	float lookAt[16] = {u.i, u.j, u.k, 0,
+						v.i, v.j, v.k, 0,
+						n.i, n.j, n.k, 0,
+		                0, 0, 0, 1};
+
+	// Duplicates viewing matrix
+	for (int i = 0; i < 16; i++)
+		temp[i] = ViewingMatrix[i];
+
+	for (int x = 0; x < 4; x++) {
+		for (int y = 0; y < 4; y++) {
+			float sum = 0.0;
+			for (int z = 0; z < 4; z++) {
+				sum += temp[4 * x + z] * lookAt[4 * z + y];
+				ViewingMatrix[4 * x + y] = sum;
+			}
+		}
+	}
 }
 
 // Transform a point with an arbitrary matrix
@@ -368,6 +391,20 @@ Vertex Transform(float* matrix, Vertex& point)
 	temp.h = matrix[3]*point.x + matrix[7]*point.y + matrix[11]*point.z + matrix[15]*point.h;
 	return temp;
 
+}
+
+/**
+* Generates a 4x4 identity matrix
+*/
+void matrixIdentity(float identityMatrix[16]) {
+	float temp[4][4] = { {1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1} };
+	int row, col;
+
+	for (row = 0; row < 4; row++) {
+		for (col = 0; col < 4; col++) {
+			identityMatrix[(row * 4) + col] = temp[row][col];
+		}
+	}
 }
 
 
