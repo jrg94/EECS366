@@ -202,7 +202,7 @@ void DisplayFunc()
 		{
 			//ADD YOUR CODE HERE: Draw the bounding boxes
 
-			glColor3f(0, 1, 0);
+			glColor3f(1, 0, 0);
 			
 			// Builds each face of the bunding boxes
 			for (int j = 0; j < 12; j++) {
@@ -221,6 +221,9 @@ void DisplayFunc()
 				for (int k = 0; k < 3; k++)
 					glVertex2f(input[k].x / input[k].h, input[k].y / input[k].h);
 				glEnd();
+
+				delete[] input;
+				input = NULL;
 
 			}
 			

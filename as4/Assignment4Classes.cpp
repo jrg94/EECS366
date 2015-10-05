@@ -375,7 +375,7 @@ Camera::Camera()
 	ViewWidth = 12.0;
 	ViewHeight = 12.0;
 
-	FarPlane = 10.0;
+	FarPlane = 12.0;
 	NearPlane = 2.0;
 	ViewPlane = 8.0;
 
@@ -472,7 +472,7 @@ void Camera::Perspective()
 	for (int i = 0; i < 16; i++) {
 		ProjectionMatrix[i] = pers[i];
 	}
-
+	
 }
 
 // Calculate the new orthographic projection matrix
@@ -508,9 +508,7 @@ void Camera::Orthographic()
 
 // Calculate the new viewing transform matrix
 void Camera::LookAt()
-{
-	// Postmultiply a lookat matrix with the current viewing matrix
-	
+{	
 	float lookAt[16] = {u.i, u.j, u.k, 0,
 						v.i, v.j, v.k, 0,
 						n.i, n.j, n.k, 0,
