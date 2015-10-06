@@ -364,7 +364,7 @@ void Scene::Load(char* file)
 Camera::Camera()
 {
 	Position.x = 10.0;
-	Position.y = 0.0;
+	Position.y = 10.0;
 	Position.z = 0.0;
 
 	Pitch = ((float) M_PI)/2;

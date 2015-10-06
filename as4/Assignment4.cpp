@@ -30,41 +30,61 @@ int WindowWidth = 300, WindowHeight = 300;
 Scene* pDisplayScene;
 Camera* pDisplayCamera;
 
+void Cross(Vertex dest, Vertex v1, Vertex v2) {
+	dest.x = v1.y * v2.z - v1.z * v2.y;
+	dest.y = v1.z * v2.x - v1.x * v2.z;
+	dest.z = v1.x * v2.y - v1.y * v2.x;
+}
+
+void Sub(Vertex dest, Vertex v1, Vertex v2) {
+	dest.x = v1.x - v2.x;
+	dest.y = v1.y - v2.y;
+	dest.z = v1.z - v2.z;
+}
+
+double Dot(Vertex v1, Vertex v2) {
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
 bool Intersects(Vertex v1, Vertex v2, Vertex v3, Vertex start, Vertex end) {
 	//CANNOT FINISH WITH BATTERY POWER
-	Vertex A, B, C, W1, D;
-	int w,s;
-	// Initialize A
-	A.x = start.x - v3.x;
-	A.y = start.y - v3.y;
-	A.z = start.z - v3.z;
-	// Initialize B
-	B.x = v1.x - v3.x;
-	B.y = v1.y - v3.y;
-	B.z = v1.z - v3.z;
-	// Initialize C
-	C.x = v2.x - v3.x;
-	C.y = v2.y - v3.y;
-	C.z = v2.z - v3.z;
-	// Initialize W1 = B x C
-	W1.x = B.y * C.z - B.z * C.y;
-	W1.y = B.z * C.x - B.x * C.z;
-	W1.z = B.x * C.y - B.y * C.x;
-	// Initialize w
-	w = A.x * W1.x + A.y * W1.y + A.z * W1.z;
-	// Initialize D
-	D.x = end.x - v3.x;
-	D.y = end.y - v3.y;
-	D.z = end.z - v3.z;
-	// Initialize s
-	s = D.x * W1.x + D.y * W1.y + D.z * W1.z;
+	Vertex edge1, edge2, tvec, pvec, qvec;
+	double det,inv_det;
+	double t, u, v;
+	double e = .000001;
 
-	if (w < 0.0 || w + s > 1.0) {
-		return false;
-	}
-	else {
+	// Vectors for two edges sharing v1
+	Sub(edge1, v2, v1);
+	Sub(edge1, v3, v1);
+
+	// Calculate determinant
+	Cross(pvec, end, edge2);
+
+	det = Dot(edge1, pvec);
+
+	// If determinant is close to zero, ray is in placne
+	if (det > -e && det < e) {
 		return true;
 	}
+	inv_det = 1.0 / det;
+
+	Sub(tvec, start, v1);
+
+	u = Dot(tvec, pvec) * inv_det;
+	if (u < 0.0 || u > 1.0) {
+		return true;
+	}
+
+	Cross(qvec, tvec, edge1);
+
+	v = Dot(end, qvec) * inv_det;
+	if (v < 0.0 || u + v > 1.0) {
+		return true;
+	}
+
+	t = Dot(edge2, qvec) * inv_det;
+
+	return false;
 }
 
 
@@ -264,8 +284,8 @@ void MouseFunc(int button,int state,int x,int y)
 		start.z = 0;
 		end.x = x;
 		end.y = y;
-		end.z = 1000; //Need a better value here
-		//Test against all faces of all objects?
+		end.z = 10; //Need a better value here
+		//Test against all faces of the bounding boxes
 		for (int i = 0; i < pDisplayScene->ObjectCount; i++) {
 			for (int j = 0; j < 12; j++) {
 				Face test = pDisplayScene->pObjectList[i].pBoxFaceList[j];
