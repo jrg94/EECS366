@@ -214,12 +214,46 @@ void MotionFunc(int x, int y)
 	if(MouseMiddle && SelectionMode)
 	{
 		// Move the Near Plane
+		// Make sure near plane stays between camera and far plane
 		// ADD CODE HERE
+
+		// If moving near plane away from the camera
+		if (y - MouseY > 1) {
+			// If the near plane is further than a unit from the far plane, move it
+			if (pDisplayCamera->NearPlane < pDisplayCamera->FarPlane + 1) {
+				pDisplayCamera->NearPlane += y - MouseY;
+			}
+			else {
+				// Do nothing
+			}
+		}
+		// Otherwise, you're moving the camera toward the camera
+		else {
+			// If the near plane is further than a unit from the view plane, move it
+			if (pDisplayCamera->NearPlane > pDisplayCamera->ViewPlane + 1) {
+				pDisplayCamera->NearPlane += y - MouseY;
+			}
+			else {
+				// Do nothing
+			}
+		}
+
 	}
 	if(MouseRight && SelectionMode)
 	{
 		// Move the Far Plane
+		// Make sure far plane does not go in front of near plane
 		// ADD CODE HERE
+
+		// If moving the far plane away - move it
+		if (y - MouseY > 1) {
+			pDisplayCamera->FarPlane += y - MouseY;
+		}
+		// Otherwise, you're moving the far plane towards the near plane
+		// Check that it doesn't go past the near plane
+		else if (pDisplayCamera->FarPlane > pDisplayCamera->NearPlane + 1) {
+			pDisplayCamera->FarPlane += y - MouseY;
+		}
 	}
     
 	MouseX = x;
