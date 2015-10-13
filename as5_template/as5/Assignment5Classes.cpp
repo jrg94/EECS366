@@ -296,12 +296,12 @@ Camera::Camera()
 	v.i = 0; v.j = 0; v.k = 1;
 	EnforceVectors();
 
-	ViewWidth = 8.0;
-	ViewHeight = 8.0;
+	ViewWidth = 10.0;
+	ViewHeight = 10.0;
 
 	FarPlane = 10.0;
 	NearPlane = 2.0;
-	ViewPlane = 10.0;
+	ViewPlane = 8.0;
 
 	LookAt();
 }
@@ -477,16 +477,98 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 	return select;
 }
 
+// Determines if point c is inside the border ab
+bool InsideOf(Vertex a, Vertex b, Vertex c) {
+	return (a.x - c.x) * (b.y - c.y) > (a.y - c.y) * (b.x - c.x);
+}
+
+Vertex intersection(Vertex a, Vertex b, Vertex c, Vertex d) {
+	double a1 = b.y - a.y;
+	double b1 = a.x - b.x;
+	double c1 = a1 * a.x + b1 * a.y;
+
+	double a2 = d.y - c.y;
+	double b2 = c.x - d.x;
+	double c2 = a2 * c.x + b2 * c.y;
+
+	double det = a1 * b2 - b1 * a2;
+	double x = (b2 * c1 - c2 * b1) / det;
+	double y = (a1 * c2 - c1 * a2) / det;
+
+	Vertex ret;
+	ret.x = x;
+	ret.y = y;
+
+	return ret;
+}
+
 // Clip a polygon against view volume borders
 // count = number of vertices in the polygon (In our case, a triangle)
 // input = a pointer to a list of vertices
 // out_count = number of vertices of the resulting polygon
 // ADD CODE HERE: dummy function only copies polygons
-Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
+Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 {
 	Vertex* output = new Vertex[count];
 	for(int i = 0; i < count; i++)
 		output[i] = input[i];
 	*out_count = count;
+
+	Vertex topLeft, topRight, bottomLeft, bottomRight;
+
+	// Initialize the top left corner
+	topLeft.x = -display->ViewWidth / 2;
+	topLeft.y = display->ViewHeight / 2;
+
+	// Initialize the top right corner
+	topRight.x = display->ViewWidth / 2;
+	topRight.y = display->ViewHeight / 2;
+
+	// Initialize the bottom left corner
+	bottomLeft.x = -display->ViewWidth / 2;
+	bottomLeft.y = -display->ViewHeight / 2;
+
+	// Initialize the bottom right corner
+	bottomRight.x = display->ViewWidth / 2;
+	bottomRight.y = -display->ViewHeight / 2;
+
+	Vertex windowCorners[4] = { topLeft, topRight, bottomLeft, bottomRight };
+
+	// For each edge in the clipping polygon
+	for (int i = 0; i < 4; i++) {
+		// Store output list into input list
+		Vertex* inputList = output;
+
+		// Clear output
+		for (int j = 0; i < *out_count; i++) {
+			// Do something
+		}
+
+		// Store that last point from the input list
+		Vertex last = inputList[*out_count - 1];
+
+		Vertex edgePoint1 = windowCorners[(i + 4 - 1) % 4];
+		Vertex edgePoint2 = windowCorners[i];
+
+		// For each point in the input list
+		for (int j = 0; j < *out_count; j++) {
+			// If the point at j is inside this edge
+			if (InsideOf(edgePoint1, edgePoint2, inputList[j])) {
+				// If last is not inside this edge
+				if (!InsideOf(edgePoint1, edgePoint2, last)) {
+					// Compute intersection and add inner intersection to output
+					Vertex intersect = intersection(edgePoint1, edgePoint2, inputList[j], last);
+				}
+				// Add point at j to list
+			}
+			// Else if last is inside this edge
+			else if (InsideOf(edgePoint1, edgePoint2, last)) {
+				// Compute intersection and add inner intersection to output
+			}
+			// last is assigned this
+			last = inputList[j];
+		}
+	}
+		
 	return output;
 }
