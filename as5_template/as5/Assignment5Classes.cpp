@@ -478,6 +478,9 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 }
 
 // Clip a polygon against view volume borders
+// count = number of vertices in the polygon (In our case, a triangle)
+// input = a pointer to a list of vertices
+// out_count = number of vertices of the resulting polygon
 // ADD CODE HERE: dummy function only copies polygons
 Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 {
