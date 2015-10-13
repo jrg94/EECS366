@@ -482,6 +482,7 @@ bool InsideOf(Vertex a, Vertex b, Vertex c) {
 	return (a.x - c.x) * (b.y - c.y) > (a.y - c.y) * (b.x - c.x);
 }
 
+// Calculates the intersection point 
 Vertex intersection(Vertex a, Vertex b, Vertex c, Vertex d) {
 	double a1 = b.y - a.y;
 	double b1 = a.x - b.x;
@@ -509,11 +510,18 @@ Vertex intersection(Vertex a, Vertex b, Vertex c, Vertex d) {
 // ADD CODE HERE: dummy function only copies polygons
 Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 {
+	// Holds the output vertices
 	Vertex* output = new Vertex[count];
-	for(int i = 0; i < count; i++)
+
+	// Loads input polygon vertices into output polygon vertex list
+	for (int i = 0; i < count; i++) {
+		//printf("%f, %f\n", input[i].x, input[i].y);
 		output[i] = input[i];
+	}
+
 	*out_count = count;
 
+	// Each of the corners of the clipping area
 	Vertex topLeft, topRight, bottomLeft, bottomRight;
 
 	// Initialize the top left corner
@@ -522,17 +530,19 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 
 	// Initialize the top right corner
 	topRight.x = display->ViewWidth / 2;
-	topRight.y = display->ViewHeight / 2;
+	topRight.y = display->ViewHeight / 2;;
 
 	// Initialize the bottom left corner
 	bottomLeft.x = -display->ViewWidth / 2;
-	bottomLeft.y = -display->ViewHeight / 2;
+	bottomLeft.y = -display->ViewHeight / 2;;
 
 	// Initialize the bottom right corner
 	bottomRight.x = display->ViewWidth / 2;
-	bottomRight.y = -display->ViewHeight / 2;
+	bottomRight.y = -display->ViewHeight / 2;;
 
 	Vertex windowCorners[4] = { topLeft, topRight, bottomLeft, bottomRight };
+
+	int added = 0;
 
 	// For each edge in the clipping polygon
 	for (int i = 0; i < 4; i++) {
@@ -540,34 +550,48 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 		Vertex* inputList = output;
 
 		// Clear output
-		for (int j = 0; i < *out_count; i++) {
+		for (int j = 0; i < count; i++) {
 			// Do something
 		}
 
 		// Store that last point from the input list
-		Vertex last = inputList[*out_count - 1];
+		Vertex last = inputList[count - 1];
 
 		Vertex edgePoint1 = windowCorners[(i + 4 - 1) % 4];
 		Vertex edgePoint2 = windowCorners[i];
 
 		// For each point in the input list
-		for (int j = 0; j < *out_count; j++) {
+		for (int j = 0; j < count; j++) {
+
 			// If the point at j is inside this edge
 			if (InsideOf(edgePoint1, edgePoint2, inputList[j])) {
 				// If last is not inside this edge
 				if (!InsideOf(edgePoint1, edgePoint2, last)) {
+					printf("A line needs clipped\n");
 					// Compute intersection and add inner intersection to output
 					Vertex intersect = intersection(edgePoint1, edgePoint2, inputList[j], last);
+					output[added] = intersect;
+					added++;
+					*out_count++;
 				}
 				// Add point at j to list
+				output[added] = inputList[j];
+				added++;
 			}
+
 			// Else if last is inside this edge
 			else if (InsideOf(edgePoint1, edgePoint2, last)) {
+				printf("A line needs clipped\n");
 				// Compute intersection and add inner intersection to output
+				Vertex intersect = intersection(edgePoint1, edgePoint2, inputList[j], last);
+				output[j] = intersect;
+				added++;
 			}
+
 			// last is assigned this
 			last = inputList[j];
 		}
+		count = *out_count;
 	}
 		
 	return output;
