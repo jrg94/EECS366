@@ -484,6 +484,7 @@ bool InsideOf(Vertex a, Vertex b, Vertex c) {
 
 // Calculates the intersection point 
 Vertex intersection(Vertex a, Vertex b, Vertex c, Vertex d) {
+
 	float a1 = b.y - a.y;
 	float b1 = a.x - b.x;
 	float c1 = a1 * a.x + b1 * a.y;
@@ -499,6 +500,7 @@ Vertex intersection(Vertex a, Vertex b, Vertex c, Vertex d) {
 	Vertex ret;
 	ret.x = x;
 	ret.y = y;
+	//printf("%f, %f\n", ret.x, ret.y);
 
 	return ret;
 }
@@ -511,7 +513,7 @@ Vertex intersection(Vertex a, Vertex b, Vertex c, Vertex d) {
 Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 {
 	// Holds the output vertices
-	Vertex* output = new Vertex[count];
+	Vertex* output = (Vertex*) calloc(count, sizeof(Vertex));
 
 	// Loads input polygon vertices into output polygon vertex list
 	for (int i = 0; i < count; i++) {
@@ -527,7 +529,6 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 	// Initialize the top left corner
 	topLeft.x = -display->ViewWidth / 2;
 	topLeft.y = display->ViewHeight / 2;
-	printf("%f\n", topLeft.x);
 
 	// Initialize the top right corner
 	topRight.x = display->ViewWidth / 2;
@@ -541,7 +542,7 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 	bottomRight.x = display->ViewWidth / 2;
 	bottomRight.y = -display->ViewHeight / 2;;
 
-	Vertex windowCorners[4] = { topLeft, topRight, bottomLeft, bottomRight };
+	Vertex windowCorners[4] = { topLeft, topRight, bottomRight, bottomLeft };
 
 	// For each edge in the clipping polygon
 	for (int i = 0; i < 4; i++) {
@@ -553,8 +554,8 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 			inputList[j] = output[j];
 		}
 
-		delete[] output;
-		output = new Vertex[count + 10];
+		// Reallocates the size of the output array
+		output = (Vertex*)realloc(output, (count + 10) * sizeof(Vertex));
 
 		Vertex edgePoint1 = windowCorners[(i + 4 - 1) % 4];
 		Vertex edgePoint2 = windowCorners[i];
@@ -569,6 +570,8 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 			Vertex point1 = inputList[(j + count - 1) % count];
 			Vertex point2 = inputList[j];
 
+			//printf("p1:%f,%f p2:%f,%f e1:%f,%f e2:%f,%f\n", point1.x, point1.y, point2.x, point2.y, edgePoint1.x, edgePoint1.y, edgePoint2.x, edgePoint2.y);
+
 			// If point 2 is inside this edge
 			if (InsideOf(edgePoint1, edgePoint2, point2)) {
 
@@ -576,7 +579,9 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 				if (!InsideOf(edgePoint1, edgePoint2, point1)) {
 					// Compute intersection and add inner intersection to output
 					Vertex intersect = intersection(edgePoint1, edgePoint2, point1, point2);
+					//printf("%f, %f\n", intersect.x, intersect.y);
 					output[added] = intersect;
+					//printf("%f, %f\n", output[added].x, output[added].y);
 					added++;
 					*out_count = *out_count + 1;
 				}
@@ -600,6 +605,7 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 		delete[] inputList;
 		inputList = NULL;
 	}
-		
+	
+	
 	return output;
 }
