@@ -299,8 +299,8 @@ Camera::Camera()
 	ViewWidth = 10.0;
 	ViewHeight = 10.0;
 
-	FarPlane = 10.0;
-	NearPlane = 2.0;
+	FarPlane = 14.0;
+	NearPlane = 10.0;
 	ViewPlane = 8.0;
 
 	LookAt();
@@ -487,20 +487,19 @@ Vertex intersection(Vertex a, Vertex b, Vertex c, Vertex d) {
 
 	float a1 = b.y - a.y;
 	float b1 = a.x - b.x;
-	float c1 = a1 * a.x + b1 * a.y;
+	float c1 = (a1 * a.x) + (b1 * a.y);
 
 	float a2 = d.y - c.y;
 	float b2 = c.x - d.x;
-	float c2 = a2 * c.x + b2 * c.y;
+	float c2 = (a2 * c.x) + (b2 * c.y);
 
-	float det = a1 * b2 - b1 * a2;
-	float x = (b2 * c1 - c2 * b1) / det;
-	float y = (a1 * c2 - c1 * a2) / det;
+	float det = (a1 * b2) - (b1 * a2);
+	float x = ((b2 * c1) - (c2 * b1)) / det;
+	float y = ((a1 * c2) - (c1 * a2)) / det;
 
 	Vertex ret;
 	ret.x = x;
 	ret.y = y;
-	//printf("%f, %f\n", ret.x, ret.y);
 
 	return ret;
 }
@@ -517,7 +516,6 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 
 	// Loads input polygon vertices into output polygon vertex list
 	for (int i = 0; i < count; i++) {
-		//printf("%f, %f\n", input[i].x, input[i].y);
 		output[i] = input[i];
 	}
 
@@ -547,7 +545,7 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 	// For each edge in the clipping polygon
 	for (int i = 0; i < 4; i++) {
 
-		Vertex* inputList = new Vertex[count];
+		Vertex * inputList = new Vertex[count]; 
 
 		// Store output list into input list
 		for (int j = 0; j < count; j++) {
@@ -570,8 +568,6 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 			Vertex point1 = inputList[(j + count - 1) % count];
 			Vertex point2 = inputList[j];
 
-			//printf("p1:%f,%f p2:%f,%f e1:%f,%f e2:%f,%f\n", point1.x, point1.y, point2.x, point2.y, edgePoint1.x, edgePoint1.y, edgePoint2.x, edgePoint2.y);
-
 			// If point 2 is inside this edge
 			if (InsideOf(edgePoint1, edgePoint2, point2)) {
 
@@ -579,9 +575,7 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 				if (!InsideOf(edgePoint1, edgePoint2, point1)) {
 					// Compute intersection and add inner intersection to output
 					Vertex intersect = intersection(edgePoint1, edgePoint2, point1, point2);
-					//printf("%f, %f\n", intersect.x, intersect.y);
 					output[added] = intersect;
-					//printf("%f, %f\n", output[added].x, output[added].y);
 					added++;
 					*out_count = *out_count + 1;
 				}
