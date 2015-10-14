@@ -546,8 +546,11 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 
 	// For each edge in the clipping polygon
 	for (int i = 0; i < 4; i++) {
+		Vertex* inputList = new Vertex[count];
 		// Store output list into input list
-		Vertex* inputList = output;
+		for (int j = 0; j < count; j++) {
+			inputList[j] = output[j];
+		}
 
 		// Clear output
 		for (int j = 0; i < count; i++) {
@@ -575,8 +578,8 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 					*out_count++;
 				}
 				// Add point at j to list
-				output[added] = inputList[j];
-				added++;
+				//output[added] = inputList[j];
+				//added++;
 			}
 
 			// Else if last is inside this edge
