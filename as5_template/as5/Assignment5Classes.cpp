@@ -542,59 +542,67 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 
 	Vertex windowCorners[4] = { topLeft, topRight, bottomLeft, bottomRight };
 
-	int added = 0;
-
 	// For each edge in the clipping polygon
 	for (int i = 0; i < 4; i++) {
+
 		Vertex* inputList = new Vertex[count];
+
 		// Store output list into input list
 		for (int j = 0; j < count; j++) {
 			inputList[j] = output[j];
 		}
 
-		// Clear output
-		for (int j = 0; i < count; i++) {
-			// Do something
-		}
-
-		// Store that last point from the input list
-		Vertex last = inputList[count - 1];
+		delete[] output;
+		output = new Vertex[count + 10];
 
 		Vertex edgePoint1 = windowCorners[(i + 4 - 1) % 4];
 		Vertex edgePoint2 = windowCorners[i];
 
+		// Keeps track of the index in the output array
+		int added = 0;
+
 		// For each point in the input list
 		for (int j = 0; j < count; j++) {
 
-			// If the point at j is inside this edge
-			if (InsideOf(edgePoint1, edgePoint2, inputList[j])) {
-				// If last is not inside this edge
-				if (!InsideOf(edgePoint1, edgePoint2, last)) {
-					printf("A line needs clipped\n");
+			// Test points for the current segment
+			Vertex point1 = inputList[(j + count - 1) % count];
+			Vertex point2 = inputList[j];
+
+			// If point 2 is inside this edge
+			if (InsideOf(edgePoint1, edgePoint2, point2)) {
+
+				// If point 1 is outside of this edge
+				if (!InsideOf(edgePoint1, edgePoint2, point1)) {
 					// Compute intersection and add inner intersection to output
-					Vertex intersect = intersection(edgePoint1, edgePoint2, inputList[j], last);
+					Vertex intersect = intersection(edgePoint1, edgePoint2, point1, point2);
 					output[added] = intersect;
 					added++;
-					*out_count++;
+					*out_count = *out_count + 1;
 				}
-				// Add point at j to list
-				//output[added] = inputList[j];
-				//added++;
-			}
 
-			// Else if last is inside this edge
-			else if (InsideOf(edgePoint1, edgePoint2, last)) {
-				printf("A line needs clipped\n");
-				// Compute intersection and add inner intersection to output
-				Vertex intersect = intersection(edgePoint1, edgePoint2, inputList[j], last);
-				output[j] = intersect;
+				// Add point 2 to output
+				output[added] = point2;
 				added++;
 			}
 
-			// last is assigned this
-			last = inputList[j];
+			// Else if last is inside this edge
+			else if (InsideOf(edgePoint1, edgePoint2, point1)) {
+				// Compute intersection and add inner intersection to output
+				Vertex intersect = intersection(edgePoint1, edgePoint2, point1, point2);
+				output[added] = intersect;
+				added++;
+			}	
 		}
-		count = *out_count;
+		count = *out_count;	
+
+		// Store output list into input list
+		for (int j = 0; j < count; j++) {
+			output[j] = inputList[j];
+		}
+
+		// To avoid memory leaks
+		delete[] inputList;
+		inputList = NULL;
 	}
 		
 	return output;
