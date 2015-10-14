@@ -484,17 +484,17 @@ bool InsideOf(Vertex a, Vertex b, Vertex c) {
 
 // Calculates the intersection point 
 Vertex intersection(Vertex a, Vertex b, Vertex c, Vertex d) {
-	double a1 = b.y - a.y;
-	double b1 = a.x - b.x;
-	double c1 = a1 * a.x + b1 * a.y;
+	float a1 = b.y - a.y;
+	float b1 = a.x - b.x;
+	float c1 = a1 * a.x + b1 * a.y;
 
-	double a2 = d.y - c.y;
-	double b2 = c.x - d.x;
-	double c2 = a2 * c.x + b2 * c.y;
+	float a2 = d.y - c.y;
+	float b2 = c.x - d.x;
+	float c2 = a2 * c.x + b2 * c.y;
 
-	double det = a1 * b2 - b1 * a2;
-	double x = (b2 * c1 - c2 * b1) / det;
-	double y = (a1 * c2 - c1 * a2) / det;
+	float det = a1 * b2 - b1 * a2;
+	float x = (b2 * c1 - c2 * b1) / det;
+	float y = (a1 * c2 - c1 * a2) / det;
 
 	Vertex ret;
 	ret.x = x;
@@ -527,6 +527,7 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 	// Initialize the top left corner
 	topLeft.x = -display->ViewWidth / 2;
 	topLeft.y = display->ViewHeight / 2;
+	printf("%f\n", topLeft.x);
 
 	// Initialize the top right corner
 	topRight.x = display->ViewWidth / 2;
@@ -594,11 +595,6 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count, Camera* display)
 			}	
 		}
 		count = *out_count;	
-
-		// Store output list into input list
-		for (int j = 0; j < count; j++) {
-			output[j] = inputList[j];
-		}
 
 		// To avoid memory leaks
 		delete[] inputList;
