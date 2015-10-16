@@ -509,7 +509,7 @@ bool Inside(Vertex p, int plane) {
 }
 
 // Calculates the intersection from a to b
-Vertex intersection(Vertex a, Vertex b) {
+Vertex intersection(Vertex a, Vertex b, int plane) {
 
 	float left = b.h + b.x;
 	float right = b.h - b.x;
@@ -523,33 +523,33 @@ Vertex intersection(Vertex a, Vertex b) {
 	Vertex ret;
 
 	// Left
-	if (left < 0) {
-		/**alpha = (a.x - a.h) / ((a.x + a.h) - (b.x + b.h));
+	if (plane == 0) {
+		alpha = (a.x - a.h) / ((a.x + a.h) - (b.x + b.h));
 		float x = (1 - alpha)*a.x + alpha*b.x;
 		float y = (1 - alpha)*a.y + alpha*b.y;
 		float z = (1 - alpha)*a.z + alpha*b.z;
 		ret.x = x;
 		ret.y = y;
-		ret.z = z;**/
+		ret.z = z;
 	}
 	// Right
-	else if (right < 0) {
+	else if (plane == 1) {
 		//alpha = ()
 	}
 	// Bottom
-	else if (bottom < 0) {
+	else if (plane == 2) {
 
 	}
 	// Top
-	else if (top < 0) {
+	else if (plane == 3) {
 
 	}
 	// Near
-	else if (near < 0) {
+	else if (plane == 4) {
 
 	}
 	// Far
-	else if (far < 0) {
+	else if (plane == 5) {
 
 	}
 
@@ -610,10 +610,9 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 				// If point 1 is outside of this edge
 				if (!Inside(point1, i)) {
 					// Compute intersection and add inner intersection to output
-					Vertex intersect = intersection(point1, point2);
-					output[added] = intersect;
+					Vertex intersect = intersection(point2, point1, i);
+					output[added] = point1;// intersect;
 					added++;
-					*out_count = *out_count + 1;
 				}
 
 				// Add point 2 to output
@@ -624,8 +623,8 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 			// Else if last is inside this edge
 			else if (Inside(point1, i)) {
 				// Compute intersection and add inner intersection to output
-				Vertex intersect = intersection(point1, point2);
-				output[added] = intersect;
+				Vertex intersect = intersection(point1, point2, i);
+				output[added] = point2; // intersect;
 				added++;
 			}	
 		}
