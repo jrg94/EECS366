@@ -554,7 +554,7 @@ Vertex intersection(Vertex a, Vertex b, int plane) {
 
 	// Left
 	if (plane == 0) {
-		alpha = (a.h - a.x) / ((a.h - a.x) - left);
+		alpha = (a.h + a.x) / ((a.h + a.x) - left);
 	}
 	// Right
 	else if (plane == 1) {
@@ -562,7 +562,7 @@ Vertex intersection(Vertex a, Vertex b, int plane) {
 	}
 	// Bottom
 	else if (plane == 2) {
-		alpha = (a.h - a.y) / ((a.h - a.y) - bottom);
+		alpha = (a.h + a.y) / ((a.h + a.y) - bottom);
 	}
 	// Top
 	else if (plane == 3) {
@@ -570,7 +570,7 @@ Vertex intersection(Vertex a, Vertex b, int plane) {
 	}
 	// Near
 	else if (plane == 4) {
-		alpha = (a.h - a.z) / ((a.h - a.z) - near);
+		alpha = (a.h + a.z) / ((a.h + a.z) - near);
 	}
 	// Far
 	else if (plane == 5) {
