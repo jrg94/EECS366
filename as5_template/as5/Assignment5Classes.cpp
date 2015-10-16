@@ -477,6 +477,34 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 	return select;
 }
 
+void SubtractPoints(Vertex a, Vertex b, Vertex* c) {
+	(*c).x = a.x - b.x;
+	(*c).y = a.y - b.y;
+	(*c).z = a.y - b.h;
+	(*c).h = a.h - b.h;
+}
+
+void AddPoints(Vertex a, Vertex b, Vertex* c) {
+	(*c).x = a.x + b.x;
+	(*c).y = a.y + b.y;
+	(*c).z = a.z + b.z;
+	(*c).h = a.h + b.h;
+}
+
+void CopyPoint(Vertex a, Vertex* b) {
+	(*b).x = a.x;
+	(*b).y = a.y;
+	(*b).z = a.z;
+	(*b).h = a.h;
+}
+
+void ScalePoint(float s, Vertex a, Vertex* b) {
+	(*b).x = a.x * s;
+	(*b).y = a.y * s;
+	(*b).z = a.z * s;
+	(*b).h = a.h * s;
+}
+
 // Determines if p is inside the clipping boundaries
 bool Inside(Vertex p, int plane) {
 
@@ -521,41 +549,37 @@ Vertex intersection(Vertex a, Vertex b, int plane) {
 	float alpha = 0;
 
 	Vertex ret;
+	CopyPoint(b, &ret);
+	SubtractPoints(ret, a, &ret);
 
 	// Left
 	if (plane == 0) {
-		alpha = (a.x - a.h) / ((a.x + a.h) - (b.x + b.h));
-		float x = (1 - alpha)*a.x + alpha*b.x;
-		float y = (1 - alpha)*a.y + alpha*b.y;
-		float z = (1 - alpha)*a.z + alpha*b.z;
-		ret.x = x;
-		ret.y = y;
-		ret.z = z;
+		alpha = (a.h - a.x) / ((a.h - a.x) - (b.h - b.x));
 	}
 	// Right
 	else if (plane == 1) {
-		//alpha = ()
+		alpha = (a.h - a.x) / ((a.h - a.x) - (b.h - b.x));
 	}
 	// Bottom
 	else if (plane == 2) {
-
+		alpha = (a.h - a.y) / ((a.h - a.y) - (b.h - b.y));
 	}
 	// Top
 	else if (plane == 3) {
-
+		alpha = (a.h - a.y) / ((a.h - a.y) - (b.h - b.y));
 	}
 	// Near
 	else if (plane == 4) {
-
+		alpha = (a.h - a.z) / ((a.h - a.z) - (b.h - b.z));
 	}
 	// Far
 	else if (plane == 5) {
-
+		alpha = (a.h - a.z) / ((a.h - a.z) - (b.h - b.z));
 	}
 
-	ret.x = a.x;
-	ret.y = a.y;
-	ret.z = a.z;
+	//alpha = 1;
+	ScalePoint(alpha, ret, &ret);
+	AddPoints(ret, a, &ret);
 
 	return ret;
 }
@@ -611,8 +635,9 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 				if (!Inside(point1, i)) {
 					// Compute intersection and add inner intersection to output
 					Vertex intersect = intersection(point2, point1, i);
-					output[added] = point1;// intersect;
+					output[added] = intersect;// intersect;
 					added++;
+					//(*out_count)++;
 				}
 
 				// Add point 2 to output
@@ -624,7 +649,7 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 			else if (Inside(point1, i)) {
 				// Compute intersection and add inner intersection to output
 				Vertex intersect = intersection(point1, point2, i);
-				output[added] = point2; // intersect;
+				output[added] = intersect; // intersect;
 				added++;
 			}	
 		}
