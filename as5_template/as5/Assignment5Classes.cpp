@@ -478,16 +478,38 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 }
 
 // Determines if p is inside the clipping boundaries
-bool Inside(Vertex p) {
-	//printf("%f\n", p.h);
-	bool insideX = -p.h <= p.x && p.x <= p.h;
-	bool insideY = -p.h <= p.y && p.y <= p.h;
-	bool insideZ = 0 <= p.z && p.z <= p.h;
-	return  insideX && insideY && insideZ;
+bool Inside(Vertex p, int plane) {
+
+	// Left
+	if (plane == 0) {
+		return -p.h <= p.x;
+	}
+	// Right
+	else if (plane == 1) {
+		return p.x <= p.h;
+	}
+	// Down
+	else if (plane == 2) {
+		return -p.h <= p.y;
+	}
+	// Up
+	else if (plane == 3) {
+		return p.y <= p.h;
+	}
+	// Near
+	else if (plane == 4) {
+		return 0 <= p.z;
+	}
+	// Far
+	else if (plane == 5) {
+		return p.z <= p.h;
+	}
+
+	return true;
 }
 
 // Calculates the intersection from a to b
-Vertex* intersection(Vertex a, Vertex b) {
+Vertex intersection(Vertex a, Vertex b) {
 
 	float left = b.h + b.x;
 	float right = b.h - b.x;
@@ -555,7 +577,7 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 
 	*out_count = count;
 
-	// For each  in the clipping polygon
+	// For each plane in the clipping polygon
 	for (int i = 0; i < 6; i++) {
 
 		Vertex * inputList = new Vertex[count]; 
@@ -583,10 +605,10 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 			Vertex point2 = inputList[j];
 
 			// If point 2 is inside this edge
-			if (Inside(point2)) {
+			if (Inside(point2, i)) {
 
 				// If point 1 is outside of this edge
-				if (!Inside(point1)) {
+				if (!Inside(point1, i)) {
 					// Compute intersection and add inner intersection to output
 					Vertex intersect = intersection(point1, point2);
 					output[added] = intersect;
@@ -600,7 +622,7 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 			}
 
 			// Else if last is inside this edge
-			else if (Inside(point1)) {
+			else if (Inside(point1, i)) {
 				// Compute intersection and add inner intersection to output
 				Vertex intersect = intersection(point1, point2);
 				output[added] = intersect;
