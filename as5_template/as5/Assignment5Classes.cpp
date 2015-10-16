@@ -487,7 +487,7 @@ bool Inside(Vertex p) {
 }
 
 // Calculates the intersection from a to b
-Vertex intersection(Vertex a, Vertex b) {
+Vertex* intersection(Vertex a, Vertex b) {
 
 	float left = b.h + b.x;
 	float right = b.h - b.x;
@@ -496,13 +496,19 @@ Vertex intersection(Vertex a, Vertex b) {
 	float near = b.z;
 	float far = b.h - b.z;
 
-	float alpha = 1;
+	float alpha = 0;
 
 	Vertex ret;
 
 	// Left
 	if (left < 0) {
-		alpha = (a.x - a.h) / ((a.x + a.h) - (b.x + b.h));
+		/**alpha = (a.x - a.h) / ((a.x + a.h) - (b.x + b.h));
+		float x = (1 - alpha)*a.x + alpha*b.x;
+		float y = (1 - alpha)*a.y + alpha*b.y;
+		float z = (1 - alpha)*a.z + alpha*b.z;
+		ret.x = x;
+		ret.y = y;
+		ret.z = z;**/
 	}
 	// Right
 	else if (right < 0) {
@@ -525,12 +531,9 @@ Vertex intersection(Vertex a, Vertex b) {
 
 	}
 
-	float x = (1 - alpha)*a.x + alpha*b.x;
-	float y = (1 - alpha)*a.y + alpha*b.y;
-	float z = (1 - alpha)*a.z + alpha*b.z;
-	ret.x = x;
-	ret.y = y;
-	ret.z = z;
+	ret.x = a.x;
+	ret.y = a.y;
+	ret.z = a.z;
 
 	return ret;
 }
@@ -552,8 +555,8 @@ Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 
 	*out_count = count;
 
-	// For each edge in the clipping polygon
-	for (int i = 0; i < 4; i++) {
+	// For each  in the clipping polygon
+	for (int i = 0; i < 6; i++) {
 
 		Vertex * inputList = new Vertex[count]; 
 
