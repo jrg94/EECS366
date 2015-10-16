@@ -480,7 +480,7 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 void SubtractPoints(Vertex a, Vertex b, Vertex* c) {
 	(*c).x = a.x - b.x;
 	(*c).y = a.y - b.y;
-	(*c).z = a.y - b.h;
+	(*c).z = a.z - b.z;
 	(*c).h = a.h - b.h;
 }
 
@@ -554,27 +554,27 @@ Vertex intersection(Vertex a, Vertex b, int plane) {
 
 	// Left
 	if (plane == 0) {
-		alpha = (a.h - a.x) / ((a.h - a.x) - (b.h - b.x));
+		alpha = (a.h - a.x) / ((a.h - a.x) - left);
 	}
 	// Right
 	else if (plane == 1) {
-		alpha = (a.h - a.x) / ((a.h - a.x) - (b.h - b.x));
+		alpha = (a.h - a.x) / ((a.h - a.x) - right);
 	}
 	// Bottom
 	else if (plane == 2) {
-		alpha = (a.h - a.y) / ((a.h - a.y) - (b.h - b.y));
+		alpha = (a.h - a.y) / ((a.h - a.y) - bottom);
 	}
 	// Top
 	else if (plane == 3) {
-		alpha = (a.h - a.y) / ((a.h - a.y) - (b.h - b.y));
+		alpha = (a.h - a.y) / ((a.h - a.y) - top);
 	}
 	// Near
 	else if (plane == 4) {
-		alpha = (a.h - a.z) / ((a.h - a.z) - (b.h - b.z));
+		alpha = (a.h - a.z) / ((a.h - a.z) - near);
 	}
 	// Far
 	else if (plane == 5) {
-		alpha = (a.h - a.z) / ((a.h - a.z) - (b.h - b.z));
+		alpha = (a.h - a.z) / ((a.h - a.z) - far);
 	}
 
 	//alpha = 1;
