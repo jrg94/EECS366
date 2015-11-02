@@ -1,26 +1,5 @@
-#define N_POINT_LIGHTS 2
-
-// A point light struct
-struct PointLight {
-	vec3 Position;
-
-	float constant;
-	float linear;
-	float quadratic;
-
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
-};
-
-//uniform PointLight pointLights[N_POINT_LIGHTS];
-
-//vec3 CalcLighting(PointLight p) {
-	
-//	return (ambient + diffuse + specular);
-//}
-
-uniform vec4 lightPos;
+uniform vec4 mainLight;
+//uniform vec4 secondLight
 
 varying vec3 normal;
 varying vec3 lightVec;
@@ -31,6 +10,6 @@ void main() {
 	vec4 vert = gl_ModelViewMatrix * gl_Vertex;
 
 	normal = gl_NormalMatrix * gl_Normal;
-	lightVec = vec3(lightPos - vert);
+	lightVec = vec3(mainLight - vert);
 	viewVec = -vec3(vert);
 }

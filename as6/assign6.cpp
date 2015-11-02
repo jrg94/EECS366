@@ -59,25 +59,27 @@ void DisplayFunc(void) {
 	glDeleteObjectARB(p1);
 	p1 = glCreateProgramObjectARB();
 
-	// Gouraud interp & Phong Lighting
+	// Gouraud interp
 	if (shadingMode == 0) {
 		glAttachObjectARB(p1, vertex_shader1);
 		glLinkProgramARB(p1);
 		glUseProgramObjectARB(p1);
 	}
-	// Phong interp & Phong Lighting
+	// Phong interp
 	else if (shadingMode == 1) {
 		glAttachObjectARB(p1, vertex_shader2);
 		glLinkProgramARB(p1);
 		glUseProgramObjectARB(p1);
 	}
 
+	// Cook-Torrance illumination
 	if (illimunationMode == 0) {
 		glAttachObjectARB(p1, fragment_shader1);
 		glLinkProgramARB(p1);
 		glUseProgramObjectARB(p1);
 
 	}
+	// Phong illumination
 	else if (illimunationMode == 1) {
 		glAttachObjectARB(p1, fragment_shader2);
 		glLinkProgramARB(p1);
@@ -148,12 +150,12 @@ void setShaders() {
 	fragment_shader1 = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	vertex_shader2 = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
 	fragment_shader2 = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-
+	
 	//read the shader files and store the strings in corresponding char. arrays.
-	vs1 = shaderFileRead("Ivory.vert");
-	fs1 = shaderFileRead("Cooke-Torrance.frag");
-	vs2 = shaderFileRead("sampleshader.vert");
-	fs2 = shaderFileRead("Phong.frag");
+	vs1 = shaderFileRead("Ivory.vert");				// Gouraud interpolation
+	fs1 = shaderFileRead("Ivory.frag");	// Cooke-Torrance illumination
+	vs2 = shaderFileRead("Phong.vert");				// Phong interpolation
+	fs2 = shaderFileRead("Phong.frag");				// Phong illumination
 
 	vv1 = vs1;
 	ff1 = fs1;
@@ -262,12 +264,12 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		if (shadingMode == 0)
 		{
 			shadingMode =1;
-			printf("Toggled Gouraud interpolation mode\n");
+			printf("Toggled Phong interpolation mode\n");
 		}
 		else
 		{
 			shadingMode =0;
-			printf("Toggle Phong interpolation mode\n");
+			printf("Toggle Gouraud interpolation mode\n");
 		}
 		break;
 	// Toggle primary and secondary light
@@ -276,10 +278,24 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		if (lightSource == 0)
 		{
 			lightSource =1;
+			GLint loc = glGetUniformLocationARB(p1, "secondLight");
+			if (loc != -1) {
+				glUniform4fARB(loc, 7.0, 7.0, 7.0, 1.0);
+			}
+			else {
+				printf("lightColor is not a valid uniform value\n");
+			}
 		}
 		else
 		{
 			lightSource =0;
+			GLint loc = glGetUniformLocationARB(p1, "secondLight");
+			if (loc != -1) {
+				glUniform4fARB(loc, 7.0, 7.0, 7.0, 0.0);
+			}
+			else {
+				printf("lightColor is not a valid uniform value\n");
+			}
 		}
 		break;
 	// Cycle color of secondary light source

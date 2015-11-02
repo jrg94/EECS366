@@ -1,33 +1,24 @@
-// Per-fragment Phong illumination model
+varying vec3 N;
+varying vec3 v;   
+ 
+void main (void)  
+{  
+   vec3 L = normalize(gl_LightSource[0].position.xyz - v);   
+   vec3 E = normalize(-v); // we are in Eye Coordinates, so EyePos is (0,0,0)  
+   vec3 R = normalize(-reflect(L,N));  
+ 
+   // Calculate the ambient term:  
+   vec4 Iamb = gl_FrontLightProduct[0].ambient;    
 
-precision mediump float; 
-
-varying vec3 normalInterp;
-varying vec3 vertPos;
-
-uniform int mode;
-
-const vec3 lightPos = vec3(1.0,1.0,1.0);
-const vec3 diffuseColor = vec3(0.5, 0.0, 0.0);
-const vec3 specColor = vec3(1.0, 1.0, 1.0);
-
-void main() {
-
-  vec3 normal = normalize(normalInterp); 
-  vec3 lightDir = normalize(lightPos - vertPos);
-
-  float lambertian = max(dot(lightDir,normal), 0.0);
-  float specular = 0.0;
-
-  if(lambertian > 0.0) {
-
-    vec3 reflectDir = reflect(-lightDir, normal);
-    vec3 viewDir = normalize(-vertPos);
-
-    float specAngle = max(dot(reflectDir, viewDir), 0.0);
-    specular = pow(specAngle, 4.0);
-  }
-
-  gl_FragColor = vec4( lambertian*diffuseColor +
-                        specular*specColor, 1.0);
+   // Calculate the diffuse term:  
+   vec4 Idiff = gl_FrontLightProduct[0].diffuse * max(dot(N,L), 0.0);
+   Idiff = clamp(Idiff, 0.0, 1.0);     
+   
+   // Calculate the specular term:
+   vec4 Ispec = gl_FrontLightProduct[0].specular 
+                * pow(max(dot(R,E),0.0),0.3*gl_FrontMaterial.shininess);
+   Ispec = clamp(Ispec, 0.0, 1.0);
+    
+   // Calculate the total color per vertex  
+   gl_FragColor = gl_FrontLightModelProduct.sceneColor + Iamb + Idiff + Ispec;     
 }

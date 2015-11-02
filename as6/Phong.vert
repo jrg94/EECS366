@@ -1,17 +1,12 @@
-attribute vec3 inputPosition;
-attribute vec2 inputTextCoord;
-attribute vec3 inputNormal;
+// Normal vector
+varying vec3 N;
+// V vector
+varying vec3 v;
 
-uniform mat4 projection;
-uniform mat4 modelview;
-uniform mat4 normalMat;
-
-varying vec3 normalInterp;
-verying vec3 vertPos;
-
-void main() {
-	gl_Position = projection * modelview * vec4(inputPosition, 1.0);
-	vec4 vertPos4 = modelview * vec4(inputPosition, 1.0);
-	vertPos = vec3(vertPos4);
-	normalInterp = vec3(normalMat * vec4(inputNormal, 0.0));
+// Per-vertex shading
+void main(void)  
+{     
+   v = vec3(gl_ModelViewMatrix * gl_Vertex);       
+   N = normalize(gl_NormalMatrix * gl_Normal);
+   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;  
 }
