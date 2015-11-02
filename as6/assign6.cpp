@@ -56,6 +56,7 @@ void DisplayFunc(void) {
 	//load projection and viewing transforms
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	glDeleteObjectARB(p1);
 	p1 = glCreateProgramObjectARB();
 
 	// Gouraud interp & Phong Lighting
