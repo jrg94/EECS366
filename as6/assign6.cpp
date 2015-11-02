@@ -86,6 +86,10 @@ void DisplayFunc(void) {
 		glUseProgramObjectARB(p1);
 	}
 
+	if (lightSource == 1) {
+		glutSolidCube(1);
+	}
+
 	gluPerspective(60,(GLdouble) WindowWidth/WindowHeight,0.01,10000);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -278,23 +282,30 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		if (lightSource == 0)
 		{
 			lightSource =1;
-			GLint loc = glGetUniformLocationARB(p1, "secondLight");
+			GLint loc = glGetUniformLocationARB(p1, "test");
 			if (loc != -1) {
-				glUniform4fARB(loc, 7.0, 7.0, 7.0, 1.0);
+				glUniform3fARB(loc, 7.0, 7.0, 7.0);
 			}
 			else {
-				printf("lightColor is not a valid uniform value\n");
+				printf("lightPosition is not a valid uniform value\n");
 			}
+//			GLfloat DiffuseLight[] = { 1.0, 1.0, 1.0 };
+//			GLfloat AmbientLight[] = { .02, .02, .02 };
+//			GLfloat LightPosition[] = { 0.0, 0.0, 0.0, 1.0 };
+//			glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
+//			glEnable(GL_LIGHT0);
+//			glDisable(GL_LIGHT1);
+//			DiffuseLight[1] = DiffuseLight[1] - .1;
 		}
 		else
 		{
 			lightSource =0;
-			GLint loc = glGetUniformLocationARB(p1, "secondLight");
+			GLint loc = glGetUniformLocationARB(p1, "test");
 			if (loc != -1) {
-				glUniform4fARB(loc, 7.0, 7.0, 7.0, 0.0);
+				glUniform3fARB(loc, 0.0, 0.0, 0.0);
 			}
 			else {
-				printf("lightColor is not a valid uniform value\n");
+				printf("lightPosition is not a valid uniform value\n");
 			}
 		}
 		break;

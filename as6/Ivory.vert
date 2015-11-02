@@ -1,5 +1,4 @@
-uniform vec4 mainLight;
-//uniform vec4 secondLight
+uniform vec4 lightPos;
 
 varying vec3 normal;
 varying vec3 lightVec;
@@ -10,6 +9,6 @@ void main() {
 	vec4 vert = gl_ModelViewMatrix * gl_Vertex;
 
 	normal = gl_NormalMatrix * gl_Normal;
-	lightVec = vec3(mainLight - vert);
+	lightVec = vec3(lightPos - vert);
 	viewVec = -vec3(vert);
 }
