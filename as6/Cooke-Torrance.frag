@@ -5,6 +5,19 @@ uniform vec3 lightDirection;
 varying vec3 varNormal;
 varying vec3 varEyeDir;
 
+float CookeLighting(float m,float F,vec3 N, vec3 L,vec3 V, vec3 H)
+{
+    float result;
+    float NdotV= dot(N,V);
+    float NdotH= dot(N,H);
+    float NdotL= dot(N,L);
+    float VdotH= dot(V,H);
+    float Geom= min(min(1.0, (2.0*NdotV*NdotH)/VdotH), (2.0*NdotL*NdotH)/VdotH);
+	float Rough= (1.0/(pow(m,2.0)*pow(NdotH,4.0)) * exp ( pow(NdotH,2.0)-1.0)/( pow(m,2.0)*pow(NdotH,2.0)));
+    float Fresnel= F + pow(1.0-VdotH,5.0) * (1.0-F);
+    return (Fresnel * Rough * Geom)/(NdotV*NdotL);
+}
+
 void main()
 {
     // set important material values

@@ -1,5 +1,6 @@
 varying vec3 N;
 varying vec3 v;
+varying vec3 viewVec;
 
 uniform int light;
 uniform vec3 test;

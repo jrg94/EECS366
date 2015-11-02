@@ -157,7 +157,7 @@ void setShaders() {
 	
 	//read the shader files and store the strings in corresponding char. arrays.
 	vs1 = shaderFileRead("Ivory.vert");				// Gouraud interpolation
-	fs1 = shaderFileRead("Ivory.frag");	// Cooke-Torrance illumination
+	fs1 = shaderFileRead("Ivory.frag");				// Cooke-Torrance illumination
 	vs2 = shaderFileRead("Phong.vert");				// Phong interpolation
 	fs2 = shaderFileRead("Phong.frag");				// Phong illumination
 
@@ -273,7 +273,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		else
 		{
 			shadingMode =0;
-			printf("Toggle Gouraud interpolation mode\n");
+			printf("Toggled Gouraud interpolation mode\n");
 		}
 		break;
 	// Toggle primary and secondary light
@@ -282,27 +282,22 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		if (lightSource == 0)
 		{
 			lightSource =1;
-			GLint loc = glGetUniformLocationARB(p1, "test");
+			GLint loc = glGetUniformLocationARB(p1, "lightPos");
 			if (loc != -1) {
-				glUniform3fARB(loc, 7.0, 7.0, 7.0);
+				glUniform4fARB(loc, 7.0, 7.0, 7.0, 1.0);
+				printf("I just switched lights\n");
 			}
 			else {
 				printf("lightPosition is not a valid uniform value\n");
 			}
-//			GLfloat DiffuseLight[] = { 1.0, 1.0, 1.0 };
-//			GLfloat AmbientLight[] = { .02, .02, .02 };
-//			GLfloat LightPosition[] = { 0.0, 0.0, 0.0, 1.0 };
-//			glLightfv(GL_LIGHT0, GL_DIFFUSE, DiffuseLight);
-//			glEnable(GL_LIGHT0);
-//			glDisable(GL_LIGHT1);
-//			DiffuseLight[1] = DiffuseLight[1] - .1;
 		}
 		else
 		{
 			lightSource =0;
-			GLint loc = glGetUniformLocationARB(p1, "test");
+			GLint loc = glGetUniformLocationARB(p1, "lightPos");
 			if (loc != -1) {
-				glUniform3fARB(loc, 0.0, 0.0, 0.0);
+				glUniform4fARB(loc, 0.0, 0.0, 0.0, 1.0);
+				printf("I just switched lights\n");
 			}
 			else {
 				printf("lightPosition is not a valid uniform value\n");
