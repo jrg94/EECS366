@@ -1,3 +1,25 @@
+#define N_POINT_LIGHTS 2
+
+// A point light struct
+struct PointLight {
+	vec3 Position;
+
+	float constant;
+	float linear;
+	float quadratic;
+
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
+uniform PointLight pointLights[N_POINT_LIGHTS];
+
+//vec3 CalcLighting(PointLight p) {
+
+//	return (ambient + diffuse + specular);
+//}
+
 uniform vec4 lightPos;
 
 varying vec3 normal;
