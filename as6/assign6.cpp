@@ -53,7 +53,10 @@ void DisplayFunc(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-        
+	if (illimunationMode == 0) {
+
+	}
+
 	gluPerspective(60,(GLdouble) WindowWidth/WindowHeight,0.01,10000);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -118,8 +121,8 @@ void setShaders() {
 	
 
 	//read the shader files and store the strings in corresponding char. arrays.
-	vs = shaderFileRead("sampleshader.vert");
-	fs = shaderFileRead("sampleshader.frag");
+	vs = shaderFileRead("Ivory.vert");
+	fs = shaderFileRead("Ivory.frag");
 
 	const char * vv = vs;
 	const char * ff = fs;
@@ -181,6 +184,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 	case 'q':
 		exit(1);
 		break;
+	// Toggle Phong and Cooke-Torrance local illumination
 	case 'w':
 	case 'W':
 		if (illimunationMode == 0)
@@ -192,6 +196,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 			illimunationMode = 0;
 		}
 		break;
+	// Toggle Gouraud and Phong interpolative shading
 	case 'e':
 	case 'E':
 		if (shadingMode == 0)
@@ -203,6 +208,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 			shadingMode =0;
 		}
 		break;
+	// Toggle primary and secondary light
 	case 'd':
 	case 'D':
 		if (lightSource == 0)
@@ -214,6 +220,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 			lightSource =0;
 		}
 		break;
+	// Cycle color of secondary light source
 	case 'f':
 	case 'F':
 		if (lightSource == 1)
@@ -239,7 +246,7 @@ int main(int argc, char **argv)
 	glutInitWindowSize(320,320);
 	glutCreateWindow("Assignment 6");
 
-
+	
 
 	glutDisplayFunc(DisplayFunc);
 	glutReshapeFunc(ReshapeFunc);
@@ -248,7 +255,13 @@ int main(int argc, char **argv)
     glutKeyboardFunc(KeyboardFunc);
 
 
-
+	const GLubyte *temp;
+	temp = glGetString(GL_VERSION);
+	printf("%s\n", temp);
+	temp = glGetString(GL_VENDOR);
+	printf("%s\n", temp);
+	temp = glGetString(GL_EXTENSIONS);
+	printf("%s\n", temp);
 	
 
 	setShaders();
