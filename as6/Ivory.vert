@@ -13,10 +13,10 @@ struct PointLight {
 	vec3 specular;
 };
 
-uniform PointLight pointLights[N_POINT_LIGHTS];
+//uniform PointLight pointLights[N_POINT_LIGHTS];
 
 //vec3 CalcLighting(PointLight p) {
-
+	
 //	return (ambient + diffuse + specular);
 //}
 

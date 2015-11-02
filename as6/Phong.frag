@@ -1,3 +1,5 @@
+// Per-fragment Phong illumination model
+
 precision mediump float; 
 
 varying vec3 normalInterp;
@@ -24,17 +26,6 @@ void main() {
 
     float specAngle = max(dot(reflectDir, viewDir), 0.0);
     specular = pow(specAngle, 4.0);
-
-    // the exponent controls the shininess (try mode 2)
-    if(mode == 2)  specular = pow(specAngle, 16.0);
-
-    // according to the rendering equation we would need to multiply
-    // with the the "lambertian", but this has little visual effect
-    if(mode == 3) specular *= lambertian;
-
-    // switch to mode 4 to turn off the specular component
-    if(mode == 4) specular *= 0.0;
-
   }
 
   gl_FragColor = vec4( lambertian*diffuseColor +

@@ -151,9 +151,9 @@ void setShaders() {
 
 	//read the shader files and store the strings in corresponding char. arrays.
 	vs1 = shaderFileRead("Ivory.vert");
-	fs1 = shaderFileRead("Ivory.frag");
+	fs1 = shaderFileRead("Cooke-Torrance.frag");
 	vs2 = shaderFileRead("sampleshader.vert");
-	fs2 = shaderFileRead("sampleshader.frag");
+	fs2 = shaderFileRead("Phong.frag");
 
 	vv1 = vs1;
 	ff1 = fs1;
@@ -289,6 +289,13 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		{
 			//change color of the secondary light source at each key press, 
 			//light color cycling through pure red, green, blue, and white.
+			GLint loc = glGetUniformLocationARB(p1, "lightColor");
+			if (loc != -1) {
+				glUniform3fARB(loc, 1.0, 1.0, 0.0);
+			}
+			else {
+				printf("lightColor is not a valid uniform value\n");
+			}
 		}
 		break;
 
