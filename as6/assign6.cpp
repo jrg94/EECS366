@@ -124,14 +124,16 @@ void setShaders() {
 	vs2 = shaderFileRead("Phong.vert");
 	fs2 = shaderFileRead("Phong.frag");
 
-	const char * vv1 = vs1;
-	const char * ff1 = fs1;
-	const char * vv2 = vs2;
-	const char * ff2 = fs2;
+	vv1 = vs1;
+	ff1 = fs1;
+	vv2 = vs2;
+	ff2 = fs2;
 
 	//set the shader's source code by using the strings read from the shader files.
-	glShaderSourceARB(vertex_shader, 1, &vv1,NULL);
-	glShaderSourceARB(fragment_shader, 1, &ff1,NULL);
+	//Start in Goroud shading
+	glShaderSourceARB(vertex_shader, 1, &vv1, NULL);
+	glShaderSourceARB(fragment_shader, 1, &ff1, NULL);
+	
 
 	free(vs1); free(fs1);
 
@@ -165,6 +167,42 @@ void setShaders() {
 	You can trace the status of link operation by calling 
 	"glGetObjectParameterARB(p,GL_OBJECT_LINK_STATUS_ARB)"
 	*/
+	glLinkProgramARB(p1);
+
+	//Start to use the program object, which is the part of the current rendering state
+	glUseProgramObjectARB(p1);
+
+}
+
+void UpdateShaders(int shader) {
+	//create the empty shader objects and get their handles
+	vertex_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+	fragment_shader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+
+	//set the shader's source code by using the strings read from the shader files.
+	if (shader == 0) {
+		//Goroud shading
+		glShaderSourceARB(vertex_shader, 1, &vv1, NULL);
+		glShaderSourceARB(fragment_shader, 1, &ff1, NULL);
+	}
+	else if (shader == 1) {
+		//Phong shading
+		glShaderSourceARB(vertex_shader, 1, &vv2, NULL);
+		glShaderSourceARB(fragment_shader, 1, &ff2, NULL);
+	}
+
+	//Compile the shader objects
+	glCompileShaderARB(vertex_shader);
+	glCompileShaderARB(fragment_shader);
+
+
+	//create an empty program object to attach the shader objects
+	p1 = glCreateProgramObjectARB();
+
+	//attach the shader objects to the program object
+	glAttachObjectARB(p1, vertex_shader);
+	glAttachObjectARB(p1, fragment_shader);
+
 	glLinkProgramARB(p1);
 
 	//Start to use the program object, which is the part of the current rendering state
@@ -209,6 +247,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		{
 			shadingMode =0;
 		}
+		UpdateShaders(shadingMode);
 		break;
 	// Toggle primary and secondary light
 	case 'd':
