@@ -22,7 +22,8 @@ using namespace std;
 
 //Illimunation and shading related declerations
 char *shaderFileRead(char *fn);
-GLuint vertex_shader,fragment_shader,p;
+GLuint vertex_shader,fragment_shader,p1,p2;
+const char *vv1, *ff1, *vv2, *ff2;
 int illimunationMode = 0;
 int shadingMode = 0;
 int lightSource = 0;
@@ -52,10 +53,6 @@ void DisplayFunc(void) {
 	//load projection and viewing transforms
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
-	if (illimunationMode == 0) {
-
-	}
 
 	gluPerspective(60,(GLdouble) WindowWidth/WindowHeight,0.01,10000);
 
@@ -113,7 +110,8 @@ void MotionFunc(int x, int y)
 
 void setShaders() {
 
-	char *vs = NULL,*fs = NULL;
+	char *vs1 = NULL, *fs1 = NULL;
+	char *vs2 = NULL, *fs2 = NULL;
 
 	//create the empty shader objects and get their handles
 	vertex_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
@@ -121,17 +119,21 @@ void setShaders() {
 	
 
 	//read the shader files and store the strings in corresponding char. arrays.
-	vs = shaderFileRead("Ivory.vert");
-	fs = shaderFileRead("Ivory.frag");
+	vs1 = shaderFileRead("Ivory.vert");
+	fs1 = shaderFileRead("Ivory.frag");
+	vs2 = shaderFileRead("Phong.vert");
+	fs2 = shaderFileRead("Phong.frag");
 
-	const char * vv = vs;
-	const char * ff = fs;
+	const char * vv1 = vs1;
+	const char * ff1 = fs1;
+	const char * vv2 = vs2;
+	const char * ff2 = fs2;
 
 	//set the shader's source code by using the strings read from the shader files.
-	glShaderSourceARB(vertex_shader, 1, &vv,NULL);
-	glShaderSourceARB(fragment_shader, 1, &ff,NULL);
+	glShaderSourceARB(vertex_shader, 1, &vv1,NULL);
+	glShaderSourceARB(fragment_shader, 1, &ff1,NULL);
 
-	free(vs);free(fs);
+	free(vs1); free(fs1);
 
 	//Compile the shader objects
 	glCompileShaderARB(vertex_shader);
@@ -139,11 +141,11 @@ void setShaders() {
 
 
 	//create an empty program object to attach the shader objects
-	p = glCreateProgramObjectARB();
+	p1 = glCreateProgramObjectARB();
 
 	//attach the shader objects to the program object
-	glAttachObjectARB(p,vertex_shader);
-	glAttachObjectARB(p,fragment_shader);
+	glAttachObjectARB(p1,vertex_shader);
+	glAttachObjectARB(p1,fragment_shader);
 
 	/*
 	**************
@@ -163,10 +165,10 @@ void setShaders() {
 	You can trace the status of link operation by calling 
 	"glGetObjectParameterARB(p,GL_OBJECT_LINK_STATUS_ARB)"
 	*/
-	glLinkProgramARB(p);
+	glLinkProgramARB(p1);
 
 	//Start to use the program object, which is the part of the current rendering state
-	glUseProgramObjectARB(p);
+	glUseProgramObjectARB(p1);
 
 }
 
