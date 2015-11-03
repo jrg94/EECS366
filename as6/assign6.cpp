@@ -29,6 +29,7 @@ const char *vv1, *ff1;
 int illimunationMode = 0;
 int shadingMode = 0;
 int lightSource = 0;
+int color_counter = 0;
 
 
 //Projection, camera contral related declerations
@@ -285,13 +286,13 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		{
 			//change color of the secondary light source at each key press, 
 			//light color cycling through pure red, green, blue, and white.
-			GLint loc = glGetUniformLocationARB(p, "lightColor");
-			if (loc != -1) {
-				glUniform3fARB(loc, 1.0, 1.0, 0.0);
-			}
-			else {
-				printf("lightColor is not a valid uniform value\n");
-			}
+
+			GLfloat color_cycle[4][4] = { { 1.0f, 0.0f, 0.0f, 1.0f },
+										{ 0.0f, 1.0f, 0.0f, 1.0f },
+										{ 0.0f, 0.0f, 1.0f, 1.0f },
+										{ 1.0f, 1.0f, 1.0f, 1.0f } };
+			glLightfv(GL_LIGHT1, GL_DIFFUSE, color_cycle[color_counter % 4]);
+			color_counter++;
 		}
 		break;
 
@@ -337,7 +338,8 @@ int main(int argc, char **argv)
 	glLightfv(GL_LIGHT1, GL_AMBIENT, g_amb);
 	GLfloat g_dif[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, g_dif);
-
+	GLfloat g_spec[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightfv(GL_LIGHT1, GL_SPECULAR, g_spec);
 
 	setShaders();
 
