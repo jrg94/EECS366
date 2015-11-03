@@ -4,18 +4,8 @@ varying vec3 viewVec;
 
 uniform int light;
 uniform int illumination;
-uniform int interp;
 
 void main() {
-
-	// Phong
-	if (interp == 0) {
-	         
-	}
-	// Goroud
-	else if (interp == 1) {
-		//gl_FragColor = color;
-	}
 
 	// Phong illumination
 	if (illumination == 0) {

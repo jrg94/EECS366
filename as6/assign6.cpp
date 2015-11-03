@@ -84,19 +84,6 @@ void DisplayFunc(void) {
 		printf("light is not a valid uniform value\n");
 	}
 
-	// Cook-Torrance illumination
-	if (illimunationMode == 0) {
-
-	}
-	// Phong illumination
-	else if (illimunationMode == 1) {
-
-	}
-
-	if (lightSource == 1) {
-		glutSolidCube(1);
-	}
-
 	gluPerspective(60,(GLdouble) WindowWidth/WindowHeight,0.01,10000);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -108,6 +95,13 @@ void DisplayFunc(void) {
 			  0,0,1);
 	glEnable(GL_DEPTH_TEST);
 	glutSolidTeapot(1);
+	if (lightSource == 1) {
+		GLfloat g_lightPos[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		glGetLightfv(GL_LIGHT1, GL_POSITION, g_lightPos);
+		glTranslatef(g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+		glutSolidCube(0.5);
+	}
+
 	glutSwapBuffers();
 }
 
@@ -309,7 +303,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
-	glutInitWindowSize(320,320);
+	glutInitWindowSize(500,500);
 	glutCreateWindow("Assignment 6");
 
 	
@@ -340,8 +334,13 @@ int main(int argc, char **argv)
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, g_dif);
 	GLfloat g_spec[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glLightfv(GL_LIGHT1, GL_SPECULAR, g_spec);
-
 	setShaders();
+
+	// Initialize Materials - Copper
+	GLfloat mat_dif[4] = { 0.755f, 0.49f, 0.095f , 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_dif);
+	GLfloat mat_spec[4] = { 0.755f, 0.49f, 0.095f , 1.0f };
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_spec);
 
 	glutMainLoop();
 
