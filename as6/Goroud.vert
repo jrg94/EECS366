@@ -1,6 +1,5 @@
 uniform mat4 modelViewProjectionMat;
 uniform mat4 modelViewMat;
-
 uniform vec3 lightPos;
 
 attribute vec4 vertPos;

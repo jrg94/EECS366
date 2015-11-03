@@ -156,8 +156,8 @@ void setShaders() {
 	fragment_shader2 = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	
 	//read the shader files and store the strings in corresponding char. arrays.
-	vs1 = shaderFileRead("Ivory.vert");				// Gouraud interpolation
-	fs1 = shaderFileRead("Ivory.frag");				// Cooke-Torrance illumination
+	vs1 = shaderFileRead("Goroud.vert");			// Gouraud interpolation
+	fs1 = shaderFileRead("Goroud.frag");			// Cooke-Torrance illumination
 	vs2 = shaderFileRead("Phong.vert");				// Phong interpolation
 	fs2 = shaderFileRead("Phong.frag");				// Phong illumination
 
