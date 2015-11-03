@@ -253,12 +253,12 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		if (shadingMode == 0)
 		{
 			shadingMode =1;
-			printf("Toggled Phong interpolation mode\n");
+			printf("Toggled Gouraud interpolation mode\n");
 		}
 		else
 		{
 			shadingMode =0;
-			printf("Toggled Gouraud interpolation mode\n");
+			printf("Toggled Phong interpolation mode\n");
 		}
 		break;
 	// Toggle primary and secondary light
