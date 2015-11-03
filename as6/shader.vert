@@ -1,5 +1,6 @@
-uniform vec4 lightPos;
-uniform int mode;
+uniform int light;
+uniform int illumination;
+uniform int interp;
 
 varying vec3 normal;
 varying vec3 lightVec;
@@ -8,22 +9,22 @@ varying vec3 viewVec;
 void main() {
 
 	// Ivory
-	if (mode == 0) {
-		gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-		vec4 vert = gl_ModelViewMatrix * gl_Vertex;
+	if (interp == 0) {
+		//gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+		//vec4 vert = gl_ModelViewMatrix * gl_Vertex;
 
-		normal = gl_NormalMatrix * gl_Normal;
-		lightVec = vec3(lightPos - vert);
-		viewVec = -vec3(vert);
+		//normal = gl_NormalMatrix * gl_Normal;
+		//lightVec = vec3(lightPos - vert);
+		//viewVec = -vec3(vert);
 	}
 	// Phong interpolation
-	else if (mode == 1) {
+	else if (interp == 1) {
 		//v = vec3(gl_ModelViewMatrix * gl_Vertex);       
 		normal = normalize(gl_NormalMatrix * gl_Normal);
 		gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex; 
 	}
 	// Goroud interpolation
-	else if (mode == 1) {
+	else if (interp == 2) {
 		//vec3 V = vec3(modelViewMat*vertPos);
 		//vec3 N = vec3(modelViewMat*vec4(vertNorm,0.0));
 		//float d = length(lightPos - V);
@@ -37,5 +38,36 @@ void main() {
 		//color = vertColor * NdotL;
 
 		//gl_Position = modelViewProjectionMat * vertPos;
+	}
+
+	// Phong illumination
+	if (illumination == 0) {
+		vec3 normal, lightdir;
+		vec4 color;
+		float NdotL;
+
+		color = gl_FrontMaterial.ambient * gl_LightSource[light].ambient;
+
+		normal = normalize(gl_NormalMatrix * gl_Normal);
+		lightdir = normalize(vec3(gl_LightSource[light].position));
+		NdotL = max(dot(normal,lightdir), 0.0);
+
+		color += NdotL * (gl_FrontMaterial.diffuse * gl_LightSource[light].diffuse);
+
+		if (NdotL > 0.0) {
+			vec3 view, reflection;
+			float RdotV;
+
+			view = vec3(-normalize(gl_ModelViewMatrix * gl_Vertex));
+			reflection = normalize(reflect(-lightdir, normal));
+			RdotV = max(dot(reflection, view), 0.0);
+
+			color += gl_FrontMaterial.specular *
+					 gl_LightSource[light].specular *
+					 pow(RdotV, gl_FrontMaterial.shininess);
+		}
+
+		gl_FrontColor = color;
+		gl_Position = ftransform();
 	}
 }
