@@ -61,9 +61,9 @@ void main() {
 	// Cooke illumination
 	else if (illumination == 1) {
 		// set important material values
-		float roughnessValue = 0.5;			// 0 : smooth, 1: rough
-		float F0 = 3.0;						// fresnel reflectance at normal incidence
-		float k = 0.3;						// fraction of diffuse reflection (specular reflection = 1 - k)
+		float roughnessValue = 0.5;			// 0 -> 1 where 1 is rough
+		float F0 = 3.0;						// Reflectance
+		float k = 0.3;						// Diffusion fraction
             
 		float specularConst = 0.0;
 		if(NdotL > 0.0)
