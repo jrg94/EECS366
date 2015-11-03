@@ -333,9 +333,10 @@ int main(int argc, char **argv)
 	// Initialize light 1
 	GLfloat g_lightPos[4] = { 7.0f, 7.0f, 7.0f, 1.0f };
 	glLightfv(GL_LIGHT1, GL_POSITION, g_lightPos);
-	GLfloat amb[4] = { 0.2f, 0.2f, 0.2f, 0.2f};
-	glLightfv(GL_LIGHT1, GL_AMBIENT, g_lightPos);
-
+	GLfloat g_amb[4] = { 0.02f, 0.02f, 0.02f, 1.0f};
+	glLightfv(GL_LIGHT1, GL_AMBIENT, g_amb);
+	GLfloat g_dif[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, g_dif);
 
 
 	setShaders();
