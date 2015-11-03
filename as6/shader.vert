@@ -8,23 +8,15 @@ varying vec3 viewVec;
 
 void main() {
 
-	// Ivory
-	if (interp == 0) {
-		//gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-		//vec4 vert = gl_ModelViewMatrix * gl_Vertex;
 
-		//normal = gl_NormalMatrix * gl_Normal;
-		//lightVec = vec3(lightPos - vert);
-		//viewVec = -vec3(vert);
-	}
 	// Phong interpolation
-	else if (interp == 1) {
+	if (interp == 0) {
 		//v = vec3(gl_ModelViewMatrix * gl_Vertex);       
 		normal = normalize(gl_NormalMatrix * gl_Normal);
 		gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex; 
 	}
 	// Goroud interpolation
-	else if (interp == 2) {
+	else if (interp == 1) {
 		//vec3 V = vec3(modelViewMat*vertPos);
 		//vec3 N = vec3(modelViewMat*vec4(vertNorm,0.0));
 		//float d = length(lightPos - V);
@@ -69,5 +61,7 @@ void main() {
 
 		gl_FrontColor = color;
 		gl_Position = ftransform();
+	} else if (illumination == 1){
+		// Do nothing
 	}
 }

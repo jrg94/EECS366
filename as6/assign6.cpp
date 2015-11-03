@@ -56,13 +56,22 @@ void DisplayFunc(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	// Gouraud interp
-	if (shadingMode == 0) {
-
+	GLint illum = glGetUniformLocationARB(p, "illumination");
+	if (illum != -1) {
+		glUniform1iARB(illum, illimunationMode);
+		printf("IlluminationMode: %d\n", illimunationMode);
 	}
-	// Phong interp
-	else if (shadingMode == 1) {
+	else {
+		printf("Illumination does not exist\n");
+	}
 
+	GLint interp = glGetUniformLocationARB(p, "interp");
+	if (interp != -1) {
+		glUniform1iARB(interp, shadingMode);
+		printf("Shading Mode: %d\n", shadingMode);
+	}
+	else {
+		printf("Interp does not exist\n");
 	}
 
 	// Cook-Torrance illumination
@@ -226,12 +235,12 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		if (illimunationMode == 0)
 		{
 			illimunationMode = 1;
-			printf("Toggled Phong illumination mode\n");
+			printf("Toggled Cooke-Torrance illumination mode\n");
 		}
 		else
 		{
 			illimunationMode = 0;
-			printf("Toggled Cooke-Torrance illumination mode\n");
+			printf("Toggled Phong illumination mode\n");
 		}
 		break;
 	// Toggle Gouraud and Phong interpolative shading

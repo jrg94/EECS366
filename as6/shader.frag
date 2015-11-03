@@ -2,32 +2,14 @@ varying vec3 normal;
 varying vec3 lightVec;
 varying vec3 viewVec;
 
-uniform int mode;
+uniform int light;
+uniform int illumination;
+uniform int interp;
 
 void main() {
 
-	gl_FragColor = gl_Color;
-
-	// Ivory
-	if (mode == 0) {
-		//vec3 norm = normalize(normal);
-
-		//vec3 L = normalize(lightVec);
-		//vec3 V = normalize(viewVec);
-		//vec3 halfAngle = normalize(L + V);
-
-		//float NdotL = dot(L, norm);
-		//float NdotH = clamp(dot(halfAngle, norm), 0.0, 1.0);
-
-		//float diffuse = 0.5 * NdotL + 0.5;
-		//float specular = pow(NdotH, 64.0);
-
-		//float result = diffuse + specular;
-
-		//gl_FragColor = vec4(result);
-	}
 	// Phong
-	else if (mode == 1) {
+	if (interp == 0) {
 		//gl_LightSource[0].position.xyz = test;
 	   //vec3 L = normalize(gl_LightSource[0].position.xyz - v);   
 	   //vec3 E = normalize(-v); 
@@ -48,10 +30,16 @@ void main() {
 	   //gl_FragColor = gl_FrontLightModelProduct.sceneColor + Iamb + Idiff + Ispec;     
 	}
 	// Goroud
-	else if (mode == 2) {
+	else if (interp == 1) {
 		//gl_FragColor = color;
 	}
-	else if (mode == 3) {
+
+	// Phong illumination
+	if (illumination == 0) {
+		gl_FragColor = gl_Color;
+	}
+	// Cooke illumination
+	else if (illumination == 1) {
 		
 	}
 }
