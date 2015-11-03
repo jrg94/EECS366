@@ -74,6 +74,15 @@ void DisplayFunc(void) {
 		printf("Interp does not exist\n");
 	}
 
+	GLint light = glGetUniformLocationARB(p, "light");
+	if (light != -1) {
+		glUniform1iARB(light, lightSource);
+		printf("Active light: %d\n", lightSource);
+	}
+	else {
+		printf("light is not a valid uniform value\n");
+	}
+
 	// Cook-Torrance illumination
 	if (illimunationMode == 0) {
 
@@ -263,26 +272,10 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		if (lightSource == 0)
 		{
 			lightSource =1;
-			GLint loc = glGetUniformLocationARB(p, "lightPos");
-			if (loc != -1) {
-				glUniform4fARB(loc, 7.0, 7.0, 7.0, 1.0);
-				printf("I just switched lights\n");
-			}
-			else {
-				printf("lightPosition is not a valid uniform value\n");
-			}
 		}
 		else
 		{
 			lightSource =0;
-			GLint loc = glGetUniformLocationARB(p, "lightPos");
-			if (loc != -1) {
-				glUniform4fARB(loc, 0.0, 0.0, 0.0, 1.0);
-				printf("I just switched lights\n");
-			}
-			else {
-				printf("lightPosition is not a valid uniform value\n");
-			}
 		}
 		break;
 	// Cycle color of secondary light source
@@ -335,6 +328,15 @@ int main(int argc, char **argv)
 	temp = glGetString(GL_EXTENSIONS);
 	printf("%s\n", temp);
 	
+	// Initialize light 0
+
+	// Initialize light 1
+	GLfloat g_lightPos[4] = { 7.0f, 7.0f, 7.0f, 1.0f };
+	glLightfv(GL_LIGHT1, GL_POSITION, g_lightPos);
+	GLfloat amb[4] = { 0.2f, 0.2f, 0.2f, 0.2f};
+	glLightfv(GL_LIGHT1, GL_AMBIENT, g_lightPos);
+
+
 
 	setShaders();
 
