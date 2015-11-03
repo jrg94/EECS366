@@ -23,10 +23,9 @@ using namespace std;
 //Illimunation and shading related declerations
 char *shaderFileRead(char *fn);
 void TestCompilation(GLuint shader);
-GLuint vertex_shader1, fragment_shader1;
-GLuint vertex_shader2, fragment_shader2;
-GLuint p1, p2, p3, p4;
-const char *vv1, *ff1, *vv2, *ff2;
+GLuint vertex_shader, fragment_shader;
+GLuint p;
+const char *vv1, *ff1;
 int illimunationMode = 0;
 int shadingMode = 0;
 int lightSource = 0;
@@ -56,34 +55,23 @@ void DisplayFunc(void) {
 	//load projection and viewing transforms
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glDeleteObjectARB(p1);
-	p1 = glCreateProgramObjectARB();
 
 	// Gouraud interp
 	if (shadingMode == 0) {
-		glAttachObjectARB(p1, vertex_shader1);
-		glLinkProgramARB(p1);
-		glUseProgramObjectARB(p1);
+
 	}
 	// Phong interp
 	else if (shadingMode == 1) {
-		glAttachObjectARB(p1, vertex_shader2);
-		glLinkProgramARB(p1);
-		glUseProgramObjectARB(p1);
+
 	}
 
 	// Cook-Torrance illumination
 	if (illimunationMode == 0) {
-		glAttachObjectARB(p1, fragment_shader1);
-		glLinkProgramARB(p1);
-		glUseProgramObjectARB(p1);
 
 	}
 	// Phong illumination
 	else if (illimunationMode == 1) {
-		glAttachObjectARB(p1, fragment_shader2);
-		glLinkProgramARB(p1);
-		glUseProgramObjectARB(p1);
+
 	}
 
 	if (lightSource == 1) {
@@ -147,53 +135,39 @@ void MotionFunc(int x, int y)
 void setShaders() {
 
 	char *vs1 = NULL, *fs1 = NULL;
-	char *vs2 = NULL, *fs2 = NULL;
 
 	//create the empty shader objects and get their handles
-	vertex_shader1 = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	fragment_shader1 = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	vertex_shader2 = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	fragment_shader2 = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	vertex_shader = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+	fragment_shader = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	
 	//read the shader files and store the strings in corresponding char. arrays.
-	vs1 = shaderFileRead("Goroud.vert");			// Gouraud interpolation
-	fs1 = shaderFileRead("Goroud.frag");			// Cooke-Torrance illumination
-	vs2 = shaderFileRead("Phong.vert");				// Phong interpolation
-	fs2 = shaderFileRead("Phong.frag");				// Phong illumination
+	vs1 = shaderFileRead("Ivory.vert");			// Gouraud interpolation
+	fs1 = shaderFileRead("Ivory.frag");			// Cooke-Torrance illumination
 
 	vv1 = vs1;
 	ff1 = fs1;
-	vv2 = vs2;
-	ff2 = fs2;
 
 	//set the shader's source code by using the strings read from the shader files.
-	glShaderSourceARB(vertex_shader1, 1, &vv1,NULL);
-	glShaderSourceARB(fragment_shader1, 1, &ff1,NULL);
-	glShaderSourceARB(vertex_shader2, 1, &vv2, NULL);
-	glShaderSourceARB(fragment_shader2, 1, &ff2, NULL);
+	glShaderSourceARB(vertex_shader, 1, &vv1,NULL);
+	glShaderSourceARB(fragment_shader, 1, &ff1,NULL);
 
 	free(vs1); free(fs1);
-	free(vs2); free(fs2);
 
 	//Compile the shader objects
-	glCompileShaderARB(vertex_shader1);
-	glCompileShaderARB(fragment_shader1);
-	glCompileShaderARB(vertex_shader2);
-	glCompileShaderARB(fragment_shader2);
+	glCompileShaderARB(vertex_shader);
+	glCompileShaderARB(fragment_shader);
 	
 	// Shows if shaders compiled
-	TestCompilation(vertex_shader1);
-	TestCompilation(vertex_shader2);
-	TestCompilation(fragment_shader1);
-	TestCompilation(fragment_shader2);
+	TestCompilation(vertex_shader);
+	TestCompilation(fragment_shader);
 
 	//create an empty program object to attach the shader objects
-	p1 = glCreateProgramObjectARB();
+	p = glCreateProgramObjectARB();
 
 	//attach the shader objects to the program object
 	// Gouraud interp & Phong Lighting
-	glAttachObjectARB(p1,vertex_shader1);
-	glAttachObjectARB(p1,fragment_shader1);
+	glAttachObjectARB(p,vertex_shader);
+	glAttachObjectARB(p,fragment_shader);
 
 	/*
 	**************
@@ -202,10 +176,8 @@ void setShaders() {
 	Delete the attached shader objects once they are attached.
 	They will be flagged for removal and will be freed when they are no more used.
 	*/
-	//glDeleteObjectARB(vertex_shader1);
-	//glDeleteObjectARB(fragment_shader1);
-	//glDeleteObjectARB(vertex_shader2);
-	//glDeleteObjectARB(fragment_shader2);
+	glDeleteObjectARB(vertex_shader);
+	glDeleteObjectARB(fragment_shader);
 
 	//Link the created program.
 	/*
@@ -215,16 +187,16 @@ void setShaders() {
 	You can trace the status of link operation by calling 
 	"glGetObjectParameterARB(p,GL_OBJECT_LINK_STATUS_ARB)"
 	*/
-	glLinkProgramARB(p1);
+	glLinkProgramARB(p);
 
 	//Start to use the program object, which is the part of the current rendering state
-	glUseProgramObjectARB(p1);
+	glUseProgramObjectARB(p);
 
 }
 
 void TestCompilation(GLuint shader) {
 	GLint compiled;
-	glGetObjectParameterivARB(vertex_shader1, GL_OBJECT_COMPILE_STATUS_ARB, &compiled);
+	glGetObjectParameterivARB(shader, GL_OBJECT_COMPILE_STATUS_ARB, &compiled);
 
 	if (compiled) {
 		printf("%d shader compiled\n", shader);
@@ -282,7 +254,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		if (lightSource == 0)
 		{
 			lightSource =1;
-			GLint loc = glGetUniformLocationARB(p1, "lightPos");
+			GLint loc = glGetUniformLocationARB(p, "lightPos");
 			if (loc != -1) {
 				glUniform4fARB(loc, 7.0, 7.0, 7.0, 1.0);
 				printf("I just switched lights\n");
@@ -294,7 +266,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		else
 		{
 			lightSource =0;
-			GLint loc = glGetUniformLocationARB(p1, "lightPos");
+			GLint loc = glGetUniformLocationARB(p, "lightPos");
 			if (loc != -1) {
 				glUniform4fARB(loc, 0.0, 0.0, 0.0, 1.0);
 				printf("I just switched lights\n");
@@ -311,7 +283,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		{
 			//change color of the secondary light source at each key press, 
 			//light color cycling through pure red, green, blue, and white.
-			GLint loc = glGetUniformLocationARB(p1, "lightColor");
+			GLint loc = glGetUniformLocationARB(p, "lightColor");
 			if (loc != -1) {
 				glUniform3fARB(loc, 1.0, 1.0, 0.0);
 			}
