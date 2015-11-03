@@ -3,29 +3,48 @@ varying vec3 lightVec;
 varying vec3 viewVec;
 
 uniform int light;
+uniform int interp;
 uniform int illumination;
 
 void main() {
 
-	// Phong illumination
-	if (illumination == 0) {
-		vec3 L = normalize(gl_LightSource[light].position.xyz - viewVec);   
-	    vec3 E = normalize(-viewVec); 
-	    vec3 R = normalize(-reflect(L,normal));  
+	gl_LightProducts lightSource = gl_FrontLightProduct[light];
+
+	vec4 color;
+	vec3 L = normalize(gl_LightSource[light].position.xyz - viewVec);   
+	vec3 E = normalize(-viewVec); 
+	vec3 N = normalize(normal);
+	vec3 R = normalize(-reflect(L,N));
+
+	float NdotL = max(dot(N, L), 0.0);
+
+	// Phong interpolation
+	if (interp == 0) {
  
 		// Calculate the ambient term:  
-	    vec4 Iamb = gl_FrontLightProduct[light].ambient;    
+	    vec4 Iamb = lightSource.ambient;    
 
 		// Calculate the diffuse term:  
-		vec4 Idiff = gl_FrontLightProduct[light].diffuse * max(dot(normal,L), 0.0);
-		Idiff = clamp(Idiff, 0.0, 1.0);     
+		vec4 Idiff = lightSource.diffuse * max(NdotL, 0.0);
+		Idiff = clamp(Idiff, 0.0, 1.0); 
+
+		color = gl_FrontLightModelProduct.sceneColor + Iamb + Idiff;
+
+	} 
+	// Gouraud interpolation
+	else if (interp == 1) {
+	
+	}
+
+	// Phong illumination
+	if (illumination == 0) {
    
 		// Calculate the specular term:
-		vec4 Ispec = gl_FrontLightProduct[light].specular * pow(max(dot(R,E),0.0),0.3*gl_FrontMaterial.shininess);
+		vec4 Ispec = lightSource.specular * pow(max(dot(R,E),0.0),0.3*gl_FrontMaterial.shininess);
 		Ispec = clamp(Ispec, 0.0, 1.0);
     
 		// Calculate the total color per vertex  
-		gl_FragColor = gl_FrontLightModelProduct.sceneColor + Iamb + Idiff + Ispec;
+		color += Ispec;
 	}
 	// Cooke illumination
 	else if (illumination == 1) {
@@ -33,14 +52,8 @@ void main() {
 		float roughnessValue = 0.3;			// 0 : smooth, 1: rough
 		float F0 = 0.8;						// fresnel reflectance at normal incidence
 		float k = 0.2;						// fraction of diffuse reflection (specular reflection = 1 - k)
-    
-		vec3 L = normalize(gl_LightSource[light].position.xyz - viewVec);   
-	    vec3 E = normalize(-viewVec); 
-	    vec3 R = normalize(-reflect(L,normal));
-		vec3 N = normalize(normal);
-    
+        
 		// do the lighting calculation for each fragment.
-		float NdotL = max(dot(N, L), 0.0);
     
 		float specular = 0.0;
 		if(NdotL > 0.0)
@@ -74,7 +87,10 @@ void main() {
 			specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);
 		}
     
-		vec3 finalValue = vec3(gl_LightSource[light].diffuse) * NdotL * (k + specular * (1.0 - k));
-		gl_FragColor = vec4(finalValue, 1.0);
+		vec3 finalValue = vec3(gl_LightSource[light].specular) * NdotL * (k + specular * (1.0 - k));
+		color += vec4(finalValue, 1.0);
 	}
+
+	// Set the color for this fragment	
+	gl_FragColor = gl_Color + color;
 }
