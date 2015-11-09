@@ -1,3 +1,8 @@
+/**
+ * Author: Jeremy Griffith
+ * Author: Evelyn Moss
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <gl\glut.h>
