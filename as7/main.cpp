@@ -211,6 +211,21 @@ void meshReader (char *filename,int sign)
  */
 void layoutReader(char *filename) {
 
+	FILE *fp;
+	int lights, spheres, meshes;
+
+	// Opens the layout file
+	fp = fopen(filename, "r");
+	if (fp == NULL) {
+		printf("Cannot open %s\n!", filename);
+		exit(0);
+	}
+
+	// Reads the first line of the file (Format: < number of lights > < number of spheres > < number of triangle meshes >)
+	if (!feof(fp)) {
+		fscanf(fp, "%d %d %d\n", &lights, &spheres, &meshes);
+	}
+
 }
 
 void drawRect(double x, double y, double w, double h)
