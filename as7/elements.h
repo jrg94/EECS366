@@ -1,5 +1,26 @@
 #pragma once
 
+#include <math.h>
+
+// STRUCTS //
+
+/**
+* The face struct
+*/
+typedef struct _faceStruct {
+	int v1, v2, v3;
+	int n1, n2, n3;
+} faceStruct;
+
+/**
+* L < light type > < x y z > < R G B >
+*/
+typedef struct Light {
+	int light_type;
+	float x, y, z;
+	float r, g, b;
+} Light;
+
 // CLASSES //
 
 /**
@@ -66,24 +87,29 @@ public:
 	double dif_r, dif_g, dif_b;
 	double spec_r, spec_g, spec_b;
 	double amb_k, dif_k, spec_k;
-
+	double spec_ex, ind_ref;
+	double refl_k, refr_k;
 };
 
-// STRUCTS //
-
 /**
- * The face struct
+ * Handles mesh objects
  */
-typedef struct _faceStruct {
-	int v1, v2, v3;
-	int n1, n2, n3;
-} faceStruct;
+class Mesh : public Element {
+public:
+	// Fields
+	int verts;
+	int faces; 
+	int norms;
+	point* vertList;
+	point* normList;
+	faceStruct *faceList;
 
-/**
- * L < light type > < x y z > < R G B >
- */
-typedef struct Light {
-	int light_type;
-	float x, y, z;
-	float r, g, b;
-} Light;
+	// Functions
+	void Load(char *filename, int sign);
+};
+
+class Sphere : public Element {
+public:
+	point center;
+	double radius;
+};
