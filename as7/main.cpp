@@ -6,11 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gl\glut.h>
+#include <GL\GLU.h>
+#include <GL\GL.h>
 #include <math.h>
 
 #include "frame_buffer.h"
 #include "primitives.h"
 #include "color.h"
+#include "elements.h"
 #include <vector>
 
 #include <iostream>
@@ -29,69 +32,12 @@ const int INITIAL_RES = 400;
 
 FrameBuffer* fb;
 
-/**
- * A point clas
- */
-class point
-{
-public:
-	double x,y,z,w;
-
-	point(){ x = 0; y = 0; z = 0; w = 1;}
-	point(double xa, double ya, double za)
-	{
-		x = xa; y = ya; z = za; w = 1.0;
-	}
-	point(double xa, double ya, double za, double wa)
-	{
-		x = xa; y = ya; z = za; w = wa;
-	}
-};
-
-/**
- * A ray class
- */
-class ray
-{
-public:
-	double x;
-	double y;
-	double z;
-
-	// Empty constructor
-	ray()
-	{
-		x = (0.0); y = (0.0); z = (0.0);
-	}
-
-	// Parameterized constructor
-	ray(double _x, double _y, double _z)
-	{
-		x = (_x); y = (_y); z = (_z);
-	}
-
-	// A magnitude function
-	const double Magnitude() const
-	{
-		return sqrt((x*x) + (y*y) + (z*z));
-	}
-
-	// A unit ray function
-	const ray UnitRay() const 
-	{
-		const double mag = Magnitude();
-		return ray(x / mag, y / mag, z / mag);
-	}
-};
-
-typedef struct _faceStruct {
-  int v1,v2,v3;
-  int n1,n2,n3;
-} faceStruct;
-
 int verts, faces, norms;    // Number of vertices, faces and normals in the system
 point *vertList, *normList; // Vertex and Normal Lists
-faceStruct *faceList;	    // Face List
+faceStruct *faceList;	    // Face List 
+
+int lights, spheres, meshes;	// Number of lights, spheres, and meshes in the system
+Light *lightList;				// List of lights
 
 // The mesh reader itself
 // It can read *very* simple obj files
@@ -212,7 +158,6 @@ void meshReader (char *filename,int sign)
 void layoutReader(char *filename) {
 
 	FILE *fp;
-	int lights, spheres, meshes;
 
 	// Opens the layout file
 	fp = fopen(filename, "r");
@@ -226,6 +171,44 @@ void layoutReader(char *filename) {
 		fscanf(fp, "%d %d %d\n", &lights, &spheres, &meshes);
 	}
 
+	int i = 0;		// Holds index of light array
+	char letter;	// Holds letter from line
+	int light_type;	// Holds light_type
+	float x, y, z;	// Holds coordinates of light
+	float r, g, b;	// Holds color of light
+
+	// Read lights: L < light type > < x y z > < R G B >
+	while (i < lights && !feof(fp)) {
+		fscanf(fp, "%c %d %f %f %f %f %f %f\n", &letter, &light_type, &x, &y, &z, &r, &g, &b);
+
+		// If the letter is L -> assign the current light
+		if (letter == 'L') {
+			lightList[i].light_type = light_type;
+			lightList[i].x = x;
+			lightList[i].y = y;
+			lightList[i].z = z;
+			lightList[i].r = r;
+			lightList[i].g = g;
+			lightList[i].b = b;
+		}
+		// Otherwise, report an error
+		else {
+			printf("FileFormatException:%s\n!", filename);
+			exit(0);
+		}
+		i++;
+	}
+
+	i = 0;
+	float radius;
+	float amb_r, amb_g, amb_b;
+	float dif_r, dif_g, dif_b;
+	float spec_r, spec_g, spec_b;
+	// Read spheres: S < x y z > < radius > < R G B ambient > < R G B diffuse > < R G B specular > 
+	// < k_ambient > < k_diffuse > < k_specular > < specular_exponent > < index of refraction > < k_reflective > < k_refractive >
+	while (i < spheres && !feof(fp)) {
+		//fscanf ()
+	}
 }
 
 void drawRect(double x, double y, double w, double h)

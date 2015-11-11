@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClInclude Include="color.h" />
     <ClInclude Include="frame_buffer.h" />
+    <ClInclude Include="elements.h" />
     <ClInclude Include="primitives.h" />
   </ItemGroup>
   <ItemGroup>
