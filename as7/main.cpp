@@ -206,6 +206,13 @@ void meshReader (char *filename,int sign)
 
 }
 
+/**
+ * Reads a scene layout file
+ */
+void layoutReader(char *filename) {
+
+}
+
 void drawRect(double x, double y, double w, double h)
 {
 	glVertex2f(x,y);
