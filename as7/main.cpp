@@ -29,6 +29,9 @@ const int INITIAL_RES = 400;
 
 FrameBuffer* fb;
 
+/**
+ * A point clas
+ */
 class point
 {
 public:
@@ -43,6 +46,30 @@ public:
 	{
 		x = xa; y = ya; z = za; w = wa;
 	}
+};
+
+/**
+ * A ray class
+ */
+class ray
+{
+public:
+	double x;
+	double y;
+	double z;
+
+	// Empty constructor
+	ray()
+	{
+		x = (0.0); y = (0.0); z = (0.0);
+	}
+
+	// Parameterized constructor
+	ray(double _x, double _y, double _z)
+	{
+		x = (_x); y = (_y); z = (_z);
+	}
+
 };
 
 typedef struct _faceStruct {
@@ -175,6 +202,23 @@ void drawRect(double x, double y, double w, double h)
 	glVertex2f(x, y+h);
 }
 
+/**
+ * The ray tracing algorithm
+ */
+void rayTrace() {
+	for (int y = 0; y < fb->GetHeight(); y++) {
+		for (int x = 0; x < fb->GetWidth(); x++) {
+			
+		}
+	}
+}
+
+/**
+ * Fires a ray
+ */
+void shootRay() {
+
+}
 
 // The display function. It is called whenever the window needs
 // redrawing (ie: overlapping window moves, resize, maximize)
@@ -275,7 +319,7 @@ int main(int argc, char* argv[])
 
 	BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
 
-	
+	meshReader("helicopter.obj", 1);
 
     // Initialize GLUT
     glutInit(&argc, argv);

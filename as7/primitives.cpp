@@ -28,8 +28,6 @@ void BresenhamLine(FrameBuffer* fb, int x_1, int y_1, int x_2, int y_2, Color c)
 	}
 }
 
-
-
 void linePosSteep(FrameBuffer* fb, int x_1, int y_1, int x_2, int y_2, Color c)
  {
 	int dx, dy, p, twodx, twodxdy, x, y, yend;
