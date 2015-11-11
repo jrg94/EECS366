@@ -1,5 +1,7 @@
 #pragma once
 
+// CLASSES //
+
 /**
 * A point clas
 */
@@ -55,12 +57,31 @@ public:
 	}
 };
 
+/**
+ * The element class
+ */
+class Element {
+public:
+	double amb_r, amb_g, amb_b;
+	double dif_r, dif_g, dif_b;
+	double spec_r, spec_g, spec_b;
+	double amb_k, dif_k, spec_k;
+
+};
+
+// STRUCTS //
+
+/**
+ * The face struct
+ */
 typedef struct _faceStruct {
 	int v1, v2, v3;
 	int n1, n2, n3;
 } faceStruct;
 
-// L < light type > < x y z > < R G B >
+/**
+ * L < light type > < x y z > < R G B >
+ */
 typedef struct Light {
 	int light_type;
 	float x, y, z;

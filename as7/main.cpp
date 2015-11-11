@@ -203,13 +203,14 @@ void layoutReader(char *filename) {
 	}
 
 	i = 0;
-	float radius;
-	float amb_r, amb_g, amb_b;
-	float dif_r, dif_g, dif_b;
-	float spec_r, spec_g, spec_b;
-	float amb_k, dif_k, spec_k;
-	float spec_ex, ind_ref;
-	float refl_k, refr_k;
+	float radius;					// Holds the radius of the sphere
+	float amb_r, amb_g, amb_b;		// Holds the ambient rgb values
+	float dif_r, dif_g, dif_b;		// Holds the diffuse rgb values
+	float spec_r, spec_g, spec_b;	// Holds the specular rgb values
+	float amb_k, dif_k, spec_k;		// Holds the k values for the lighting
+	float spec_ex, ind_ref;			// Holds some lighting constants  
+	float refl_k, refr_k;			
+
 	// Read spheres: S < x y z > < radius > < R G B ambient > < R G B diffuse > < R G B specular > 
 	// < k_ambient > < k_diffuse > < k_specular > < specular_exponent > < index of refraction > < k_reflective > < k_refractive >
 	while (i < spheres && !feof(fp)) {
@@ -231,6 +232,7 @@ void layoutReader(char *filename) {
 	char meshFilename[255];
 	float scale;
 	float rotx, roty, rotz;
+
 	// M < file.obj > < scale > < rotX rotY rotZ > < x y z > < R G B ambient > < R G B diffuse > < R G B specular > 
 	// < k_ambient > < k_diffuse > < k_specular > < specular_exponent > < index of refraction > < k_reflective > < k_refractive >
 	while (i < meshes && !feof(fp)) {
@@ -247,6 +249,7 @@ void layoutReader(char *filename) {
 		}
 		i++;
 	}
+	fclose(fp);
 }
 
 void drawRect(double x, double y, double w, double h)
