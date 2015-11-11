@@ -57,7 +57,9 @@ void layoutReader(char *filename) {
 	}
 
 	// Initialize lists
-	lightList = (Light *)malloc(sizeof(Light) * lights);
+	lightList = new Light[lights];
+	sphereList = new Sphere[spheres];
+	meshList = new Mesh[meshes];
 
 	int i = 0;		// Holds index of light array
 	char letter;	// Holds letter from line
@@ -99,13 +101,17 @@ void layoutReader(char *filename) {
 	// Read spheres: S < x y z > < radius > < R G B ambient > < R G B diffuse > < R G B specular > 
 	// < k_ambient > < k_diffuse > < k_specular > < specular_exponent > < index of refraction > < k_reflective > < k_refractive >
 	while (i < spheres && !feof(fp)) {
-		fscanf(fp, "%c %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+		fscanf(fp, "%c %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
 			&letter, &x, &y, &z, &radius, &amb_r, &amb_g, &amb_b, &dif_r, &dif_g, &dif_b,
 			&spec_r, &spec_g, &spec_b, &amb_k, &dif_k, &spec_k, &spec_ex, &ind_ref, &refl_k, &refr_k);
 
+		// Initialize sphere traits
 		if (letter == 'S') {
-			// TODO: Insert sphere array stuff here
+			Sphere s = Sphere(point(x, y, x), radius, amb_r, amb_g, amb_b, dif_r, dif_g, dif_b, spec_r,
+								spec_g, spec_b, amb_k, dif_k, spec_k, spec_ex, ind_ref, refl_k, refr_k);
+			sphereList[i] = s;
 		}
+		// Otherwise, spit out exception
 		else {
 			printf("FileFormatException:%s - Missing an S\n!", filename);
 			exit(0);
@@ -121,12 +127,15 @@ void layoutReader(char *filename) {
 	// M < file.obj > < scale > < rotX rotY rotZ > < x y z > < R G B ambient > < R G B diffuse > < R G B specular > 
 	// < k_ambient > < k_diffuse > < k_specular > < specular_exponent > < index of refraction > < k_reflective > < k_refractive >
 	while (i < meshes && !feof(fp)) {
-		fscanf(fp, "%c %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+		fscanf(fp, "%c %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
 			&letter, &meshFilename, &scale, &rotx, &roty, &rotz, &x, &y, &z, &amb_r, &amb_g, &amb_b,
 			&dif_r, &dif_g, &dif_b, &spec_r, &spec_g, &spec_b, &amb_k, &dif_k, &spec_k, &spec_ex, &ind_ref, &refl_k, &refr_k);
 
 		if (letter == 'M') {
-			// TODO: Insert mesh array stuff here
+			Mesh m = Mesh(amb_r, amb_g, amb_b, dif_r, dif_g, dif_b, spec_r,
+			spec_g, spec_b, amb_k, dif_k, spec_k, spec_ex, ind_ref, refl_k, refr_k);
+			m.Load(meshFilename, 1);
+			meshList[i] = m;
 		}
 		else {
 			printf("FileFormatException:%s - Missing an M\n!", filename);
@@ -267,9 +276,9 @@ int main(int argc, char* argv[])
 
 	fb = new FrameBuffer(INITIAL_RES, INITIAL_RES);
 
-	BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
+	//BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
 
-	//Mesh m = new Mesh(); Load("helicopter.obj", 1);
+	layoutReader("red_sphere_and_teapot.rtl");
 
     // Initialize GLUT
     glutInit(&argc, argv);

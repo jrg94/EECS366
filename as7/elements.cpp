@@ -115,3 +115,60 @@ void Mesh::Load(char *filename, int sign)
 	}
 
 }
+
+/**
+ * Default constructor for element
+ */
+Element::Element() {}
+
+/**
+ * Standard constructor for element
+ */
+Element::Element(double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
+	double _spec_r, double _spec_g, double _spec_b, double _amb_k, double _dif_k, double _spec_k,
+	double _spec_ex, double _ind_ref, double _refl_k, double _refr_k) {
+
+	amb_r = _amb_r;
+	amb_g = _amb_g;
+	amb_b = _amb_b;
+	dif_r = _dif_r;
+
+}
+
+/**
+ * Empty destructor
+ */
+Element::~Element() {}
+
+/**
+ * Empty destructor for Mesh
+ */
+Mesh::~Mesh() {
+	delete[] vertList;
+	delete[] faceList;
+}
+
+/**
+ * Empty constructor for Mesh
+ */
+Mesh::Mesh() {}
+
+Mesh::Mesh(double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
+	double _spec_r, double _spec_g, double _spec_b, double _amb_k, double _dif_k, double _spec_k,
+	double _spec_ex, double _ind_ref, double _refl_k, double _refr_k) : Element(_amb_r, _amb_g, _amb_b, _dif_r, _dif_g, _dif_b,
+		_spec_r, _spec_g, _spec_b, _amb_k, _dif_k, _spec_k,
+		_spec_ex, _ind_ref, _refl_k, _refr_k) {
+}
+
+Sphere::Sphere() {}
+
+Sphere::Sphere(point _center, double _radius, double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
+	double _spec_r, double _spec_g, double _spec_b, double _amb_k, double _dif_k, double _spec_k,
+	double _spec_ex, double _ind_ref, double _refl_k, double _refr_k) : Element(_amb_r, _amb_g, _amb_b, _dif_r, _dif_g, _dif_b,
+	_spec_r, _spec_g, _spec_b, _amb_k, _dif_k, _spec_k,
+	_spec_ex, _ind_ref, _refl_k, _refr_k) {
+
+	center = _center;
+	radius = _radius;
+}
+
