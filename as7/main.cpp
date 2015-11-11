@@ -196,7 +196,7 @@ void layoutReader(char *filename) {
 		}
 		// Otherwise, report an error
 		else {
-			printf("FileFormatException:%s\n!", filename);
+			printf("FileFormatException:%s - Missing an L\n!", filename);
 			exit(0);
 		}
 		i++;
@@ -216,6 +216,36 @@ void layoutReader(char *filename) {
 		fscanf(fp, "%c %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
 			&letter, &x, &y, &z, &radius, &amb_r, &amb_g, &amb_b, &dif_r, &dif_g, &dif_b,
 			&spec_r, &spec_g, &spec_b, &amb_k, &dif_k, &spec_k, &spec_ex, &ind_ref, &refl_k, &refr_k);
+
+		if (letter == 'S') {
+			// TODO: Insert sphere array stuff here
+		}
+		else {
+			printf("FileFormatException:%s - Missing an S\n!", filename);
+			exit(0);
+		}
+		i++;
+	}
+
+	i = 0;
+	char meshFilename[255];
+	float scale;
+	float rotx, roty, rotz;
+	// M < file.obj > < scale > < rotX rotY rotZ > < x y z > < R G B ambient > < R G B diffuse > < R G B specular > 
+	// < k_ambient > < k_diffuse > < k_specular > < specular_exponent > < index of refraction > < k_reflective > < k_refractive >
+	while (i < meshes && !feof(fp)) {
+		fscanf(fp, "%c %s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+			&letter, &meshFilename, &scale, &rotx, &roty, &rotz, &x, &y, &z, &amb_r, &amb_g, &amb_b,
+			&dif_r, &dif_g, &dif_b, &spec_r, &spec_g, &spec_b, &amb_k, &dif_k, &spec_k, &spec_ex, &ind_ref, &refl_k, &refr_k);
+
+		if (letter == 'M') {
+			// TODO: Insert mesh array stuff here
+		}
+		else {
+			printf("FileFormatException:%s - Missing an M\n!", filename);
+			exit(0);
+		}
+		i++;
 	}
 }
 
