@@ -171,6 +171,9 @@ void layoutReader(char *filename) {
 		fscanf(fp, "%d %d %d\n", &lights, &spheres, &meshes);
 	}
 
+	// Initialize lists
+	lightList = (Light *)malloc(sizeof(Light) * lights);
+
 	int i = 0;		// Holds index of light array
 	char letter;	// Holds letter from line
 	int light_type;	// Holds light_type
@@ -204,10 +207,15 @@ void layoutReader(char *filename) {
 	float amb_r, amb_g, amb_b;
 	float dif_r, dif_g, dif_b;
 	float spec_r, spec_g, spec_b;
+	float amb_k, dif_k, spec_k;
+	float spec_ex, ind_ref;
+	float refl_k, refr_k;
 	// Read spheres: S < x y z > < radius > < R G B ambient > < R G B diffuse > < R G B specular > 
 	// < k_ambient > < k_diffuse > < k_specular > < specular_exponent > < index of refraction > < k_reflective > < k_refractive >
 	while (i < spheres && !feof(fp)) {
-		//fscanf ()
+		fscanf(fp, "%c %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+			&letter, &x, &y, &z, &radius, &amb_r, &amb_g, &amb_b, &dif_r, &dif_g, &dif_b,
+			&spec_r, &spec_g, &spec_b, &amb_k, &dif_k, &spec_k, &spec_ex, &ind_ref, &refl_k, &refr_k);
 	}
 }
 
