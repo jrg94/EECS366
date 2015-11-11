@@ -70,6 +70,18 @@ public:
 		x = (_x); y = (_y); z = (_z);
 	}
 
+	// A magnitude function
+	const double Magnitude() const
+	{
+		return sqrt((x*x) + (y*y) + (z*z));
+	}
+
+	// A unit ray function
+	const ray UnitRay() const 
+	{
+		const double mag = Magnitude();
+		return ray(x / mag, y / mag, z / mag);
+	}
 };
 
 typedef struct _faceStruct {
@@ -216,8 +228,15 @@ void rayTrace() {
 /**
  * Fires a ray
  */
-void shootRay() {
-
+void shootRay(ray r) {
+	// Intersection test
+	// if ray intersects and object
+	//		get normal at intersection point
+	//		calculate local intensity
+	//		decrement current depth of trace
+	//		if depth > 0
+	//			calculate and shoot the reflected ray
+	//			calculate and shoot the refracted ray
 }
 
 // The display function. It is called whenever the window needs
