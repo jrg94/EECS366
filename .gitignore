@@ -22,7 +22,11 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+<<<<<<< HEAD
 # Visual Studo 2015 cache/options directory
+=======
+# Visual Studio 2015 cache/options directory
+>>>>>>> EECS-366-Assignment-5/master
 .vs/
 
 # MSTest test Results
@@ -38,6 +42,13 @@ TestResult.xml
 [Rr]eleasePS/
 dlldata.c
 
+<<<<<<< HEAD
+=======
+# DNX
+project.lock.json
+artifacts/
+
+>>>>>>> EECS-366-Assignment-5/master
 *_i.c
 *_p.c
 *_i.h
@@ -90,7 +101,11 @@ _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
+<<<<<<< HEAD
 # JustCode is a .NET coding addin-in
+=======
+# JustCode is a .NET coding add-in
+>>>>>>> EECS-366-Assignment-5/master
 .JustCode
 
 # TeamCity is a build add-in
@@ -129,9 +144,17 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
+<<<<<<< HEAD
 # TODO: Comment the next line if you want to checkin your web deploy settings 
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
+=======
+## TODO: Comment the next line if you want to checkin your
+## web deploy settings but do note that will include unencrypted
+## passwords
+#*.pubxml
+
+>>>>>>> EECS-366-Assignment-5/master
 *.publishproj
 
 # NuGet Packages
@@ -150,8 +173,18 @@ csx/
 # Windows Store app package directory
 AppPackages/
 
+<<<<<<< HEAD
 # Others
 *.[Cc]ache
+=======
+# Visual Studio cache files
+# files ending in .cache can be ignored
+*.[Cc]ache
+# but keep track of directories ending in .cache
+!*.[Cc]ache/
+
+# Others
+>>>>>>> EECS-366-Assignment-5/master
 ClientBin/
 [Ss]tyle[Cc]op.*
 ~$*
@@ -161,7 +194,11 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
+<<<<<<< HEAD
 bower_components/
+=======
+orleans.codegen.cs
+>>>>>>> EECS-366-Assignment-5/master
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -194,3 +231,11 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+<<<<<<< HEAD
+=======
+
+# LightSwitch generated files
+GeneratedArtifacts/
+_Pvt_Extensions/
+ModelManifest.xml
+>>>>>>> EECS-366-Assignment-5/master
