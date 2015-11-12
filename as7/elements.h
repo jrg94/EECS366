@@ -50,33 +50,30 @@ public:
 class ray
 {
 public:
-	double x;
-	double y;
-	double z;
+	point origin;
+	point direction; 
+
+	float r, g, b;	// Color of ray
+	int depth;		// Parameter to track trace depth
+	double ind_ref;
+	double refl_k, refr_k;	// Reflected and Refracted constants
+	ray *reflected;	// Keeps track of the reflected ray
+	ray *refracted;	// Keeps track of the refracted ray
 
 	// Empty constructor
 	ray()
 	{
-		x = (0.0); y = (0.0); z = (0.0);
-	}
-
-	// Parameterized constructor
-	ray(double _x, double _y, double _z)
-	{
-		x = (_x); y = (_y); z = (_z);
+		origin = point(0.0, 0.0, 0.0);
+		direction = point(0.0, 0.0, 0.0);
 	}
 
 	// A magnitude function
 	const double Magnitude() const
 	{
+		float x = direction.x - origin.x;
+		float y = direction.y - origin.y;
+		float z = direction.z - origin.z;
 		return sqrt((x*x) + (y*y) + (z*z));
-	}
-
-	// A unit ray function
-	const ray UnitRay() const
-	{
-		const double mag = Magnitude();
-		return ray(x / mag, y / mag, z / mag);
 	}
 };
 
