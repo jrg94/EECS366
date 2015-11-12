@@ -176,6 +176,7 @@ junction findJunctions(Ray *r) {
 	junction ret;
 	
 	// Initialize ret
+	ret.type = NONE;
 
 	// Run through entire scene for spheres
 	int i;
@@ -235,12 +236,31 @@ void rayTrace() {
  */
 void calcAndShootReflectedRay(junction intersect, Ray *r) {
 	// if object is reflecting object
+	if (intersect.element.refl_k > 0.0) {
+		Ray *refl = new Ray();
+		refl->depth = r->depth;
+
+		// Handle negative sign based on location of ray
+		double sign = 1.0;
+		if (r->inside) {
+			sign = -1.0;
+		}
+
 		// Calculate reflection vector and include in ray structure
+		double RdotN = r->direction.x * intersect.normal.x * sign + r->direction.y * intersect.normal.y * sign + r->direction.z * intersect.normal.z * sign;
+
+		//refl->direction.x
+		//refl->direction.y
+		//refl->direction.z
+
 		// Ray origin is assigned intersection
-		// Attenuate the ray - multiple krg by its previous value
-		// shootRay(Reflected Ray);
-		// If reflected ray intersects an object
-			// Combine colors with local illumination
+		refl->origin = intersect.origin;
+
+		// TODO: Attenuate the ray - multiple krg by its previous value
+
+		// Shoot ray
+		shootRay(refl);
+	}
 }
 
 /**

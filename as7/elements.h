@@ -62,6 +62,7 @@ public:
 	double krg;
 	Ray *reflected;	// Keeps track of the reflected Ray
 	Ray *refracted;	// Keeps track of the refracted Ray
+	bool inside;
 
 	// Functions
 	Ray();
