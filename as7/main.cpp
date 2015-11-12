@@ -166,8 +166,23 @@ void rayTrace() {
 
 	for (int y = 0; y < fb->GetHeight(); y++) {
 		for (int x = 0; x < fb->GetWidth(); x++) {
+			// Initialize ray
 			r = new Ray();
+			
+
+			// Fire the ray
 			shootRay(r);
+			
+			// Compute colors of the ray
+			r->computeVariables();
+
+			// Store colors from recursive calculations
+			c.r = r->r;
+			c.g = r->g;
+			c.b = r->b;
+
+			// Load the current pixel with this color
+			fb->SetPixel(y, x, c);
 		}
 	}
 }
@@ -263,11 +278,14 @@ void	keyboard(unsigned char key, int x, int y)
 		break;
 	case '-':
 		fb->Resize(fb->GetHeight()/2, fb->GetWidth()/2);
-		BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
+		//BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
 		break;
 	case '=':
 		fb->Resize(fb->GetHeight()*2, fb->GetWidth()*2);
-		BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
+		//BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
+		break;
+	case 'r':
+		rayTrace();
 		break;
     default:
 		break;
@@ -307,6 +325,8 @@ int main(int argc, char* argv[])
 	glEnable(GL_POLYGON_SMOOTH);
 	glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
+
+	rayTrace();
 
     // Switch to main loop
     glutMainLoop();
