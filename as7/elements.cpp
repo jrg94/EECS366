@@ -122,6 +122,11 @@ void Mesh::Load(char *filename, int sign)
 Ray::Ray() {
 	origin = point(0.0, 0.0, 0.0);
 	direction = point(0.0, 0.0, 0.0);
+	reflected = NULL;
+	refracted = NULL;
+	r = g = b = 0.0;
+	krg = ind_ref = 1.0;
+	refl_k = refr_k = 0.0;
 }
 
 /**
@@ -130,6 +135,8 @@ Ray::Ray() {
 void Ray::computeVariables() {
 	double refl_r, refl_g, refl_b;
 	double refr_r, refr_g, refr_b;
+
+	refl_r = refl_g = refl_b = refr_r = refr_g = refr_b = 0.0;
 
 	// Computes constants for reflected ray
 	if (reflected) {

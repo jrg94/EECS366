@@ -84,6 +84,7 @@ void layoutReader(char *filename) {
 			lightList[i].r = r;
 			lightList[i].g = g;
 			lightList[i].b = b;
+			printf("A light has been added to the scene at %f, %f, %f\n", x, y, z);
 		}
 		// Otherwise, report an error
 		else {
@@ -114,6 +115,7 @@ void layoutReader(char *filename) {
 			Sphere s = Sphere(point(x, y, x), radius, amb_r, amb_g, amb_b, dif_r, dif_g, dif_b, spec_r,
 								spec_g, spec_b, amb_k, dif_k, spec_k, spec_ex, ind_ref, refl_k, refr_k);
 			sphereList[i] = s;
+			printf("A sphere has been added to the scene at %f, %f, %f\n", x, y, z);
 		}
 		// Otherwise, spit out exception
 		else {
@@ -140,6 +142,7 @@ void layoutReader(char *filename) {
 			spec_g, spec_b, amb_k, dif_k, spec_k, spec_ex, ind_ref, refl_k, refr_k);
 			m.Load(meshFilename, 1);
 			meshList[i] = m;
+			printf("A mesh has been added to the scene at %f, %f, %f\n", x, y, z);
 		}
 		else {
 			printf("FileFormatException:%s - Missing an M\n!", filename);
@@ -207,6 +210,7 @@ void rayTrace() {
 		for (int x = 0; x < fb->GetWidth(); x++) {
 			// Initialize ray
 			r = new Ray();
+			r->depth = 3;
 			
 
 			// Fire the ray
@@ -226,7 +230,10 @@ void rayTrace() {
 	}
 }
 
-void calcAndShootReflectedRay() {
+/**
+ * Produces a new reflected ray from an intersection
+ */
+void calcAndShootReflectedRay(junction intersect, Ray *r) {
 	// if object is reflecting object
 		// Calculate reflection vector and include in ray structure
 		// Ray origin is assigned intersection
@@ -236,7 +243,10 @@ void calcAndShootReflectedRay() {
 			// Combine colors with local illumination
 }
 
-void calcAndShootRefractedRay() {
+/**
+ * Produces a new refracted ray from an intersection
+ */
+void calcAndShootRefractedRay(junction intersect, Ray *r) {
 
 }
 
@@ -265,7 +275,9 @@ void shootRay(Ray *r) {
 	//	if depth > 0
 	if (r->depth > 0) {
 		// TODO: calculate and shoot the reflected ray
+		calcAndShootReflectedRay(test, r);
 		// TODO: calculate and shoot the refracted ray
+		calcAndShootRefractedRay(test, r);
 	}
 	else {
 		r = NULL;
