@@ -117,6 +117,55 @@ void Mesh::Load(char *filename, int sign)
 }
 
 /**
+ * A ray constructor
+ */
+Ray::Ray() {
+	origin = point(0.0, 0.0, 0.0);
+	direction = point(0.0, 0.0, 0.0);
+}
+
+/**
+ * Handles behavior based on type of ray
+ */
+void Ray::computeVariables() {
+	double refl_r, refl_g, refl_b;
+	double refr_r, refr_g, refr_b;
+
+	// Computes constants for reflected ray
+	if (reflected) {
+		// Make a recursive call on the reflected ray
+		reflected->computeVariables();
+		refl_r = reflected->r;
+		refl_g = reflected->g;
+		refl_b = reflected->b;
+	}
+
+	// Computes constants for refracted ray
+	if (refracted) {
+		// Make a recursive call on the refracted ray
+		refracted->computeVariables();
+		refr_r = refracted->r;
+		refr_g = refracted->g;
+		refr_b = refracted->b;
+	}
+	
+	// Compute color of this ray
+	r = (r * krg) + (refl_r * refl_k) + (refr_r * refr_k);
+	g = (g * krg) + (refl_g * refl_k) + (refr_g * refr_k);
+	b = (b * krg) + (refl_b * refl_k) + (refr_b * refr_k);
+}
+
+/**
+ * Computes the magnitude of a ray
+ */
+const double Ray::Magnitude() {
+	float x = direction.x - origin.x;
+	float y = direction.y - origin.y;
+	float z = direction.z - origin.z;
+	return sqrt((x*x) + (y*y) + (z*z));
+}
+
+/**
  * Default constructor for element
  */
 Element::Element() {}

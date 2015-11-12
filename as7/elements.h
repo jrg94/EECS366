@@ -45,36 +45,26 @@ public:
 };
 
 /**
-* A ray class
+* A Ray class
 */
-class ray
+class Ray
 {
 public:
+	// Fields
 	point origin;
 	point direction; 
-
-	float r, g, b;	// Color of ray
+	float r, g, b;	// Color of Ray
 	int depth;		// Parameter to track trace depth
-	double ind_ref;
+	double ind_ref;			// Holds the index of refraction for the ray
 	double refl_k, refr_k;	// Reflected and Refracted constants
-	ray *reflected;	// Keeps track of the reflected ray
-	ray *refracted;	// Keeps track of the refracted ray
+	double krg;
+	Ray *reflected;	// Keeps track of the reflected Ray
+	Ray *refracted;	// Keeps track of the refracted Ray
 
-	// Empty constructor
-	ray()
-	{
-		origin = point(0.0, 0.0, 0.0);
-		direction = point(0.0, 0.0, 0.0);
-	}
-
-	// A magnitude function
-	const double Magnitude() const
-	{
-		float x = direction.x - origin.x;
-		float y = direction.y - origin.y;
-		float z = direction.z - origin.z;
-		return sqrt((x*x) + (y*y) + (z*z));
-	}
+	// Functions
+	Ray();
+	void computeVariables();
+	const double Magnitude();
 };
 
 /**

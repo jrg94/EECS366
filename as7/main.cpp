@@ -38,7 +38,7 @@ Sphere *sphereList;				// List of spheres
 Mesh *meshList;					// List of meshes
 
 // Functions
-void shootRay(ray *r);
+void shootRay(Ray *r);
 
 /**
  * Reads a scene layout file
@@ -162,11 +162,11 @@ void drawRect(double x, double y, double w, double h)
  */
 void rayTrace() {
 	Color c;
-	ray *r;
+	Ray *r;
 
 	for (int y = 0; y < fb->GetHeight(); y++) {
 		for (int x = 0; x < fb->GetWidth(); x++) {
-			r = new ray();
+			r = new Ray();
 			shootRay(r);
 		}
 	}
@@ -175,7 +175,7 @@ void rayTrace() {
 /**
  * Fires a ray
  */
-void shootRay(ray *r) {
+void shootRay(Ray *r) {
 	// Intersection test
 	// if ray intersects and object
 	//		get normal at intersection point
