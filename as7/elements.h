@@ -2,6 +2,11 @@
 
 #include <math.h>
 
+// Define the various intersection types
+#define NONE 0
+#define SPHERE 1
+#define MESH 2
+
 /**
  * The face struct
  */

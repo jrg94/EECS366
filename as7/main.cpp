@@ -173,10 +173,24 @@ junction findJunctions(Ray *r) {
 	
 	// Initialize ret
 
-	// Run through entire scene
+	// Run through entire scene for spheres
 	int i;
 	for (i = 0; i < spheres; i++) {
-		
+		junction next = sphereList[i].junctions(*r);
+
+		// If the intersection type something other than none
+		if (next.type != NONE) {
+
+			// If intersection distance is less than max distance & intersection distance > 0
+			if (next.magnitude < magnitude && next.magnitude > 0.00001) {
+				magnitude = next.magnitude;
+				ret = next;
+			}
+		}
+	}
+
+	for (i = 0; i < meshes; i++) {
+		// TODO: Write intersects function for meshes
 	}
 	return ret;
 }
@@ -216,13 +230,28 @@ void rayTrace() {
  */
 void shootRay(Ray *r) {
 	// Intersection test
-	// if ray intersects and object
-	//		get normal at intersection point
-	//		calculate local intensity
-	//		decrement current depth of trace
-	//		if depth > 0
-	//			calculate and shoot the reflected ray
-	//			calculate and shoot the refracted ray
+	junction test = findJunctions(r);
+
+	// if ray intersects an object
+	if (test.type == NONE) {
+		r = NULL;
+		return;
+	}
+
+	// Assign constants to ray
+	r->refl_k = test.element.refl_k;
+	r->refr_k = test.element.refr_k;
+
+	// TODO: calculate local intensity
+
+	// decrement current depth of trace
+	r->depth = r->depth - 1;
+
+	//	if depth > 0
+	if (r->depth > 0) {
+		// TODO: calculate and shoot the reflected ray
+		// TODO: calculate and shoot the refracted ray
+	}
 }
 
 // The display function. It is called whenever the window needs

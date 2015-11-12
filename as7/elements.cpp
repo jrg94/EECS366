@@ -230,6 +230,7 @@ Sphere::Sphere(point _center, double _radius, double _amb_r, double _amb_g, doub
 junction Sphere::junctions(Ray r) {
 	// Create return junction
 	junction ret;
+	ret.type = NONE;
 
 	// Hold axis magnitudes
 	double magx = r.direction.x - r.origin.x;
@@ -268,6 +269,7 @@ junction Sphere::junctions(Ray r) {
 		ret.normal.z = (ret.origin.z - center.z) / inverse;
 		ret.magnitude = q;
 		ret.element = (Element) *this;
+		ret.type = SPHERE;
 		return ret;
 	}
 
