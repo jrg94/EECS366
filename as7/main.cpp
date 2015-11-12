@@ -24,7 +24,6 @@
 
 using namespace std;
 
-
 // Global variables
 int window_width, window_height;    // Window dimensions
 const int INITIAL_RES = 400;		// Stores the initial resolution
@@ -39,6 +38,8 @@ void shootRay(Ray *r);
 void layoutReader(char *filename);
 void drawRect(double x, double y, double w, double h);
 junction findJunctions(Ray *r);
+void rayTrace();
+void display(void);
 
 /**
  * Reads a scene layout file
@@ -223,6 +224,20 @@ void rayTrace() {
 			fb->SetPixel(y, x, c);
 		}
 	}
+}
+
+void calcAndShootReflectedRay() {
+	// if object is reflecting object
+		// Calculate reflection vector and include in ray structure
+		// Ray origin is assigned intersection
+		// Attenuate the ray - multiple krg by its previous value
+		// shootRay(Reflected Ray);
+		// If reflected ray intersects an object
+			// Combine colors with local illumination
+}
+
+void calcAndShootRefractedRay() {
+
 }
 
 /**
