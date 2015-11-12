@@ -27,18 +27,18 @@ using namespace std;
 
 // Global variables
 int window_width, window_height;    // Window dimensions
-
-const int INITIAL_RES = 400;
-
-FrameBuffer* fb;
-
-int lights, spheres, meshes;	// Number of lights, spheres, and meshes in the system
-Light *lightList;				// List of lights
-Sphere *sphereList;				// List of spheres
-Mesh *meshList;					// List of meshes
+const int INITIAL_RES = 400;		// Stores the initial resolution
+FrameBuffer* fb;					// The framebuffer
+int lights, spheres, meshes;		// Number of lights, spheres, and meshes in the system
+Light *lightList;					// List of lights
+Sphere *sphereList;					// List of spheres
+Mesh *meshList;						// List of meshes
 
 // Functions
 void shootRay(Ray *r);
+void layoutReader(char *filename);
+void drawRect(double x, double y, double w, double h);
+junction findJunctions(Ray *r);
 
 /**
  * Reads a scene layout file
@@ -251,6 +251,9 @@ void shootRay(Ray *r) {
 	if (r->depth > 0) {
 		// TODO: calculate and shoot the reflected ray
 		// TODO: calculate and shoot the refracted ray
+	}
+	else {
+		r = NULL;
 	}
 }
 
