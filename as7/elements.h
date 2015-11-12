@@ -2,17 +2,14 @@
 
 #include <math.h>
 
-// STRUCTS //
-
 /**
-* The face struct
-*/
+ * The face struct
+ */
 typedef struct _faceStruct {
 	int v1, v2, v3;
 	int n1, n2, n3;
 } faceStruct;
 
-// CLASSES //
 
 /**
 * A point clas
@@ -89,6 +86,17 @@ public:
 };
 
 /**
+* The intersection struct
+*/
+typedef struct _junction {
+	int type;
+	Element element;
+	point origin;
+	point normal;
+	double magnitude;
+} junction;
+
+/**
  * Handles mesh objects
  */
 class Mesh : public Element {
@@ -121,4 +129,6 @@ public:
 	Sphere(point _center, double _radius, double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
 		double _spec_r, double _spec_g, double _spec_b, double _amb_k, double _dif_k, double _spec_k,
 		double _spec_ex, double _ind_ref, double _refl_k, double _refr_k);
+	junction junctions(Ray r);
 };
+

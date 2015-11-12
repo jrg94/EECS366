@@ -149,12 +149,36 @@ void layoutReader(char *filename) {
 	fclose(fp);
 }
 
+/**
+ * Draws a rectangle
+ */
 void drawRect(double x, double y, double w, double h)
 {
 	glVertex2f(x,y);
 	glVertex2f(x+w,y);
 	glVertex2f(x+w,y+h);
 	glVertex2f(x, y+h);
+}
+
+/**
+ * Computes the intersection of this ray 
+ * with an object in the scene
+ */
+junction findJunctions(Ray *r) {
+	// 1 billion is the magnitude of the travel distance for one ray
+	double magnitude = 1000000000; 
+
+	// The return object
+	junction ret;
+	
+	// Initialize ret
+
+	// Run through entire scene
+	int i;
+	for (i = 0; i < spheres; i++) {
+		
+	}
+	return ret;
 }
 
 /**

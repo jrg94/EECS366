@@ -211,6 +211,9 @@ Mesh::Mesh(double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _d
 
 Sphere::Sphere() {}
 
+/**
+ * Parameterized constructor
+ */
 Sphere::Sphere(point _center, double _radius, double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
 	double _spec_r, double _spec_g, double _spec_b, double _amb_k, double _dif_k, double _spec_k,
 	double _spec_ex, double _ind_ref, double _refl_k, double _refr_k) : Element(_amb_r, _amb_g, _amb_b, _dif_r, _dif_g, _dif_b,
@@ -219,5 +222,73 @@ Sphere::Sphere(point _center, double _radius, double _amb_r, double _amb_g, doub
 
 	center = _center;
 	radius = _radius;
+}
+
+/**
+ * Returns an intersection on a sphere
+ */
+junction Sphere::junctions(Ray r) {
+	// Create return junction
+	junction ret;
+
+	// Hold axis magnitudes
+	double magx = r.direction.x - r.origin.x;
+	double magy = r.direction.y - r.origin.y;
+	double magz = r.direction.z - r.origin.z;
+
+	// Quadratic Formula // -> Sphere can only be intersected twice
+	// a = x*x + y*y + z*z
+	double a = r.direction.x * r.direction.x + r.direction.y * r.direction.y + r.direction.z * r.direction.z;
+
+	// b = 2 * (x*magx + y*magy + z*magz)
+	double b = 2.0 * (r.direction.x * magx + r.direction.y * magy + r.direction.z * magz);
+
+	// c = magx*magx + magy*magy + magz*magz - radius*radius
+	double c = magx*magx + magy*magy + magz*magz - radius*radius;
+
+	// Calculate discriminant
+	double discriminant = b * b - 4 * a * c;
+
+	// Test the discriminant
+	if (discriminant < 0.0) {
+		return ret;
+	}
+
+	// Compute quadratic formula (-)
+	double q = (-b - sqrt(discriminant)) / (2 * a);
+
+	// Test quadratic formula
+	if (q > 0.0) {
+		double inverse = 1.0 / radius;
+		ret.origin.x = r.origin.x + q * r.direction.x;
+		ret.origin.y = r.origin.y + q * r.direction.y;
+		ret.origin.z = r.origin.z + q * r.direction.z;
+		ret.normal.x = (ret.origin.x - center.x) / inverse;
+		ret.normal.y = (ret.origin.y - center.y) / inverse;
+		ret.normal.z = (ret.origin.z - center.z) / inverse;
+		ret.magnitude = q;
+		ret.element = (Element) *this;
+		return ret;
+	}
+
+	// Recompute quadratic formula (+)
+	q = (-b + sqrt(discriminant)) / (2 * a);
+
+	// Test quadratic formula
+	if (q <= 0.0) {
+		return ret;
+	}
+
+	double inverse = 1.0 / radius;
+	ret.origin.x = r.origin.x + q * r.direction.x;
+	ret.origin.y = r.origin.y + q * r.direction.y;
+	ret.origin.z = r.origin.z + q * r.direction.z;
+	ret.normal.x = (ret.origin.x - center.x) / inverse;
+	ret.normal.y = (ret.origin.y - center.y) / inverse;
+	ret.normal.z = (ret.origin.z - center.z) / inverse;
+	ret.magnitude = q;
+	ret.element = (Element)*this;
+
+	return ret;
 }
 
