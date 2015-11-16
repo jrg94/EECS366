@@ -285,7 +285,7 @@ junction Sphere::junctions(Ray r) {
 
 	// Test the discriminant
 	if (discriminant < 0.0) {
-		r.debug("Discriminant less the 0");
+		//r.debug("Discriminant less the 0");
 		return ret;
 	}
 
@@ -304,7 +304,7 @@ junction Sphere::junctions(Ray r) {
 		ret.magnitude = q;
 		ret.element = (Element) *this;
 		ret.type = SPHERE;
-		r.debug("Quadratic formula greater than 0");
+		//r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
 
@@ -312,20 +312,20 @@ junction Sphere::junctions(Ray r) {
 	q = (-b + sqrt(discriminant)) / (2 * a);
 
 	// Test quadratic formula
-	if (q <= 0.0) {
-		r.debug("Quadratic formula less than 0");
+	if (q > 0.0) {
+		double inverse = 1.0 / radius;
+		ret.origin.x = r.origin.x + q * r.direction.x;
+		ret.origin.y = r.origin.y + q * r.direction.y;
+		ret.origin.z = r.origin.z + q * r.direction.z;
+		ret.normal.x = (ret.origin.x - center.x) / inverse;
+		ret.normal.y = (ret.origin.y - center.y) / inverse;
+		ret.normal.z = (ret.origin.z - center.z) / inverse;
+		ret.magnitude = q;
+		ret.element = (Element)*this;
+		ret.type = SPHERE;
+		//r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
-
-	double inverse = 1.0 / radius;
-	ret.origin.x = r.origin.x + q * r.direction.x;
-	ret.origin.y = r.origin.y + q * r.direction.y;
-	ret.origin.z = r.origin.z + q * r.direction.z;
-	ret.normal.x = (ret.origin.x - center.x) / inverse;
-	ret.normal.y = (ret.origin.y - center.y) / inverse;
-	ret.normal.z = (ret.origin.z - center.z) / inverse;
-	ret.magnitude = q;
-	ret.element = (Element)*this;
 
 	return ret;
 }
