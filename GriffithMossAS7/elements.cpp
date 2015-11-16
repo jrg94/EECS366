@@ -2,6 +2,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+void point::Normalize() {
+	double magnitude = sqrt(x * x + y * y + z * z);
+	x = x / magnitude;
+	y = y / magnitude;
+	z = z / magnitude;
+}
+
 // The mesh reader itself
 // It can read *very* simple obj files
 void Mesh::Load(char *filename, int sign)

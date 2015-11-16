@@ -36,6 +36,7 @@ public:
 	{
 		x = xa; y = ya; z = za; w = wa;
 	}
+	void Normalize();
 };
 
 /**

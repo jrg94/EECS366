@@ -419,6 +419,10 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
  * Fires a ray
  */
 void shootRay(Ray *r) {
+
+	// Normalize this ray's direction
+	r->direction.Normalize();
+
 	// Intersection test
 	junction test = findJunctions(r);
 
