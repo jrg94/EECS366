@@ -269,7 +269,47 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
 void calcAndShootRefractedRay(junction intersect, Ray *r) {
 	// If object is a refractng object
 	if (intersect.element.refr_k > 0.0) {
+		Ray *refr = new Ray();
 
+		double sign = 1.0;
+		double ind_ref;
+
+		// If the ray is inside an object, change sign and assign index of refraction
+		if (r->inside) {
+			sign = -1.0;
+			ind_ref = intersect.element.ind_ref;
+		}
+		// Otherwise, index of refraction is the inverse of the objects index
+		else {
+			ind_ref = 1.0 / intersect.element.ind_ref;
+		}
+
+		// Compute r dot n
+		double RdotN = r->direction.x * intersect.normal.x + r->direction.y * intersect.normal.y + r->direction.z * intersect.normal.z;
+
+		// Compute refraction constant
+		double k = 1.0 - (ind_ref * ind_ref * (1.0 - (RdotN * RdotN)));
+
+		// If refraction constant is greater than or equal to 0.0, build refracted ray
+		if (k >= 0.0) {
+			double j = sign * ind_ref * RdotN - sqrt(k);
+
+			refr->direction.x = (j * sign * intersect.normal.x) - (ind_ref * r->direction.x);
+			refr->direction.y = (j * sign * intersect.normal.y) - (ind_ref * r->direction.y);
+			refr->direction.z = (j * sign * intersect.normal.z) - (ind_ref * r->direction.z);
+
+			refr->origin = intersect.origin;
+			refr->inside = !r->inside;
+
+			r->refracted = refr;
+			refr->depth = r->depth;
+
+			shootRay(refr);
+		}
+		// Otherwise, there is no refraction
+		else {
+			delete refr;
+		}
 	}
 }
 
