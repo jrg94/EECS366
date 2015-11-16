@@ -327,7 +327,13 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 	float light_r, light_g, light_b;
 	// Accumulate color for every light source
 	for (i = 0; i < lights; i++) {
+
+		// Assign rgb colors of this light to temp variables
+		light_r = lightList[i].r;
+		light_g = lightList[i].g;
+		light_b = lightList[i].b;
 		
+		// Incoming light
 		point L;
 		// If lightsource is a directional light
 		if (lightList[i].light_type == DIRECTIONAL_SOURCE) {
@@ -341,6 +347,63 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 			L.y = lightList[i].y - intersect.origin.y;
 			L.z = lightList[i].z - intersect.origin.z;
 		}
+
+		// Normalize L
+		float magnitude_L = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);
+		L.x = L.x / magnitude_L;
+		L.y = L.y / magnitude_L;
+		L.z = L.z / magnitude_L;
+
+		// Create a new light ray for this light source
+		Ray *temp = new Ray();
+		temp->origin.x = lightList[i].x;
+		temp->origin.y = lightList[i].y;
+		temp->origin.z = lightList[i].z;
+		temp->direction.x = intersect.origin.x - lightList[i].x;
+		temp->direction.y = intersect.origin.y - lightList[i].y; 
+		temp->direction.z = intersect.origin.z - lightList[i].z;
+
+		junction temp1 = findJunctions(temp);
+		// If junction type is not none, and junction is close to this junction, attenuate the light
+		if (temp1.type != NONE &&
+		   (temp1.origin.x - intersect.origin.x > 0.1 ||
+			temp1.origin.y - intersect.origin.y > 0.1 ||
+			temp1.origin.z - intersect.origin.z > 0.1)) {
+
+			light_r = light_r * temp1.element.refl_k;
+			light_g = light_g * temp1.element.refl_k;
+			light_b = light_b * temp1.element.refl_k;
+		}
+
+		// Compute NdotL
+		float NdotL = (L.x * intersect.normal.x) + (L.y * intersect.normal.y) + (L.z * intersect.normal.z);
+
+		if (NdotL < 0) {
+			NdotL = 0.0;
+		}
+
+		// Perfect Reflection
+		point R;
+		R.x = L.x - (2.0 * NdotL * intersect.normal.x);
+		R.y = L.y - (2.0 * NdotL * intersect.normal.y);
+		R.z = L.z - (2.0 * NdotL * intersect.normal.z);
+
+		point V;
+		// Normalize V
+		V.x = -ray->direction.x;
+		V.y = -ray->direction.y;
+		V.z = -ray->direction.z;
+		float magnitude_V = sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
+		V.x = V.x / magnitude_V;
+		V.y = V.y / magnitude_V;
+		V.z = V.z / magnitude_V;
+
+		float RdotV = (V.x * R.x) + (V.y * R.y) + (V.z * R.z);
+		float RdotV_exp = pow(RdotV, intersect.element.spec_ex);
+
+		r = r + intersect.element.dif_k * intersect.element.dif_r * NdotL * intersect.element.spec_k * intersect.element.spec_r * RdotV_exp;
+		g = g + intersect.element.dif_k * intersect.element.dif_g * NdotL * intersect.element.spec_k * intersect.element.spec_g * RdotV_exp;
+		b = b + intersect.element.dif_k * intersect.element.dif_b * NdotL * intersect.element.spec_k * intersect.element.spec_b * RdotV_exp;
 	}
 }
 
@@ -361,7 +424,7 @@ void shootRay(Ray *r) {
 	r->refl_k = test.element.refl_k;
 	r->refr_k = test.element.refr_k;
 
-	// TODO: calculate local intensity
+	// calculate local intensity
 	localColorCalc(r->r, r->g, r->b, test, r);
 
 	// decrement current depth of trace
@@ -369,9 +432,9 @@ void shootRay(Ray *r) {
 
 	//	if depth > 0
 	if (r->depth > 0) {
-		// TODO: calculate and shoot the reflected ray
+		// calculate and shoot the reflected ray
 		calcAndShootReflectedRay(test, r);
-		// TODO: calculate and shoot the refracted ray
+		// calculate and shoot the refracted ray
 		calcAndShootRefractedRay(test, r);
 	}
 	else {
