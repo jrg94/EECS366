@@ -249,9 +249,9 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
 		// Calculate reflection vector and include in ray structure
 		double RdotN = r->direction.x * intersect.normal.x * sign + r->direction.y * intersect.normal.y * sign + r->direction.z * intersect.normal.z * sign;
 
-		//refl->direction.x
-		//refl->direction.y
-		//refl->direction.z
+		refl->direction.x = r->direction.x - (2.0 * RdotN * intersect.normal.x * sign);
+		refl->direction.y = r->direction.y - (2.0 * RdotN * intersect.normal.y * sign);
+		refl->direction.z = r->direction.z - (2.0 * RdotN * intersect.normal.z * sign);
 
 		// Ray origin is assigned intersection
 		refl->origin = intersect.origin;
@@ -267,7 +267,10 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
  * Produces a new refracted ray from an intersection
  */
 void calcAndShootRefractedRay(junction intersect, Ray *r) {
+	// If object is a refractng object
+	if (intersect.element.refr_k > 0.0) {
 
+	}
 }
 
 /**
