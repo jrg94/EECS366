@@ -189,9 +189,10 @@ junction findJunctions(Ray *r) {
 
 		// If the intersection type something other than none
 		if (next.type != NONE) {
-			r->debug("intersection type is not NONE"); // Here's our problem folks - TODO: Fix this
+			//r->debug("intersection type is not NONE");
 			// If intersection distance is less than max distance & intersection distance > 0
 			if (next.magnitude < magnitude && next.magnitude > 0.00001) {
+				//r->debug("Reassigning magnitude");
 				magnitude = next.magnitude;
 				ret = next;
 			}
@@ -231,6 +232,7 @@ void rayTrace() {
 			
 			// Compute colors of the ray
 			r->computeVariables();
+			//r->dumpData();
 
 			// Store colors from recursive calculations
 			c.r = r->r;
@@ -247,6 +249,8 @@ void rayTrace() {
  * Produces a new reflected ray from an intersection
  */
 void calcAndShootReflectedRay(junction intersect, Ray *r) {
+	//r->debug("Shooting reflected ray");
+
 	// if object is reflecting object
 	if (intersect.element.refl_k > 0.0) {
 		r->debug("Calculating reflection ray");
@@ -279,6 +283,7 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
  * Produces a new refracted ray from an intersection
  */
 void calcAndShootRefractedRay(junction intersect, Ray *r) {
+	//r->debug("Shooting refracted ray");
 
 	// If object is a refractng object
 	if (intersect.element.refr_k > 0.0) {
@@ -336,10 +341,10 @@ void calcAndShootRefractedRay(junction intersect, Ray *r) {
  * Performs the local illumination color calculation
  */
 void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) {
-	ray->debug("Performing local illumination calculation");
+	//ray->debug("Performing local illumination calculation");
 
 	// ambient lighting
-	const double amb = 0.3;
+	double amb = 0.3;
 
 	r = amb * intersect.element.amb_r * intersect.element.amb_k;
 	g = amb * intersect.element.amb_g * intersect.element.amb_k;
@@ -349,6 +354,7 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 	float light_r, light_g, light_b;
 	// Accumulate color for every light source
 	for (i = 0; i < lights; i++) {
+		//ray->debug("local illumination for this light");
 
 		// Assign rgb colors of this light to temp variables
 		light_r = lightList[i].r;
@@ -371,10 +377,7 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 		}
 
 		// Normalize L
-		float magnitude_L = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);
-		L.x = L.x / magnitude_L;
-		L.y = L.y / magnitude_L;
-		L.z = L.z / magnitude_L;
+		L.Normalize();
 
 		// Create a new light ray for this light source
 		Ray *temp = new Ray();
@@ -415,10 +418,7 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 		V.x = -ray->direction.x;
 		V.y = -ray->direction.y;
 		V.z = -ray->direction.z;
-		float magnitude_V = sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
-		V.x = V.x / magnitude_V;
-		V.y = V.y / magnitude_V;
-		V.z = V.z / magnitude_V;
+		V.Normalize();
 
 		float RdotV = (V.x * R.x) + (V.y * R.y) + (V.z * R.z);
 		float RdotV_exp = pow(RdotV, intersect.element.spec_ex);

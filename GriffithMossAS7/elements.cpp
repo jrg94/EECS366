@@ -127,11 +127,10 @@ void Mesh::Load(char *filename, int sign)
  * A ray constructor
  */
 Ray::Ray() {
-	origin = point(0.0, 0.0, 0.0);
-	direction = point(0.0, 0.0, 0.0);
 	reflected = NULL;
 	refracted = NULL;
-	r = g = b = 0.0;
+	r = g = b = 0;
+	inside = false;
 	krg = ind_ref = 1.0;
 	refl_k = refr_k = 0.0;
 }
@@ -143,11 +142,12 @@ void Ray::computeVariables() {
 	double refl_r, refl_g, refl_b;
 	double refr_r, refr_g, refr_b;
 
-	refl_r = refl_g = refl_b = refr_r = refr_g = refr_b = 0.0;
+	refl_r = refl_g = refl_b = refr_r = refr_g = refr_b = 0;
 
 	// Computes constants for reflected ray
 	if (reflected) {
 		// Make a recursive call on the reflected ray
+		debug("Computing variables for a reflected ray");
 		reflected->computeVariables();
 		refl_r = reflected->r;
 		refl_g = reflected->g;
@@ -158,6 +158,7 @@ void Ray::computeVariables() {
 	if (refracted) {
 		// Make a recursive call on the refracted ray
 		refracted->computeVariables();
+		debug("Computing variables for a refracted ray");
 		refr_r = refracted->r;
 		refr_g = refracted->g;
 		refr_b = refracted->b;
@@ -179,8 +180,18 @@ const double Ray::Magnitude() {
 	return sqrt((x*x) + (y*y) + (z*z));
 }
 
+/**
+ * Helper method for printing out messages about a ray
+ */
 void Ray::debug(char* message) {
 	printf("Ray %f, %f, %f: %s\n", direction.x, direction.y, direction.z, message);
+}
+
+/**
+ * Helper function for dumping data about a ray
+ */
+void Ray::dumpData() {
+	printf("Ray: r %f, g %f, b %f, krg %f, ind_ref %f\n", r, g, b, krg);
 }
 
 /**
@@ -199,7 +210,6 @@ Element::Element(double _amb_r, double _amb_g, double _amb_b, double _dif_r, dou
 	amb_g = _amb_g;
 	amb_b = _amb_b;
 	dif_r = _dif_r;
-
 }
 
 /**

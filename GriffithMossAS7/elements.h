@@ -7,8 +7,8 @@
 #define SPHERE 1
 #define MESH 2
 
-#define POINT_SOURCE 0
-#define DIRECTIONAL_SOURCE 1
+#define POINT_SOURCE 1
+#define DIRECTIONAL_SOURCE 0
 
 /**
  * The face struct
@@ -73,6 +73,7 @@ public:
 	void computeVariables();
 	const double Magnitude();
 	void debug(char* message);
+	void dumpData();
 };
 
 /**
