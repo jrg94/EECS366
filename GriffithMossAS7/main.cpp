@@ -170,7 +170,7 @@ void drawRect(double x, double y, double w, double h)
  * with an object in the scene
  */
 junction findJunctions(Ray *r) {
-	r->debug("Finding intersections for this ray");
+	//r->debug("Finding intersections for this ray");
 
 	// 1 billion is the magnitude of the travel distance for one ray
 	double magnitude = 1000000000000; 
@@ -184,11 +184,12 @@ junction findJunctions(Ray *r) {
 	// Run through entire scene for spheres
 	int i;
 	for (i = 0; i < spheres; i++) {
+		//r->debug("Running through all spheres in scene");
 		junction next = sphereList[i].junctions(*r);
 
 		// If the intersection type something other than none
 		if (next.type != NONE) {
-
+			r->debug("intersection type is not NONE"); // Here's our problem folks - TODO: Fix this
 			// If intersection distance is less than max distance & intersection distance > 0
 			if (next.magnitude < magnitude && next.magnitude > 0.00001) {
 				magnitude = next.magnitude;
