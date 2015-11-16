@@ -7,6 +7,9 @@
 #define SPHERE 1
 #define MESH 2
 
+#define POINT_SOURCE 0
+#define DIRECTIONAL_SOURCE 1
+
 /**
  * The face struct
  */

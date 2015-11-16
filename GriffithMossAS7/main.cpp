@@ -14,7 +14,6 @@
 #include "primitives.h"
 #include "color.h"
 #include "elements.h"
-#include <vector>
 
 #include <iostream>
 #include <fstream>
@@ -314,6 +313,38 @@ void calcAndShootRefractedRay(junction intersect, Ray *r) {
 }
 
 /**
+ * Performs the local illumination color calculation
+ */
+void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) {
+	// ambient lighting
+	const double amb = 0.3;
+
+	r = amb * intersect.element.amb_r * intersect.element.amb_k;
+	g = amb * intersect.element.amb_g * intersect.element.amb_k;
+	b = amb * intersect.element.amb_b * intersect.element.amb_k;
+
+	int i;
+	float light_r, light_g, light_b;
+	// Accumulate color for every light source
+	for (i = 0; i < lights; i++) {
+		
+		point L;
+		// If lightsource is a directional light
+		if (lightList[i].light_type == DIRECTIONAL_SOURCE) {
+			L.x = -lightList[i].x;
+			L.y = -lightList[i].y;
+			L.z = -lightList[i].z;
+		}
+		// Otherwise, it's a point source
+		else {
+			L.x = lightList[i].x - intersect.origin.x;
+			L.y = lightList[i].y - intersect.origin.y;
+			L.z = lightList[i].z - intersect.origin.z;
+		}
+	}
+}
+
+/**
  * Fires a ray
  */
 void shootRay(Ray *r) {
@@ -331,6 +362,7 @@ void shootRay(Ray *r) {
 	r->refr_k = test.element.refr_k;
 
 	// TODO: calculate local intensity
+	localColorCalc(r->r, r->g, r->b, test, r);
 
 	// decrement current depth of trace
 	r->depth = r->depth - 1;
