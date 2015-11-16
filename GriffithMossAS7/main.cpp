@@ -25,6 +25,8 @@ using namespace std;
 
 // Global variables
 int window_width, window_height;    // Window dimensions
+float image_plane_size;				// Image plane size
+float image_plane_distance;			// Image plane distance
 const int INITIAL_RES = 400;		// Stores the initial resolution
 FrameBuffer* fb;					// The framebuffer
 int lights, spheres, meshes;		// Number of lights, spheres, and meshes in the system
@@ -206,12 +208,18 @@ void rayTrace() {
 	Color c;
 	Ray *r;
 
+	float width = fb->GetWidth() / 2.0;
+	float height = fb->GetHeight() / 2.0;
+
 	for (int y = 0; y < fb->GetHeight(); y++) {
 		for (int x = 0; x < fb->GetWidth(); x++) {
 			// Initialize ray
 			r = new Ray();
 			r->depth = 3;
-			
+			r->inside = false;
+			r->direction.x = image_plane_size + (x - width + 0.5) / width;
+			r->direction.y = image_plane_size + (y - height + 0.5) / height;
+			r->direction.z = -image_plane_distance;
 
 			// Fire the ray
 			shootRay(r);
@@ -541,6 +549,8 @@ int main(int argc, char* argv[])
 {    
 
 	fb = new FrameBuffer(INITIAL_RES, INITIAL_RES);
+	image_plane_distance = 8;
+	image_plane_size = 5;
 
 	//BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
 
