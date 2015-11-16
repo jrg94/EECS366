@@ -72,6 +72,7 @@ public:
 	Ray();
 	void computeVariables();
 	const double Magnitude();
+	void debug(char* message);
 };
 
 /**
@@ -126,6 +127,7 @@ public:
 		double _spec_ex, double _ind_ref, double _refl_k, double _refr_k);
 	~Mesh();
 	void Load(char *filename, int sign);
+	junction junctions(Ray r);
 };
 
 class Sphere : public Element {

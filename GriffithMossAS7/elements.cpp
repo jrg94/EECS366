@@ -179,6 +179,10 @@ const double Ray::Magnitude() {
 	return sqrt((x*x) + (y*y) + (z*z));
 }
 
+void Ray::debug(char* message) {
+	printf("Ray %f, %f, %f: %s\n", direction.x, direction.y, direction.z, message);
+}
+
 /**
  * Default constructor for element
  */
@@ -222,6 +226,20 @@ Mesh::Mesh(double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _d
 		_spec_r, _spec_g, _spec_b, _amb_k, _dif_k, _spec_k,
 		_spec_ex, _ind_ref, _refl_k, _refr_k) {
 }
+/**
+ * Computes intersection for meshes
+ */
+junction Mesh::junctions(Ray r) {
+	junction ret;
+	ret.type = NONE;
+
+	int i;
+	for (i = 0; i < faces; i++) {
+		// TODO: mesh calculations
+	}
+
+	return ret;
+}
 
 Sphere::Sphere() {}
 
@@ -242,6 +260,7 @@ Sphere::Sphere(point _center, double _radius, double _amb_r, double _amb_g, doub
  * Returns an intersection on a sphere
  */
 junction Sphere::junctions(Ray r) {
+	//r.debug("junctions was called on sphere");
 	// Create return junction
 	junction ret;
 	ret.type = NONE;
@@ -253,19 +272,20 @@ junction Sphere::junctions(Ray r) {
 
 	// Quadratic Formula // -> Sphere can only be intersected twice
 	// a = x*x + y*y + z*z
-	double a = r.direction.x * r.direction.x + r.direction.y * r.direction.y + r.direction.z * r.direction.z;
+	double a = (r.direction.x * r.direction.x) + (r.direction.y * r.direction.y) + (r.direction.z * r.direction.z);
 
 	// b = 2 * (x*magx + y*magy + z*magz)
-	double b = 2.0 * (r.direction.x * magx + r.direction.y * magy + r.direction.z * magz);
+	double b = 2.0 * ((r.direction.x * magx) + (r.direction.y * magy) + (r.direction.z * magz));
 
 	// c = magx*magx + magy*magy + magz*magz - radius*radius
-	double c = magx*magx + magy*magy + magz*magz - radius*radius;
+	double c = (magx * magx) + (magy * magy) + (magz * magz) - (radius * radius);
 
 	// Calculate discriminant
 	double discriminant = b * b - 4 * a * c;
 
 	// Test the discriminant
 	if (discriminant < 0.0) {
+		r.debug("Discriminant less the 0");
 		return ret;
 	}
 
@@ -284,6 +304,7 @@ junction Sphere::junctions(Ray r) {
 		ret.magnitude = q;
 		ret.element = (Element) *this;
 		ret.type = SPHERE;
+		r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
 
@@ -292,6 +313,7 @@ junction Sphere::junctions(Ray r) {
 
 	// Test quadratic formula
 	if (q <= 0.0) {
+		r.debug("Quadratic formula less than 0");
 		return ret;
 	}
 

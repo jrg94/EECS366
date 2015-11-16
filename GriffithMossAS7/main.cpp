@@ -170,8 +170,10 @@ void drawRect(double x, double y, double w, double h)
  * with an object in the scene
  */
 junction findJunctions(Ray *r) {
+	r->debug("Finding intersections for this ray");
+
 	// 1 billion is the magnitude of the travel distance for one ray
-	double magnitude = 1000000000; 
+	double magnitude = 1000000000000; 
 
 	// The return object
 	junction ret;
@@ -197,6 +199,7 @@ junction findJunctions(Ray *r) {
 
 	for (i = 0; i < meshes; i++) {
 		// TODO: Write intersects function for meshes
+		junction next = meshList[i].junctions(*r);
 	}
 	return ret;
 }
@@ -215,11 +218,12 @@ void rayTrace() {
 		for (int x = 0; x < fb->GetWidth(); x++) {
 			// Initialize ray
 			r = new Ray();
-			r->depth = 3;
+			r->depth = 10;
 			r->inside = false;
 			r->direction.x = image_plane_size + (x - width + 0.5) / width;
 			r->direction.y = image_plane_size + (y - height + 0.5) / height;
 			r->direction.z = -image_plane_distance;
+			// r->debug("Created ray for this frame buffer pixel");
 
 			// Fire the ray
 			shootRay(r);
@@ -244,8 +248,10 @@ void rayTrace() {
 void calcAndShootReflectedRay(junction intersect, Ray *r) {
 	// if object is reflecting object
 	if (intersect.element.refl_k > 0.0) {
+		r->debug("Calculating reflection ray");
 		Ray *refl = new Ray();
 		refl->depth = r->depth;
+		intersect.normal.Normalize();
 
 		// Handle negative sign based on location of ray
 		double sign = 1.0;
@@ -263,8 +269,6 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
 		// Ray origin is assigned intersection
 		refl->origin = intersect.origin;
 
-		// TODO: Attenuate the ray - multiple krg by its previous value
-
 		// Shoot ray
 		shootRay(refl);
 	}
@@ -274,8 +278,14 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
  * Produces a new refracted ray from an intersection
  */
 void calcAndShootRefractedRay(junction intersect, Ray *r) {
+
 	// If object is a refractng object
 	if (intersect.element.refr_k > 0.0) {
+		r->debug("Calculating refracted ray");
+		// Normalize vectors
+		intersect.normal.Normalize();
+		r->direction.Normalize();
+
 		Ray *refr = new Ray();
 
 		double sign = 1.0;
@@ -304,6 +314,7 @@ void calcAndShootRefractedRay(junction intersect, Ray *r) {
 			refr->direction.x = (j * sign * intersect.normal.x) - (ind_ref * r->direction.x);
 			refr->direction.y = (j * sign * intersect.normal.y) - (ind_ref * r->direction.y);
 			refr->direction.z = (j * sign * intersect.normal.z) - (ind_ref * r->direction.z);
+			refr->direction.Normalize();
 
 			refr->origin = intersect.origin;
 			refr->inside = !r->inside;
@@ -324,6 +335,8 @@ void calcAndShootRefractedRay(junction intersect, Ray *r) {
  * Performs the local illumination color calculation
  */
 void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) {
+	ray->debug("Performing local illumination calculation");
+
 	// ambient lighting
 	const double amb = 0.3;
 
@@ -419,9 +432,12 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
  * Fires a ray
  */
 void shootRay(Ray *r) {
-
+	//r->debug("Firing a ray");
+	
 	// Normalize this ray's direction
 	r->direction.Normalize();
+
+	//r->debug("Ray has been normalized");
 
 	// Intersection test
 	junction test = findJunctions(r);
@@ -558,7 +574,7 @@ int main(int argc, char* argv[])
 
 	//BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
 
-	layoutReader("red_sphere_and_teapot.rtl");
+	layoutReader("redsphere.rtl");
 
     // Initialize GLUT
     glutInit(&argc, argv);
