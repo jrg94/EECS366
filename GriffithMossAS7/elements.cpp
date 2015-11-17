@@ -308,7 +308,7 @@ junction Sphere::junctions(Ray r) {
 	// Test the discriminant
 	if (discriminant < 0.0) {
 		//r.debug("Discriminant less the 0");
-		r.debug("Help");
+		//r.debug("Help");
 		return ret;
 	}
 
@@ -327,7 +327,7 @@ junction Sphere::junctions(Ray r) {
 		ret.magnitude = q;
 		ret.element = (Element) *this;
 		ret.type = SPHERE;
-		r.debug("Quadratic formula greater than 0");
+		//r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
 
@@ -346,7 +346,7 @@ junction Sphere::junctions(Ray r) {
 		ret.magnitude = q;
 		ret.element = (Element)*this;
 		ret.type = SPHERE;
-		r.debug("Quadratic formula greater than 0");
+		//r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
 

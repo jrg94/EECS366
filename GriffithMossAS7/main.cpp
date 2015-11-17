@@ -228,6 +228,8 @@ junction findJunctions(Ray *r) {
  * The ray tracing algorithm
  */
 void rayTrace() {
+	printf("Drawing the scene!\n");
+
 	Color c;
 	Ray *r;
 
@@ -261,6 +263,7 @@ void rayTrace() {
 			fb->SetPixel(y, x, c);
 		}
 	}
+	printf("Finished drawing scene!\n");
 }
 
 /**
@@ -413,7 +416,7 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 			temp1.origin.y - intersect.origin.y > 0.1 ||
 			temp1.origin.z - intersect.origin.z > 0.1)) {
 
-			temp->debug("Attenuating the light");
+			//temp->debug("Attenuating the light");
 			light_r = light_r * temp1.element.refr_k;
 			light_g = light_g * temp1.element.refr_k;
 			light_b = light_b * temp1.element.refr_k;
