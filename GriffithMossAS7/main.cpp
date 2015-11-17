@@ -286,7 +286,7 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
 		}
 
 		// Calculate reflection vector and include in ray structure
-		double RdotN = (r->direction.x * intersect.normal.x * sign) + (r->direction.y * intersect.normal.y * sign) + (r->direction.z * intersect.normal.z * sign);
+		double RdotN = r->direction.Dot(intersect.normal);
 
 		refl->direction.x = r->direction.x - (2.0 * RdotN * intersect.normal.x * sign);
 		refl->direction.y = r->direction.y - (2.0 * RdotN * intersect.normal.y * sign);

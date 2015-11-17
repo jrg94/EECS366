@@ -19,6 +19,17 @@ float Point::Dot(Point a) {
 	return (x * a.x) + (y * a.y) + (z * a.z);
 }
 
+/**
+ * Provides cross product functionality for points
+ */
+Point Point::Cross(Point a) {
+	Point ret;
+	ret.x = y*a.z - z*a.y;
+	ret.y = z*a.x - x*a.z;
+	ret.z = x*a.y - y*a.x;
+	return ret;
+}
+
 /** 
  * The mesh reader itself
  * It can read *very* simple obj files
