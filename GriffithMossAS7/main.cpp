@@ -157,10 +157,16 @@ void layoutReader(char *filename) {
 			&dif_r, &dif_g, &dif_b, &spec_r, &spec_g, &spec_b, &amb_k, &dif_k, &spec_k, &spec_ex, &ind_ref, &refl_k, &refr_k);
 
 		if (letter == 'M') {
-			Mesh m = Mesh(amb_r, amb_g, amb_b, dif_r, dif_g, dif_b, spec_r,
-			spec_g, spec_b, amb_k, dif_k, spec_k, spec_ex, ind_ref, refl_k, refr_k);
-			m.Load(meshFilename, 1);
-			meshList[i] = m;
+			meshList[i].amb_r = amb_r;
+			meshList[i].amb_g = amb_g;
+			meshList[i].amb_b = amb_b;
+			meshList[i].dif_r = dif_r;
+			meshList[i].dif_g = dif_g;
+			meshList[i].dif_b = dif_b;
+			meshList[i].spec_r = spec_r;
+			meshList[i].spec_g = spec_g;
+			meshList[i].spec_b = spec_b;
+			meshList[i].Load(meshFilename, 1);
 			printf("A mesh has been added to the scene at %f, %f, %f\n", x, y, z);
 		}
 		else {
@@ -645,7 +651,7 @@ int main(int argc, char* argv[])
 	image_plane_distance = 8;
 	image_plane_size = 5;
 
-	layoutReader("redsphere.rtl");
+	layoutReader("red_sphere_and_teapot.rtl");
 
     // Initialize GLUT
     glutInit(&argc, argv);

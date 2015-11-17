@@ -294,8 +294,7 @@ junction Mesh::junctions(Ray r) {
 	for (i = 0; i < faces; i++) {
 		float t, u, v;
 
-		// TODO: mesh calculations
-		Triangle temp;
+		Triangle temp = Triangle();
 		temp.a = vertList[faceList[i].v1];
 		temp.b = vertList[faceList[i].v2];
 		temp.c = vertList[faceList[i].v3];
@@ -306,7 +305,23 @@ junction Mesh::junctions(Ray r) {
 			intersection.magnitude = t;
 
 			if ((ret.type == NONE || ret.magnitude > intersection.magnitude) && intersection.magnitude > .001) {
+				intersection.element = (Element)*this;
 
+				// Build intersection's origin
+				intersection.origin.x = ((1 - u - v)*temp.a.x) + (u * temp.b.x) + (v * temp.c.x);
+				intersection.origin.y = ((1 - u - v)*temp.a.y) + (u * temp.b.y) + (v * temp.c.y);
+				intersection.origin.z = ((1 - u - v)*temp.a.z) + (u * temp.b.z) + (v * temp.c.z);
+
+				// Build intersection's normal
+				intersection.normal.x = ((1 - u - v)*normList[faceList[i].v1].x) + (u * normList[faceList[i].v2].x) + (v * normList[faceList[i].v3].x);
+				intersection.normal.y = ((1 - u - v)*normList[faceList[i].v1].y) + (u * normList[faceList[i].v2].y) + (v * normList[faceList[i].v3].y);
+				intersection.normal.z = ((1 - u - v)*normList[faceList[i].v1].z) + (u * normList[faceList[i].v2].z) + (v * normList[faceList[i].v3].z);
+
+				// Normalize normal
+				intersection.normal.Normalize();
+
+				// Write this intersection back to the return intersection
+				ret = intersection;
 			}
 		}
 	}
@@ -397,6 +412,12 @@ junction Sphere::junctions(Ray r) {
 	}
 
 	return ret;
+}
+
+Triangle::Triangle() {
+	a = Point();
+	b = Point();
+	c = Point();
 }
 
 /**
