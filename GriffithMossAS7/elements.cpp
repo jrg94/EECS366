@@ -314,7 +314,7 @@ junction Sphere::junctions(Ray r) {
 	// Compute quadratic formula (-)
 	double q = (-b - sqrt(discriminant)) / (2 * a);
 
-	// Test quadratic formula
+	// Test quadratic formula -> This never evaluates (may be because of the location of the sphere)
 	if (q > 0.0) {
 		double inverse = 1.0 / radius;
 		ret.origin.x = r.origin.x + q * r.direction.x;
@@ -326,7 +326,7 @@ junction Sphere::junctions(Ray r) {
 		ret.magnitude = q;
 		ret.element = (Element) *this;
 		ret.type = SPHERE;
-		r.debug("Quadratic formula greater than 0");
+		//r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
 
