@@ -203,20 +203,28 @@ junction findJunctions(Ray *r) {
 	for (i = 0; i < spheres; i++) {
 		junction next = sphereList[i].junctions(*r);
 
-		// If the intersection type something other than none
+		// If the intersection type is something other than none
 		if (next.type != NONE) {
 			// If intersection distance is less than max distance & intersection distance > 0
 			if (next.magnitude < magnitude && next.magnitude > 0.0001) {
-				//r->debug("Reassigning magnitude");
 				magnitude = next.magnitude;
 				ret = next;
 			}
 		}
 	}
 
+	// Run through entire scene for meshes
 	for (i = 0; i < meshes; i++) {
-		// TODO: Write intersects function for meshes
 		junction next = meshList[i].junctions(*r);
+
+		// If the intersection type is something other than none
+		if (next.type != NONE) {
+			// If intersection distance is less than max distance & intersection distance > 0
+			if (next.magnitude < magnitude && next.magnitude > 0.00001) {
+				magnitude = next.magnitude;
+				ret = next;
+			}
+		}
 	}
 	return ret;
 }
