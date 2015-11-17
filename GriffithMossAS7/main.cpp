@@ -166,6 +166,13 @@ void layoutReader(char *filename) {
 			meshList[i].spec_r = spec_r;
 			meshList[i].spec_g = spec_g;
 			meshList[i].spec_b = spec_b;
+			meshList[i].amb_k = amb_k;
+			meshList[i].dif_k = dif_k;
+			meshList[i].spec_k = spec_k;
+			meshList[i].spec_ex = spec_ex;
+			meshList[i].ind_ref = ind_ref;
+			meshList[i].refl_k = refl_k;
+			meshList[i].refr_k = refr_k;
 			meshList[i].Load(meshFilename, 1);
 			printf("A mesh has been added to the scene at %f, %f, %f\n", x, y, z);
 		}
