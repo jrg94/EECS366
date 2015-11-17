@@ -490,7 +490,7 @@ void shootRay(Ray *r) {
 // The display function. It is called whenever the window needs
 // redrawing (ie: overlapping window moves, resize, maximize)
 // You should redraw your polygons here
-void	display(void)
+void display(void)
 {
     // Clear the background
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -522,10 +522,9 @@ void	display(void)
     glutSwapBuffers();
 }
 
-
 // This function is called whenever the window is resized. 
 // Parameters are the new dimentions of the window
-void	resize(int x,int y)
+void resize(int x,int y)
 {
     glViewport(0,0,x,y);
     window_width = x;
@@ -534,42 +533,77 @@ void	resize(int x,int y)
     printf("Resized to %d %d\n",x,y);
 }
 
-
 // This function is called whenever the mouse is pressed or released
 // button is a number 0 to 2 designating the button
 // state is 1 for release 0 for press event
 // x and y are the location of the mouse (in window-relative coordinates)
-void	mouseButton(int button,int state,int x,int y)
+void mouseButton(int button,int state,int x,int y)
 {
    ;
 }
 
-
 //This function is called whenever the mouse is moved with a mouse button held down.
 // x and y are the location of the mouse (in window-relative coordinates)
-void	mouseMotion(int x, int y)
+void mouseMotion(int x, int y)
 {
 	;
 }
 
+/**
+ * A method for moving the image plane
+ */
+void moveImagePlane(int change) {
+	// Place bounds on the image plane
+	if (image_plane_distance > 1 && image_plane_distance < 20) {
+		image_plane_distance += change;
+	}
+	// Cover close case
+	else if (image_plane_distance == 1 && change > 0) {
+		image_plane_distance += change;
+	} 
+	// Handle far case
+	else if (image_plane_distance == 20 && change < 0) {
+		image_plane_distance += change;
+	}
+	// Otherwise, do nothing
+	printf("Image Plane is now located at %f units in front of the camera\n", image_plane_distance);
+}
 
 // This function is called whenever there is a keyboard input
 // key is the ASCII value of the key pressed
 // x and y are the location of the mouse
-void	keyboard(unsigned char key, int x, int y)
+void keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
+	// Quit
     case 'q':
 		exit(1);
 		break;
+	// Decrease fake pixel size
 	case '-':
 		fb->Resize(fb->GetHeight()/2, fb->GetWidth()/2);
 		break;
+	// Increase fake pixel size
 	case '=':
 		fb->Resize(fb->GetHeight()*2, fb->GetWidth()*2);
 		break;
+	// Redraw image
 	case 'r':
 		rayTrace();
+		break;
+	// Move image plane closer to camera
+	case '[':
+		moveImagePlane(-1);
+		break;
+	// Move image plane away from camera
+	case ']':
+		moveImagePlane(1);
+		break;
+	// Decrease x,y dimensions of image plane
+	case ',':
+		break;
+	// Increase c,y dimensions of image plane
+	case '.':
 		break;
     default:
 		break;
