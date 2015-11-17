@@ -553,7 +553,7 @@ void mouseMotion(int x, int y)
  * A method for moving the image plane
  */
 void moveImagePlane(int change) {
-	// Place bounds on the image plane
+	// Place bounds on the image plane distance
 	if (image_plane_distance > 1 && image_plane_distance < 20) {
 		image_plane_distance += change;
 	}
@@ -567,6 +567,26 @@ void moveImagePlane(int change) {
 	}
 	// Otherwise, do nothing
 	printf("Image Plane is now located at %f units in front of the camera\n", image_plane_distance);
+}
+
+/**
+ * A helper function for changing image plane size
+ */
+void changeImagePlaneSize(int change) {
+	// Place bounds on image plane size
+	if (image_plane_size > 1 && image_plane_size < 15) {
+		image_plane_size += change;
+	}
+	// Cover small case
+	else if (image_plane_size == 1 && change > 0) {
+		image_plane_size += change;
+	}
+	// Cover large case
+	else if (image_plane_size == 15 && change < 0) {
+		image_plane_size += change;
+	}
+	// Otherwise, do nothing
+	printf("Image Plane is now of size %f\n", image_plane_size);
 }
 
 // This function is called whenever there is a keyboard input
@@ -601,9 +621,11 @@ void keyboard(unsigned char key, int x, int y)
 		break;
 	// Decrease x,y dimensions of image plane
 	case ',':
+		changeImagePlaneSize(-1);
 		break;
 	// Increase c,y dimensions of image plane
 	case '.':
+		changeImagePlaneSize(1);
 		break;
     default:
 		break;
