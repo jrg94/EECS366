@@ -7,7 +7,7 @@
 #define SPHERE 1
 #define MESH 2
 
-#define POINT_SOURCE 1
+#define Point_SOURCE 1
 #define DIRECTIONAL_SOURCE 0
 
 /**
@@ -18,25 +18,35 @@ typedef struct _faceStruct {
 	int n1, n2, n3;
 } faceStruct;
 
-
 /**
-* A point clas
+* A Point clas
 */
-class point
+class Point
 {
 public:
 	double x, y, z, w;
 
-	point() { x = 0; y = 0; z = 0; w = 1; }
-	point(double xa, double ya, double za)
+	Point() { x = 0; y = 0; z = 0; w = 1; }
+	Point(double xa, double ya, double za)
 	{
 		x = xa; y = ya; z = za; w = 1.0;
 	}
-	point(double xa, double ya, double za, double wa)
+	Point(double xa, double ya, double za, double wa)
 	{
 		x = xa; y = ya; z = za; w = wa;
 	}
 	void Normalize();
+	float Dot(Point a);
+};
+
+/**
+ * A class that represents a triangle
+ */
+class Triangle {
+public:
+	Point a, b, c;
+
+	bool intersects(Point origin, Point direction, float t, float u, float v);
 };
 
 /**
@@ -57,8 +67,8 @@ class Ray
 {
 public:
 	// Fields
-	point origin;
-	point direction; 
+	Point origin;
+	Point direction; 
 	float r, g, b;	// Color of Ray
 	int depth;		// Parameter to track trace depth
 	double ind_ref;			// Holds the index of refraction for the ray
@@ -103,8 +113,8 @@ public:
 typedef struct _junction {
 	int type;
 	Element element;
-	point origin;
-	point normal;
+	Point origin;
+	Point normal;
 	double magnitude;
 } junction;
 
@@ -117,8 +127,8 @@ public:
 	int verts;
 	int faces; 
 	int norms;
-	point* vertList;
-	point* normList;
+	Point* vertList;
+	Point* normList;
 	faceStruct *faceList;
 
 	// Functions
@@ -131,15 +141,18 @@ public:
 	junction junctions(Ray r);
 };
 
+/**
+ * A class that represents a sphere object
+ */
 class Sphere : public Element {
 public:
 	// Fields
-	point center;
+	Point center;
 	double radius;
 
 	// Functions
 	Sphere();
-	Sphere(point _center, double _radius, double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
+	Sphere(Point _center, double _radius, double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
 		double _spec_r, double _spec_g, double _spec_b, double _amb_k, double _dif_k, double _spec_k,
 		double _spec_ex, double _ind_ref, double _refl_k, double _refr_k);
 	junction junctions(Ray r);

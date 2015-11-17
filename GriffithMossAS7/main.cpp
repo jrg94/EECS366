@@ -385,14 +385,14 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 		light_b = lightList[i].b;
 		
 		// Incoming light
-		point L;
+		Point L;
 		// If lightsource is a directional light
 		if (lightList[i].light_type == DIRECTIONAL_SOURCE) {
 			L.x = -lightList[i].x;
 			L.y = -lightList[i].y;
 			L.z = -lightList[i].z;
 		}
-		// Otherwise, it's a point source
+		// Otherwise, it's a Pointsource
 		else {
 			L.x = lightList[i].x - intersect.origin.x;
 			L.y = lightList[i].y - intersect.origin.y;
@@ -424,19 +424,19 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 		}
 
 		// Compute NdotL
-		float NdotL = (L.x * intersect.normal.x) + (L.y * intersect.normal.y) + (L.z * intersect.normal.z);
+		float NdotL = L.Dot(intersect.normal);
 
 		if (NdotL < 0) {
 			NdotL = 0.0;
 		}
 
 		// Perfect Reflection
-		point R;
+		Point R;
 		R.x = L.x - (2.0 * NdotL * intersect.normal.x);
 		R.y = L.y - (2.0 * NdotL * intersect.normal.y);
 		R.z = L.z - (2.0 * NdotL * intersect.normal.z);
 
-		point V;
+		Point V;
 		// Normalize V
 		V.x = -ray->direction.x;
 		V.y = -ray->direction.y;

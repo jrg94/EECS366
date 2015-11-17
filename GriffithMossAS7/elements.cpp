@@ -2,21 +2,33 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void point::Normalize() {
+/**
+ * Normalizes a point (basically a vector)
+ */
+void Point::Normalize() {
 	double magnitude = sqrt(x * x + y * y + z * z);
 	x = x / magnitude;
 	y = y / magnitude;
 	z = z / magnitude;
 }
 
-// The mesh reader itself
-// It can read *very* simple obj files
+/**
+ * Provides dot product functionality for points
+ */
+float Point::Dot(Point a) {
+	return (x * a.x) + (y * a.y) + (z * a.z);
+}
+
+/** 
+ * The mesh reader itself
+ * It can read *very* simple obj files
+ */
 void Mesh::Load(char *filename, int sign)
 {
 	float x, y, z, len;
 	int i;
 	char letter;
-	point v1, v2, crossP;
+	Point v1, v2, crossP;
 	int ix, iy, iz;
 	int *normCount;
 	FILE *fp;
@@ -49,8 +61,8 @@ void Mesh::Load(char *filename, int sign)
 
 	// Dynamic allocation of vertex and face lists
 	faceList = (faceStruct *)malloc(sizeof(faceStruct)*faces);
-	vertList = (point *)malloc(sizeof(point)*verts);
-	normList = (point *)malloc(sizeof(point)*verts);
+	vertList = (Point *)malloc(sizeof(Point)*verts);
+	normList = (Point *)malloc(sizeof(Point)*verts);
 
 	fp = fopen(filename, "r");
 
@@ -246,6 +258,7 @@ Mesh::Mesh(double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _d
 		_spec_r, _spec_g, _spec_b, _amb_k, _dif_k, _spec_k,
 		_spec_ex, _ind_ref, _refl_k, _refr_k) {
 }
+
 /**
  * Computes intersection for meshes
  */
@@ -266,7 +279,7 @@ Sphere::Sphere() {}
 /**
  * Parameterized constructor
  */
-Sphere::Sphere(point _center, double _radius, double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
+Sphere::Sphere(Point _center, double _radius, double _amb_r, double _amb_g, double _amb_b, double _dif_r, double _dif_g, double _dif_b,
 	double _spec_r, double _spec_g, double _spec_b, double _amb_k, double _dif_k, double _spec_k,
 	double _spec_ex, double _ind_ref, double _refl_k, double _refr_k) : Element(_amb_r, _amb_g, _amb_b, _dif_r, _dif_g, _dif_b,
 	_spec_r, _spec_g, _spec_b, _amb_k, _dif_k, _spec_k,
@@ -344,5 +357,13 @@ junction Sphere::junctions(Ray r) {
 	}
 
 	return ret;
+}
+
+/**
+ * A triangle intersection test function
+ */
+bool Triangle::intersects(Point origin, Point direction, float t, float u, float v) {
+
+	return true;
 }
 
