@@ -85,7 +85,7 @@ void layoutReader(char *filename) {
 			lightList[i].r = r;
 			lightList[i].g = g;
 			lightList[i].b = b;
-			printf("A light has been added to the scene at %f, %f, %f\n", x, y, z);
+			printf("A light has been added to the scene at %f, %f, %f\n", lightList[i].x, lightList[i].y, lightList[i].z);
 		}
 		// Otherwise, report an error
 		else {
@@ -247,7 +247,7 @@ void rayTrace() {
 
 			// Fire the ray
 			shootRay(r);
-			
+
 			// Compute colors of the ray
 			r->computeVariables();
 			//r->dumpData();
@@ -271,7 +271,7 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
 
 	// if object is reflecting object
 	if (intersect.element.refl_k > 0.0) {
-		r->debug("Calculating reflection ray");
+		//r->debug("Calculating reflection ray");
 		Ray *refl = new Ray();
 		refl->depth = r->depth;
 		intersect.normal.Normalize();
@@ -305,7 +305,7 @@ void calcAndShootRefractedRay(junction intersect, Ray *r) {
 
 	// If object is a refractng object
 	if (intersect.element.refr_k > 0.0) {
-		r->debug("Calculating refracted ray");
+		//r->debug("Calculating refracted ray");
 		// Normalize vectors
 		intersect.normal.Normalize();
 		r->direction.Normalize();
@@ -406,16 +406,17 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 		temp->direction.y = intersect.origin.y - lightList[i].y; 
 		temp->direction.z = intersect.origin.z - lightList[i].z;
 
-		junction temp1 = findJunctions(temp);
+		junction temp1 = findJunctions(temp); // Having trouble with this TODO: fix
 		// If junction type is not none, and junction is close to this junction, attenuate the light
 		if (temp1.type != NONE &&
 		   (temp1.origin.x - intersect.origin.x > 0.1 ||
 			temp1.origin.y - intersect.origin.y > 0.1 ||
 			temp1.origin.z - intersect.origin.z > 0.1)) {
 
-			light_r = light_r * temp1.element.refl_k;
-			light_g = light_g * temp1.element.refl_k;
-			light_b = light_b * temp1.element.refl_k;
+			temp->debug("Attenuating the light");
+			light_r = light_r * temp1.element.refr_k;
+			light_g = light_g * temp1.element.refr_k;
+			light_b = light_b * temp1.element.refr_k;
 		}
 
 		// Compute NdotL
@@ -440,6 +441,7 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 
 		float RdotV = (V.x * R.x) + (V.y * R.y) + (V.z * R.z);
 		float RdotV_exp = pow(RdotV, intersect.element.spec_ex);
+		//printf("%f\n", RdotV_exp);
 
 		r = r + intersect.element.dif_k * intersect.element.dif_r * NdotL * intersect.element.spec_k * intersect.element.spec_r * RdotV_exp;
 		g = g + intersect.element.dif_k * intersect.element.dif_g * NdotL * intersect.element.spec_k * intersect.element.spec_g * RdotV_exp;
@@ -463,7 +465,7 @@ void shootRay(Ray *r) {
 
 	// if ray intersects an object
 	if (test.type == NONE) {
-		r->debug("No intersections found");
+		//r->debug("No intersections found");
 		r = NULL;
 		return;
 	}

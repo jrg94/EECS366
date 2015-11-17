@@ -210,6 +210,18 @@ Element::Element(double _amb_r, double _amb_g, double _amb_b, double _dif_r, dou
 	amb_g = _amb_g;
 	amb_b = _amb_b;
 	dif_r = _dif_r;
+	dif_g = _dif_g;
+	dif_b = _dif_b;
+	spec_r = _spec_r;
+	spec_g = _spec_g;
+	spec_b = _spec_b;
+	amb_k = _amb_k;
+	dif_k = _dif_k;
+	spec_k = _spec_k;
+	spec_ex = _spec_ex;
+	ind_ref = _ind_ref;
+	refl_k = _refl_k;
+	refr_k = _refr_k;
 }
 
 /**
@@ -314,7 +326,7 @@ junction Sphere::junctions(Ray r) {
 		ret.magnitude = q;
 		ret.element = (Element) *this;
 		ret.type = SPHERE;
-		//r.debug("Quadratic formula greater than 0");
+		r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
 
