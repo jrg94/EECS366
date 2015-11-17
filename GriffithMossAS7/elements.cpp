@@ -307,7 +307,8 @@ junction Sphere::junctions(Ray r) {
 
 	// Test the discriminant
 	if (discriminant < 0.0) {
-		r.debug("Discriminant less the 0");
+		//r.debug("Discriminant less the 0");
+		r.debug("Help");
 		return ret;
 	}
 

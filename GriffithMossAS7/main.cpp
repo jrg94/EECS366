@@ -240,8 +240,8 @@ void rayTrace() {
 			r = new Ray();
 			r->depth = 10;
 			r->inside = false;
-			r->direction.x = image_plane_size + (x - width + 0.5) / width;
-			r->direction.y = image_plane_size + (y - height + 0.5) / height;
+			r->direction.x = image_plane_size * (x - width + 0.5) / width;
+			r->direction.y = image_plane_size * (y - height + 0.5) / height;
 			r->direction.z = -image_plane_distance;
 			// r->debug("Created ray for this frame buffer pixel");
 
