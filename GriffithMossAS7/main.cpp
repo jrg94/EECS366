@@ -443,9 +443,10 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 		float RdotV_exp = pow(RdotV, intersect.element.spec_ex);
 		//printf("%f\n", RdotV_exp);
 
-		r = r + intersect.element.dif_k * intersect.element.dif_r * NdotL * intersect.element.spec_k * intersect.element.spec_r * RdotV_exp;
-		g = g + intersect.element.dif_k * intersect.element.dif_g * NdotL * intersect.element.spec_k * intersect.element.spec_g * RdotV_exp;
-		b = b + intersect.element.dif_k * intersect.element.dif_b * NdotL * intersect.element.spec_k * intersect.element.spec_b * RdotV_exp;
+		// If no intersection occurs, all intersection terms are zero
+		r = r + light_r * ((intersect.element.dif_k * intersect.element.dif_r * NdotL) + (intersect.element.spec_k * intersect.element.spec_r * RdotV_exp));
+		g = g + light_g * ((intersect.element.dif_k * intersect.element.dif_g * NdotL) + (intersect.element.spec_k * intersect.element.spec_g * RdotV_exp));
+		b = b + light_b * ((intersect.element.dif_k * intersect.element.dif_b * NdotL) + (intersect.element.spec_k * intersect.element.spec_b * RdotV_exp));
 	}
 }
 
