@@ -332,7 +332,7 @@ void calcAndShootRefractedRay(junction intersect, Ray *r) {
 		}
 
 		// Compute r dot n
-		double RdotN = r->direction.x * intersect.normal.x + r->direction.y * intersect.normal.y + r->direction.z * intersect.normal.z;
+		double RdotN = r->direction.Dot(intersect.normal);
 
 		// Compute refraction constant
 		double k = 1.0 - (ind_ref * ind_ref * (1.0 - (RdotN * RdotN)));
@@ -443,7 +443,7 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 		V.z = -ray->direction.z;
 		V.Normalize();
 
-		float RdotV = (V.x * R.x) + (V.y * R.y) + (V.z * R.z);
+		float RdotV = R.Dot(V);
 		float RdotV_exp = pow(RdotV, intersect.element.spec_ex);
 
 		// If no intersection occurs, all intersection terms are zero
