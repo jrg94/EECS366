@@ -38,6 +38,7 @@ public:
 	void Normalize();
 	float Dot(Point a);
 	Point Cross(Point a);
+	Point Sub(Point a);
 };
 
 /**

@@ -30,6 +30,17 @@ Point Point::Cross(Point a) {
 	return ret;
 }
 
+/**
+ * Provides subtraction functionality for points
+ */
+Point Point::Sub(Point a) {
+	Point ret;
+	ret.x = x - a.x;
+	ret.y = y - a.y;
+	ret.z = z - a.z;
+	return ret;
+}
+
 /** 
  * The mesh reader itself
  * It can read *very* simple obj files
