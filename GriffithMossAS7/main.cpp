@@ -113,10 +113,28 @@ void layoutReader(char *filename) {
 
 		// Initialize sphere traits
 		if (letter == 'S') {
-			Sphere s = Sphere(point(x, y, x), radius, amb_r, amb_g, amb_b, dif_r, dif_g, dif_b, spec_r,
-								spec_g, spec_b, amb_k, dif_k, spec_k, spec_ex, ind_ref, refl_k, refr_k);
-			sphereList[i] = s;
-			printf("A sphere has been added to the scene at %f, %f, %f\n", x, y, z);
+			// Sphere constructor works but you can't assign element to array directly
+			sphereList[i].center.x = x;
+			sphereList[i].center.y = y;
+			sphereList[i].center.z = z;
+			sphereList[i].radius = radius;
+			sphereList[i].amb_r = amb_r;
+			sphereList[i].amb_g = amb_g;
+			sphereList[i].amb_b = amb_b;
+			sphereList[i].dif_r = dif_r;
+			sphereList[i].dif_g = dif_g;
+			sphereList[i].dif_b = dif_b;
+			sphereList[i].spec_r = spec_r;
+			sphereList[i].spec_g = spec_g;
+			sphereList[i].spec_b = spec_b;
+			sphereList[i].amb_k = amb_k;
+			sphereList[i].dif_k = dif_k;
+			sphereList[i].spec_k = spec_k;
+			sphereList[i].spec_ex = spec_ex;
+			sphereList[i].ind_ref = ind_ref;
+			sphereList[i].refl_k = refl_k;
+			sphereList[i].refr_k = refr_k;
+			printf("A sphere has been added to the scene at %f, %f, %f\n", sphereList[i].center.x, sphereList[i].center.y, sphereList[i].center.z);
 		}
 		// Otherwise, spit out exception
 		else {
@@ -445,6 +463,7 @@ void shootRay(Ray *r) {
 
 	// if ray intersects an object
 	if (test.type == NONE) {
+		r->debug("No intersections found");
 		r = NULL;
 		return;
 	}
