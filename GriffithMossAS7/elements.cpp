@@ -288,9 +288,9 @@ junction Sphere::junctions(Ray r) {
 	ret.type = NONE;
 
 	// Hold axis magnitudes
-	double magx = r.direction.x - r.origin.x;
-	double magy = r.direction.y - r.origin.y;
-	double magz = r.direction.z - r.origin.z;
+	double magx = r.origin.x - center.x;
+	double magy = r.origin.y - center.y;
+	double magz = r.origin.z - center.z;
 
 	// Quadratic Formula // -> Sphere can only be intersected twice
 	// a = x*x + y*y + z*z
@@ -307,7 +307,7 @@ junction Sphere::junctions(Ray r) {
 
 	// Test the discriminant
 	if (discriminant < 0.0) {
-		//r.debug("Discriminant less the 0");
+		r.debug("Discriminant less the 0");
 		return ret;
 	}
 
@@ -326,7 +326,7 @@ junction Sphere::junctions(Ray r) {
 		ret.magnitude = q;
 		ret.element = (Element) *this;
 		ret.type = SPHERE;
-		//r.debug("Quadratic formula greater than 0");
+		r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
 
@@ -345,7 +345,7 @@ junction Sphere::junctions(Ray r) {
 		ret.magnitude = q;
 		ret.element = (Element)*this;
 		ret.type = SPHERE;
-		//r.debug("Quadratic formula greater than 0");
+		r.debug("Quadratic formula greater than 0");
 		return ret;
 	}
 

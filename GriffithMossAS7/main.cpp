@@ -209,7 +209,7 @@ junction findJunctions(Ray *r) {
 		if (next.type != NONE) {
 			//r->debug("intersection type is not NONE");
 			// If intersection distance is less than max distance & intersection distance > 0
-			if (next.magnitude < magnitude && next.magnitude > 0.00001) {
+			if (next.magnitude < magnitude && next.magnitude > 0.0001) {
 				//r->debug("Reassigning magnitude");
 				magnitude = next.magnitude;
 				ret = next;
