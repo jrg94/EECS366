@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define EPSILON .000001
+
 /**
  * Normalizes a point (basically a vector)
  */
@@ -290,7 +292,23 @@ junction Mesh::junctions(Ray r) {
 
 	int i;
 	for (i = 0; i < faces; i++) {
+		float t, u, v;
+
 		// TODO: mesh calculations
+		Triangle temp;
+		temp.a = vertList[faceList[i].v1];
+		temp.b = vertList[faceList[i].v2];
+		temp.c = vertList[faceList[i].v3];
+
+		if (temp.intersects(r.origin, r.direction, &t, &u, &v)) {
+			junction intersection;
+			intersection.type = MESH;
+			intersection.magnitude = t;
+
+			if ((ret.type == NONE || ret.magnitude > intersection.magnitude) && intersection.magnitude > .001) {
+
+			}
+		}
 	}
 
 	return ret;
@@ -384,7 +402,38 @@ junction Sphere::junctions(Ray r) {
 /**
  * A triangle intersection test function
  */
-bool Triangle::intersects(Point origin, Point direction, float t, float u, float v) {
+bool Triangle::intersects(Point origin, Point direction, float *t, float *u, float *v) {
+
+	Point edge1 = b.Sub(a);
+	Point edge2 = c.Sub(a);
+
+	Point pvec = direction.Cross(edge2);
+
+	float determinant = edge1.Dot(pvec);
+
+	if (determinant > -EPSILON && determinant < EPSILON) {
+		return false;
+	}
+
+	float inv_det = 1.0 / determinant;
+
+	Point tvec = origin.Sub(a);
+
+	*u = tvec.Dot(pvec) * inv_det;
+
+	if (*u < 0.0 || *u > 1.0) {
+		return false;
+	}
+
+	Point qvec = tvec.Cross(edge1);
+
+	*v = direction.Dot(qvec) * inv_det;
+
+	if (*v < 0.0 || *u + *v > 1.0) {
+		return false;
+	}
+
+	*t = edge2.Dot(qvec) * inv_det;
 
 	return true;
 }

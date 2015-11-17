@@ -48,7 +48,7 @@ class Triangle {
 public:
 	Point a, b, c;
 
-	bool intersects(Point origin, Point direction, float t, float u, float v);
+	bool intersects(Point origin, Point direction, float *t, float *u, float *v);
 };
 
 /**
