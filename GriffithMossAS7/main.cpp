@@ -113,7 +113,7 @@ void layoutReader(char *filename) {
 
 		// Initialize sphere traits
 		if (letter == 'S') {
-			// Sphere constructor works but you can't assign element to array directly
+			// Sphere constructor works but you can't assign element to array directly -> This solved it
 			sphereList[i].center.x = x;
 			sphereList[i].center.y = y;
 			sphereList[i].center.z = z;
@@ -188,7 +188,6 @@ void drawRect(double x, double y, double w, double h)
  * with an object in the scene
  */
 junction findJunctions(Ray *r) {
-	//r->debug("Finding intersections for this ray");
 
 	// 1 billion is the magnitude of the travel distance for one ray
 	double magnitude = 1000000000000; 
@@ -202,12 +201,10 @@ junction findJunctions(Ray *r) {
 	// Run through entire scene for spheres
 	int i;
 	for (i = 0; i < spheres; i++) {
-		//r->debug("Running through all spheres in scene");
 		junction next = sphereList[i].junctions(*r);
 
 		// If the intersection type something other than none
 		if (next.type != NONE) {
-			//r->debug("intersection type is not NONE");
 			// If intersection distance is less than max distance & intersection distance > 0
 			if (next.magnitude < magnitude && next.magnitude > 0.0001) {
 				//r->debug("Reassigning magnitude");
@@ -245,14 +242,12 @@ void rayTrace() {
 			r->direction.x = image_plane_size * (x - width + 0.5) / width;
 			r->direction.y = image_plane_size * (y - height + 0.5) / height;
 			r->direction.z = -image_plane_distance;
-			// r->debug("Created ray for this frame buffer pixel");
 
 			// Fire the ray
 			shootRay(r);
 
 			// Compute colors of the ray
 			r->computeVariables();
-			//r->dumpData();
 
 			// Store colors from recursive calculations
 			c.r = r->r;
@@ -260,7 +255,7 @@ void rayTrace() {
 			c.b = r->b;
 
 			// Load the current pixel with this color
-			fb->SetPixel(y, x, c);
+			fb->SetPixel(x, y, c);
 		}
 	}
 	printf("Finished drawing scene!\n");
@@ -270,11 +265,8 @@ void rayTrace() {
  * Produces a new reflected ray from an intersection
  */
 void calcAndShootReflectedRay(junction intersect, Ray *r) {
-	//r->debug("Shooting reflected ray");
-
 	// if object is reflecting object
 	if (intersect.element.refl_k > 0.0) {
-		//r->debug("Calculating reflection ray");
 		Ray *refl = new Ray();
 		refl->depth = r->depth;
 		intersect.normal.Normalize();
@@ -286,7 +278,7 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
 		}
 
 		// Calculate reflection vector and include in ray structure
-		double RdotN = r->direction.x * intersect.normal.x * sign + r->direction.y * intersect.normal.y * sign + r->direction.z * intersect.normal.z * sign;
+		double RdotN = (r->direction.x * intersect.normal.x * sign) + (r->direction.y * intersect.normal.y * sign) + (r->direction.z * intersect.normal.z * sign);
 
 		refl->direction.x = r->direction.x - (2.0 * RdotN * intersect.normal.x * sign);
 		refl->direction.y = r->direction.y - (2.0 * RdotN * intersect.normal.y * sign);
@@ -294,6 +286,12 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
 
 		// Ray origin is assigned intersection
 		refl->origin = intersect.origin;
+
+		// Attenuate ray
+		refl->krg = refl->krg * r->krg;
+
+		// Assign reflected to this new ray
+		r->reflected = refl;
 
 		// Shoot ray
 		shootRay(refl);
@@ -304,11 +302,8 @@ void calcAndShootReflectedRay(junction intersect, Ray *r) {
  * Produces a new refracted ray from an intersection
  */
 void calcAndShootRefractedRay(junction intersect, Ray *r) {
-	//r->debug("Shooting refracted ray");
-
 	// If object is a refractng object
 	if (intersect.element.refr_k > 0.0) {
-		//r->debug("Calculating refracted ray");
 		// Normalize vectors
 		intersect.normal.Normalize();
 		r->direction.Normalize();
@@ -349,6 +344,9 @@ void calcAndShootRefractedRay(junction intersect, Ray *r) {
 			r->refracted = refr;
 			refr->depth = r->depth;
 
+			// Attenuate the ray
+			refr->krg = refr->krg * r->krg;
+
 			shootRay(refr);
 		}
 		// Otherwise, there is no refraction
@@ -362,9 +360,7 @@ void calcAndShootRefractedRay(junction intersect, Ray *r) {
  * Performs the local illumination color calculation
  */
 void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) {
-	//ray->debug("Performing local illumination calculation");
-
-	// ambient lighting
+	// Ambient lighting constant
 	double amb = 0.3;
 
 	r = amb * intersect.element.amb_r * intersect.element.amb_k;
@@ -375,8 +371,6 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 	float light_r, light_g, light_b;
 	// Accumulate color for every light source
 	for (i = 0; i < lights; i++) {
-		//ray->debug("local illumination for this light");
-
 		// Assign rgb colors of this light to temp variables
 		light_r = lightList[i].r;
 		light_g = lightList[i].g;
@@ -416,7 +410,6 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 			temp1.origin.y - intersect.origin.y > 0.1 ||
 			temp1.origin.z - intersect.origin.z > 0.1)) {
 
-			//temp->debug("Attenuating the light");
 			light_r = light_r * temp1.element.refr_k;
 			light_g = light_g * temp1.element.refr_k;
 			light_b = light_b * temp1.element.refr_k;
@@ -444,7 +437,6 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 
 		float RdotV = (V.x * R.x) + (V.y * R.y) + (V.z * R.z);
 		float RdotV_exp = pow(RdotV, intersect.element.spec_ex);
-		//printf("%f\n", RdotV_exp);
 
 		// If no intersection occurs, all intersection terms are zero
 		r = r + light_r * ((intersect.element.dif_k * intersect.element.dif_r * NdotL) + (intersect.element.spec_k * intersect.element.spec_r * RdotV_exp));
@@ -456,43 +448,34 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 /**
  * Fires a ray
  */
-void shootRay(Ray *r) {
-	//r->debug("Firing a ray");
-	
+void shootRay(Ray *r) {	
 	// Normalize this ray's direction
 	r->direction.Normalize();
-
-	//r->debug("Ray has been normalized");
 
 	// Intersection test
 	junction test = findJunctions(r);
 
-	// if ray intersects an object
-	if (test.type == NONE) {
-		//r->debug("No intersections found");
-		r = NULL;
-		return;
-	}
+	// If ray intersects an object
+	if (test.type != NONE) {
 
-	// Assign constants to ray
-	r->refl_k = test.element.refl_k;
-	r->refr_k = test.element.refr_k;
+		// Get reflectiom/refraction constants
+		r->refl_k = test.element.refl_k;
+		r->refr_k = test.element.refr_k;
 
-	// calculate local intensity
-	localColorCalc(r->r, r->g, r->b, test, r);
+		// Calculate local intensity
+		localColorCalc(r->r, r->g, r->b, test, r);
 
-	// decrement current depth of trace
-	r->depth = r->depth - 1;
+		// Decrement current depth of trace
+		r->depth = r->depth - 1;
 
-	//	if depth > 0
-	if (r->depth > 0) {
-		// calculate and shoot the reflected ray
-		calcAndShootReflectedRay(test, r);
-		// calculate and shoot the refracted ray
-		calcAndShootRefractedRay(test, r);
-	}
-	else {
-		r = NULL;
+		// If depth > 0
+		if (r->depth > 0) {
+			calcAndShootReflectedRay(test, r);
+			calcAndShootRefractedRay(test, r);
+		}
+		else {
+			r = NULL;
+		}
 	}
 }
 
@@ -568,16 +551,14 @@ void	mouseMotion(int x, int y)
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-    case 'q':                           /* Quit */
+    case 'q':
 		exit(1);
 		break;
 	case '-':
 		fb->Resize(fb->GetHeight()/2, fb->GetWidth()/2);
-		//BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
 		break;
 	case '=':
 		fb->Resize(fb->GetHeight()*2, fb->GetWidth()*2);
-		//BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
 		break;
 	case 'r':
 		rayTrace();
@@ -597,8 +578,6 @@ int main(int argc, char* argv[])
 	fb = new FrameBuffer(INITIAL_RES, INITIAL_RES);
 	image_plane_distance = 8;
 	image_plane_size = 5;
-
-	//BresenhamLine(fb, fb->GetWidth()*0.1, fb->GetHeight()*0.1, fb->GetWidth()*0.9, fb->GetHeight()*0.9, Color(1,0,0));
 
 	layoutReader("redsphere.rtl");
 

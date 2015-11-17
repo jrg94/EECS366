@@ -147,7 +147,7 @@ void Ray::computeVariables() {
 	// Computes constants for reflected ray
 	if (reflected) {
 		// Make a recursive call on the reflected ray
-		debug("Computing variables for a reflected ray");
+		//debug("Computing variables for a reflected ray");
 		reflected->computeVariables();
 		refl_r = reflected->r;
 		refl_g = reflected->g;
