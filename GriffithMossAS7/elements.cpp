@@ -389,7 +389,7 @@ junction Sphere::junctions(Ray r) {
 		ret.normal.y = (ret.origin.y - center.y) / inverse;
 		ret.normal.z = (ret.origin.z - center.z) / inverse;
 		ret.magnitude = q;
-		ret.element = (Element) *this;
+		ret.element = (Sphere) *this;
 		ret.type = SPHERE;
 		return ret;
 	}
@@ -407,7 +407,7 @@ junction Sphere::junctions(Ray r) {
 		ret.normal.y = (ret.origin.y - center.y) / inverse;
 		ret.normal.z = (ret.origin.z - center.z) / inverse;
 		ret.magnitude = q;
-		ret.element = (Element)*this;
+		ret.element = (Sphere)*this;
 		ret.type = SPHERE;
 		return ret;
 	}
@@ -426,11 +426,14 @@ Triangle::Triangle() {
  */
 bool Triangle::intersects(Point origin, Point direction, float *t, float *u, float *v) {
 
+	// Build two edges
 	Point edge1 = b.Sub(a);
 	Point edge2 = c.Sub(a);
 
+	// Determine the p vector
 	Point pvec = direction.Cross(edge2);
 
+	// Calculate the determinant
 	float determinant = edge1.Dot(pvec);
 
 	if (determinant > -EPSILON && determinant < EPSILON) {

@@ -437,6 +437,9 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 			light_b = light_b * temp1.element.refr_k;
 		}
 
+		// Normalize normal
+		intersect.normal.Normalize();
+
 		// Compute NdotL
 		float NdotL = L.Dot(intersect.normal);
 
@@ -446,9 +449,11 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 
 		// Perfect Reflection
 		Point R;
+		// Normalize R
 		R.x = L.x - (2.0 * NdotL * intersect.normal.x);
 		R.y = L.y - (2.0 * NdotL * intersect.normal.y);
 		R.z = L.z - (2.0 * NdotL * intersect.normal.z);
+		R.Normalize();
 
 		Point V;
 		// Normalize V
@@ -499,6 +504,10 @@ void shootRay(Ray *r) {
 		else {
 			r = NULL;
 		}
+	}
+	// If ray doesn't intersect anything, delete it
+	else {
+		r = NULL;
 	}
 }
 
