@@ -141,7 +141,7 @@ public:
 		double _spec_r, double _spec_g, double _spec_b, double _amb_k, double _dif_k, double _spec_k,
 		double _spec_ex, double _ind_ref, double _refl_k, double _refr_k);
 	~Mesh();
-	void Load(char *filename, int sign);
+	void Load(char *filename, int sign, float x, float y, float z);
 	junction junctions(Ray r);
 };
 

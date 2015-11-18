@@ -173,7 +173,7 @@ void layoutReader(char *filename) {
 			meshList[i].ind_ref = ind_ref;
 			meshList[i].refl_k = refl_k;
 			meshList[i].refr_k = refr_k;
-			meshList[i].Load(meshFilename, 1);
+			meshList[i].Load(meshFilename, 1, x, y, z);
 			printf("A mesh has been added to the scene at %f, %f, %f\n", x, y, z);
 		}
 		else {
@@ -669,7 +669,7 @@ int main(int argc, char* argv[])
 	image_plane_distance = 8;
 	image_plane_size = 5;
 
-	layoutReader("redsphere.rtl");
+	layoutReader("red_sphere_and_teapot.rtl");
 
     // Initialize GLUT
     glutInit(&argc, argv);
@@ -692,7 +692,7 @@ int main(int argc, char* argv[])
 	glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
 
-	rayTrace();
+	//rayTrace();
 
     // Switch to main loop
     glutMainLoop();

@@ -47,9 +47,9 @@ Point Point::Sub(Point a) {
  * The mesh reader itself
  * It can read *very* simple obj files
  */
-void Mesh::Load(char *filename, int sign)
+void Mesh::Load(char *filename, int sign, float x, float y, float z)
 {
-	float x, y, z, len;
+	float len;
 	int i;
 	char letter;
 	Point v1, v2, crossP;
@@ -109,11 +109,25 @@ void Mesh::Load(char *filename, int sign)
 	}
 	fclose(fp);
 
+	// Build translation matrix
+	float matrix[16];
+	matrix[0] = matrix[5] = matrix[10] = matrix[15] = 1.0;
+	matrix[1] = matrix[2] = matrix[3] = matrix[4] = 0.0;
+	matrix[6] = matrix[7] = matrix[8] = matrix[9] = 0.0;
+	matrix[11] = matrix[12] = matrix[13] = matrix[14] = 0.0;
+
+	matrix[12] += x;
+	matrix[13] += y;
+	matrix[14] += z;
 
 	// The part below calculates the normals of each vertex
 	normCount = (int *)malloc(sizeof(int)*verts);
 	for (i = 0; i < verts; i++)
 	{
+		vertList[i].x = matrix[0] * vertList[i].x + matrix[4] * vertList[i].y + matrix[8] * vertList[i].z + matrix[12] * vertList[i].w;
+		vertList[i].y = matrix[1] * vertList[i].x + matrix[5] * vertList[i].y + matrix[9] * vertList[i].z + matrix[13] * vertList[i].w;
+		vertList[i].z = matrix[2] * vertList[i].x + matrix[6] * vertList[i].y + matrix[10] * vertList[i].z + matrix[14] * vertList[i].w;
+		vertList[i].w = matrix[3] * vertList[i].x + matrix[7] * vertList[i].y + matrix[11] * vertList[i].z + matrix[15] * vertList[i].w;
 		normList[i].x = normList[i].y = normList[i].z = 0.0;
 		normCount[i] = 0;
 	}
@@ -156,7 +170,6 @@ void Mesh::Load(char *filename, int sign)
 		normList[i].y = (float)sign*normList[i].y / (float)normCount[i];
 		normList[i].z = (float)sign*normList[i].z / (float)normCount[i];
 	}
-
 }
 
 /**
@@ -312,6 +325,8 @@ junction Mesh::junctions(Ray r) {
 				intersection.origin.x = ((1 - u - v)*temp.a.x) + (u * temp.b.x) + (v * temp.c.x);
 				intersection.origin.y = ((1 - u - v)*temp.a.y) + (u * temp.b.y) + (v * temp.c.y);
 				intersection.origin.z = ((1 - u - v)*temp.a.z) + (u * temp.b.z) + (v * temp.c.z);
+
+				intersection.origin.Normalize();
 
 				// Build intersection's normal
 				intersection.normal.x = ((1 - u - v)*normList[faceList[i].v1].x) + (u * normList[faceList[i].v2].x) + (v * normList[faceList[i].v3].x);
