@@ -269,6 +269,7 @@ Element::~Element() {}
 Mesh::~Mesh() {
 	delete[] vertList;
 	delete[] faceList;
+	delete[] boundingBox;
 }
 
 /**

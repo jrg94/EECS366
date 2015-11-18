@@ -132,6 +132,7 @@ public:
 	int norms;
 	Point* vertList;
 	Point* normList;
+	Point* boundingBox;
 	faceStruct *faceList;
 
 	// Functions

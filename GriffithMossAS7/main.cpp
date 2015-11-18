@@ -277,6 +277,7 @@ void rayTrace() {
 
 			// Load the current pixel with this color
 			fb->SetPixel(x, y, c);
+			delete r;
 		}
 	}
 	printf("Finished drawing scene!\n");
@@ -463,6 +464,7 @@ void localColorCalc(float &r, float &g, float &b, junction intersect, Ray *ray) 
 		r = r + light_r * ((intersect.element.dif_k * intersect.element.dif_r * NdotL) + (intersect.element.spec_k * intersect.element.spec_r * RdotV_exp));
 		g = g + light_g * ((intersect.element.dif_k * intersect.element.dif_g * NdotL) + (intersect.element.spec_k * intersect.element.spec_g * RdotV_exp));
 		b = b + light_b * ((intersect.element.dif_k * intersect.element.dif_b * NdotL) + (intersect.element.spec_k * intersect.element.spec_b * RdotV_exp));
+		delete temp;
 	}
 }
 
@@ -658,7 +660,7 @@ int main(int argc, char* argv[])
 	image_plane_distance = 8;
 	image_plane_size = 5;
 
-	layoutReader("red_sphere_and_teapot.rtl");
+	layoutReader("redsphere.rtl");
 
     // Initialize GLUT
     glutInit(&argc, argv);
