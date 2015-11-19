@@ -1,0 +1,2 @@
+This texture map is from:
+http://developer.nvidia.com/object/cube_map_ogl_tutorial.html
