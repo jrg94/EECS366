@@ -109,25 +109,18 @@ void Mesh::Load(char *filename, int sign, float x, float y, float z)
 	}
 	fclose(fp);
 
-	// Build translation matrix
-	float matrix[16];
-	matrix[0] = matrix[5] = matrix[10] = matrix[15] = 1.0;
-	matrix[1] = matrix[2] = matrix[3] = matrix[4] = 0.0;
-	matrix[6] = matrix[7] = matrix[8] = matrix[9] = 0.0;
-	matrix[11] = matrix[12] = matrix[13] = matrix[14] = 0.0;
-
-	matrix[12] += x;
-	matrix[13] += y;
-	matrix[14] += z;
-
 	// The part below calculates the normals of each vertex
 	normCount = (int *)malloc(sizeof(int)*verts);
 	for (i = 0; i < verts; i++)
 	{
-		vertList[i].x = matrix[0] * vertList[i].x + matrix[4] * vertList[i].y + matrix[8] * vertList[i].z + matrix[12] * vertList[i].w;
-		vertList[i].y = matrix[1] * vertList[i].x + matrix[5] * vertList[i].y + matrix[9] * vertList[i].z + matrix[13] * vertList[i].w;
-		vertList[i].z = matrix[2] * vertList[i].x + matrix[6] * vertList[i].y + matrix[10] * vertList[i].z + matrix[14] * vertList[i].w;
-		vertList[i].w = matrix[3] * vertList[i].x + matrix[7] * vertList[i].y + matrix[11] * vertList[i].z + matrix[15] * vertList[i].w;
+		// Hardcoded translate
+		Point temp;
+		temp.x = 1.0 * vertList[i].x + 0.0 * vertList[i].y + 0.0 * vertList[i].z + x * 1.0;
+		temp.y = 0.0 * vertList[i].x + 1.0 * vertList[i].y + 0.0 * vertList[i].z + y * 1.0;
+		temp.z = 0.0 * vertList[i].x + 0.0 * vertList[i].y + 1.0 * vertList[i].z + z * 1.0;
+		temp.w = 0.0 * vertList[i].x + 0.0 * vertList[i].y + 0.0 * vertList[i].z + 1.0 * 1.0;
+		vertList[i] = temp;
+
 		normList[i].x = normList[i].y = normList[i].z = 0.0;
 		normCount[i] = 0;
 	}

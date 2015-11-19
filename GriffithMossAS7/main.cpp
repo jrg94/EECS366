@@ -669,7 +669,7 @@ int main(int argc, char* argv[])
 	image_plane_distance = 8;
 	image_plane_size = 5;
 
-	layoutReader("red_sphere_and_teapot.rtl");
+	layoutReader("redsphere.rtl");
 
     // Initialize GLUT
     glutInit(&argc, argv);
@@ -692,7 +692,7 @@ int main(int argc, char* argv[])
 	glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
 
-	//rayTrace();
+	rayTrace();
 
     // Switch to main loop
     glutMainLoop();
