@@ -18,7 +18,7 @@ Evelyn Moss
 #include <windows.h>
 
 #include "glprocs.h"
-# include "assign8_temp.h"
+#include "assign8.h"
 #include "read_tga.h"
 
 #define PI 3.14159265359

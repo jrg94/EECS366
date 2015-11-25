@@ -146,7 +146,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="assign8_temp.h" />
+    <ClInclude Include="assign8.h" />
     <ClInclude Include="glext.h" />
     <ClInclude Include="glprocs.h" />
     <ClInclude Include="glxext.h" />

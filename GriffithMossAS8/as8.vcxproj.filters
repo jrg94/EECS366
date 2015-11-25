@@ -33,7 +33,7 @@
     <ClInclude Include="tga.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="assign8_temp.h">
+    <ClInclude Include="assign8.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
