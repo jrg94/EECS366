@@ -1,8 +1,10 @@
 /*
 
 EECS 366/466 COMPUTER GRAPHICS
-Template for Assignment 8-MAPPING
-Spring 2006
+Assignment 8-MAPPING
+Fall 2015
+Jeremy Griffith
+Evelyn Moss
 
 */
 

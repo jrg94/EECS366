@@ -44,10 +44,10 @@
     <ClCompile Include="tga.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="assign8_temp.cpp">
+    <ClCompile Include="glprocs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="glprocs.c">
+    <ClCompile Include="assign8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

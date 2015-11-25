@@ -154,7 +154,7 @@
     <ClInclude Include="tga.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="assign8_temp.cpp" />
+    <ClCompile Include="assign8.cpp" />
     <ClCompile Include="glprocs.c" />
     <ClCompile Include="read_tga.cpp" />
     <ClCompile Include="tga.c" />
