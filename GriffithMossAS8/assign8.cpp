@@ -23,7 +23,7 @@
 #define PI 3.14159265359
 
 // Define the number of algorithms in this assignment
-#define NUM_OF_ALGORITHMS 1
+#define NUM_OF_ALGORITHMS 11
 
 // Define an enum for mapping algorithms
 #define TEXTURE_MAPPING 0
@@ -83,7 +83,7 @@ bool MouseRight = false;
 
 // Program functionality variables
 int algorithmIndex = 0;
-int algorithList[] = {TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, BUMP_MAPPING, BUMP_MAPPING}; // 11
+int algorithmList[] = {TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, BUMP_MAPPING, BUMP_MAPPING}; // 11
 int objectList[] = {PLANE, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, PLANE, SPHERE}; // 11
 int mapList[] = {PLANE_MAP, PLANE_MAP, PLANE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, CUBE_MAP, CUBE_MAP, NONE, NONE}; // 11
 
@@ -235,6 +235,51 @@ void MotionFunc(int x, int y) {
 }
 
 /**
+ * Prints algorithm information about the
+ * current algorithm settings
+ */
+void PrintAlgorithm(int alg) {
+	printf("Algorithm #%d\n", algorithmIndex);
+	switch (alg) {
+	case 0:
+		printf("texture mapping - plane, planar mapping\n");
+		break;
+	case 1:
+		printf("texture mapping - sphere, planar mapping\n");
+		break;
+	case 2:
+		printf("texture mapping - teapot, planar mapping\n");
+		break;
+	case 3:
+		printf("texture mapping - sphere, spherical mapping\n");
+		break;
+	case 4:
+		printf("texture mapping - teapot, spherical mapping\n");
+		break;
+	case 5:
+		printf("environment mapping - sphere, sphere map\n");
+		break;
+	case 6:
+		printf("environment mapping - teapot, sphere map\n");
+		break;
+	case 7:
+		printf("environment mapping - sphere, cube map [EXTRA CREDIT]\n");
+		break;
+	case 8:
+		printf("environment mapping - teapot, cube map [EXTRA CREDIT]\n");
+		break;
+	case 9:
+		printf("bump mapping - plane\n");
+		break;
+	case 10:
+		printf("bump mapping - sphere [EXTRA CREDIT]\n");
+		break;
+	default:
+		break;
+	}
+}
+
+/**
  * Motion and camera controls
  */
 void KeyboardFunc(unsigned char key, int x, int y) {
@@ -244,6 +289,7 @@ void KeyboardFunc(unsigned char key, int x, int y) {
 	case 'A':
 	case 'a':
 		algorithmIndex = (algorithmIndex + 1) % NUM_OF_ALGORITHMS;
+		PrintAlgorithm(algorithmIndex);
 		break;
 	// Quits the program
 	case 'Q':
@@ -326,6 +372,7 @@ int main(int argc, char **argv) {
 	//setShaders();
 	
 	meshReader("teapot.obj", 1);
+	PrintAlgorithm(algorithmIndex);
 
 	glutMainLoop();
 
