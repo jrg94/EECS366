@@ -61,12 +61,10 @@ int MouseY = 0;
 bool MouseLeft = false;
 bool MouseRight = false;
 
-
-
-
-
-void DisplayFunc(void) 
-{
+/**
+ * The display function for the GLUT Main Loop
+ */
+void DisplayFunc(void)  {
     GLuint id ;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -128,8 +126,7 @@ void DisplayFunc(void)
 
     delete TGAImage;
 
-	for (int i = 0; i < faces; i++)
-	{
+	for (int i = 0; i < faces; i++) {
 		
 		glBegin(GL_TRIANGLES);
 			point v1, v2, v3, n1, n2, n3;
@@ -153,20 +150,23 @@ void DisplayFunc(void)
 	}	
 
 	//glutSolidTeapot(1);
-//	setParameters(program);
+	//setParameters(program);
 	glutSwapBuffers();
 }
 
-void ReshapeFunc(int x,int y)
-{
+/**
+ * The reshape function for the GLUT Main Loop
+ */
+void ReshapeFunc(int x,int y) {
     glViewport(0,0,x,y);
     WindowWidth = x;
     WindowHeight = y;
 }
 
-
-void MouseFunc(int button,int state,int x,int y)
-{
+/**
+ * The mouse function for the GLUT Main Loop
+ */
+void MouseFunc(int button,int state,int x,int y) {
 	MouseX = x;
 	MouseY = y;
 
@@ -176,8 +176,11 @@ void MouseFunc(int button,int state,int x,int y)
 		MouseRight = !(bool) state;
 }
 
-void MotionFunc(int x, int y)
-{
+/**
+ * The motion function for the GLUT Main Loop
+ */
+void MotionFunc(int x, int y) {
+
 	if(MouseLeft)
 	{
         CameraTheta += 0.01*PI*(MouseX - x);
@@ -200,13 +203,11 @@ void MotionFunc(int x, int y)
 	glutPostRedisplay();
 }
 
+/**
+ * Motion and camera controls
+ */
+void KeyboardFunc(unsigned char key, int x, int y) {
 
-
-
-
-//Motion and camera controls
-void KeyboardFunc(unsigned char key, int x, int y)
-{
     switch(key)
 	{
 	case 'A':
@@ -266,8 +267,10 @@ void KeyboardFunc(unsigned char key, int x, int y)
 	glutPostRedisplay();
 }
 
-int main(int argc, char **argv) 
-{			  
+/**
+ * The main function
+ */
+int main(int argc, char **argv) {			  
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -299,26 +302,21 @@ Setting the shader files
 Setting the shader variables
 *************************************************************/
 
-void error_exit(int status, char *text)
-{
+void error_exit(int status, char *text) {
 
 	// Print error message
-
 	fprintf(stderr,"Internal Error %i: ", status);
 	fprintf(stderr,text);
 	printf("\nTerminating as Result of Internal Error.\nPress Enter to exit.\n");
 
 	// Keep the terminal open
-
 	int anyKey = getchar();
 
 	// Exit program
-
 	exit(status);
 }
 
-int PrintOGLError(char *file, int line)
-{
+int PrintOGLError(char *file, int line) {
     GLenum glErr;
     int    retCode = 0;
 
@@ -333,8 +331,7 @@ int PrintOGLError(char *file, int line)
 }
 
 
-void setShaders() 
-{
+void setShaders() {
 
 	char *vs = NULL,*fs = NULL;
 
@@ -402,15 +399,16 @@ void setShaders()
 	glUseProgramObjectARB(p);
 
 	    
-//	setParameters(p);
+	//setParameters(p);
 
 }
 
-//Gets the location of the uniform variable given with "name" in the memory
-//and tests whether the process was successfull.
-//Returns the location of the queried uniform variable
-int getUniformVariable(GLuint program,char *name)
-{
+/**
+ * Gets the location of the uniform variable given with "name" in the memory
+ * and tests whether the process was successfull.
+ * Returns the location of the queried uniform variable
+ */
+int getUniformVariable(GLuint program,char *name) {
 	int location = glGetUniformLocationARB(program, name);
 	
 	if (location == -1)
@@ -421,8 +419,7 @@ int getUniformVariable(GLuint program,char *name)
 	return location;
 }
 
-void update_Light_Position()
-{
+void update_Light_Position() {
 	
 	// Create light components
 	GLfloat light_position[] = { CameraRadius*cos(CameraTheta)*sin(CameraPhi),			  
@@ -434,8 +431,7 @@ void update_Light_Position()
 }
 
 //Sets the light positions, etc. parameters for the shaders
-void setParameters(GLuint program)
-{
+void setParameters(GLuint program) {
 	int light_loc;
 	int ambient_loc,diffuse_loc,specular_loc;
 	int exponent_loc;
@@ -508,8 +504,7 @@ char *shaderFileRead(char *fn) {
 	return content;
 }
 
-void meshReader (char *filename,int sign)
-{
+void meshReader (char *filename,int sign) {
   float x,y,z,len;
   int i;
   char letter;
