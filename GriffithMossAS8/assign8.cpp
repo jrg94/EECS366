@@ -513,6 +513,36 @@ void setParameters(GLuint program) {
 
 }
 
+/**
+ * Determines the state of the scene
+ */
+void SetScene() {
+
+	// If we are texture mapping
+	if (algorithmList[algorithmIndex] == TEXTURE_MAPPING) {
+		// And if we are using a plane map
+		if (mapList[algorithmIndex] == PLANE_MAP) {
+
+		}
+		// And if we are using a sphere map
+		else if (mapList[algorithmIndex] == SPHERE_MAP) {
+
+		}
+		// Otherwise, this is not a valid scene
+		else {
+			printf("Not a valid scene\n");
+		}
+	}
+
+	// If we are environment mapping
+	else if (algorithmList[algorithmIndex] == ENVIRONMENT_MAPPING) {
+
+	}
+	// If we are bump mapping
+	else {
+
+	}
+}
 
 /****************************************************************
 Utility methods:
