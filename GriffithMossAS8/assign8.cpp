@@ -111,7 +111,7 @@ void DisplayFunc(void)  {
 	glEnable(GL_DEPTH_TEST);	
 	glEnable(GL_TEXTURE_2D);
 
-	//	setParameters(program);
+	setParameters(program);
 
 	// Load image from tga file
 	TGA *TGAImage	= new TGA("./sphericalenvironmentmap/house2.tga");
@@ -164,8 +164,6 @@ void DisplayFunc(void)  {
 			n2 = vertList[faceList[i].v2];
 			n3 = vertList[faceList[i].v3];
 
-			// Algorithm info will be happening here
-
 			// GL Functions for displaying this face
 			glNormal3f(n1.x, n1.y, n1.z);
 			glTexCoord2f (v1.x, v1.y);
@@ -181,7 +179,7 @@ void DisplayFunc(void)  {
 	}	
 
 	//glutSolidTeapot(1);
-	//setParameters(program);
+	setParameters(program);
 	glutSwapBuffers();
 }
 
@@ -358,18 +356,15 @@ int main(int argc, char **argv) {
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(320,320);
-	glutCreateWindow("Assignment 6");
-
-
+	glutCreateWindow("Assignment 8");
 
 	glutDisplayFunc(DisplayFunc);
 	glutReshapeFunc(ReshapeFunc);
 	glutMouseFunc(MouseFunc);
     glutMotionFunc(MotionFunc);
     glutKeyboardFunc(KeyboardFunc);
-
 	
-	//setShaders();
+	setShaders();
 	
 	meshReader("teapot.obj", 1);
 	PrintAlgorithm(algorithmIndex);
