@@ -1,12 +1,10 @@
-/*
-
-EECS 366/466 COMPUTER GRAPHICS
-Assignment 8-MAPPING
-Fall 2015
-Jeremy Griffith
-Evelyn Moss
-
-*/
+/**
+ * EECS 366/466 COMPUTER GRAPHICS
+ * Assignment 8-MAPPING
+ * Fall 2015
+ * Jeremy Griffith
+ * Evelyn Moss
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,19 +20,18 @@ Evelyn Moss
 #include "read_tga.h"
 
 #define PI 3.14159265359
+#define NUM_OF_ALGORITHMS 1
 
 #define PrintOpenGLError()::PrintOGLError(__FILE__, __LINE__)
 
 using namespace std;
 
-
-//object related information
+// Object related information
 int verts, faces, norms;    // Number of vertices, faces and normals in the system
 point *vertList, *normList; // Vertex and Normal Lists
 faceStruct *faceList;	    // Face List
 
-
-//Illimunation and shading related declerations
+// Illimunation and shading related declerations
 char *shaderFileRead(char *fn);
 GLuint vertex_shader,fragment_shader,p;
 int illimunationMode = 0;
@@ -42,24 +39,23 @@ int shadingMode = 0;
 int lightSource = 0;
 int program=-1;
 
-
-//Parameters for Copper (From: "Computer Graphics Using OpenGL" BY F.S. Hill, Jr.) 
+// Parameters for Copper (From: "Computer Graphics Using OpenGL" BY F.S. Hill, Jr.) 
 GLfloat ambient_cont [] = {0.19125,0.0735,0.0225};
 GLfloat diffuse_cont [] = {0.7038,0.27048,0.0828};
 GLfloat specular_cont [] = {0.256777,0.137622,0.086014};
 GLfloat exponent = 12.8;
 
-
-//Projection, camera contral related declerations
+// Projection, camera contral related declerations
 int WindowWidth,WindowHeight;
 bool LookAtObject = false;
 bool ShowAxes = true;
 
-
-
+// Camera declarations
 float CameraRadius = 10;
 float CameraTheta = PI / 2;
 float CameraPhi = PI / 2;
+
+// Mouse declarations
 int MouseX = 0;
 int MouseY = 0;
 bool MouseLeft = false;
