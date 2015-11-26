@@ -61,6 +61,9 @@ int MouseY = 0;
 bool MouseLeft = false;
 bool MouseRight = false;
 
+// Program functionality variables
+int algorithmIndex = 0;
+
 /**
  * The display function for the GLUT Main Loop
  */
@@ -208,16 +211,18 @@ void MotionFunc(int x, int y) {
  */
 void KeyboardFunc(unsigned char key, int x, int y) {
 
-    switch(key)
-	{
+    switch(key) {
+	// Cycles through the different algorithms
 	case 'A':
 	case 'a':
-		ShowAxes = !ShowAxes;
+		algorithmIndex = (algorithmIndex + 1) % NUM_OF_ALGORITHMS;
 		break;
+	// Quits the program
 	case 'Q':
 	case 'q':
 		exit(1);
 		break;
+	// Changes the illumination mode
 	case 'w':
 	case 'W':
 		if (illimunationMode == 0)
@@ -229,6 +234,7 @@ void KeyboardFunc(unsigned char key, int x, int y) {
 			illimunationMode = 0;
 		}
 		break;
+	// Changes the shading mode
 	case 'e':
 	case 'E':
 		if (shadingMode == 0)
@@ -240,6 +246,7 @@ void KeyboardFunc(unsigned char key, int x, int y) {
 			shadingMode =0;
 		}
 		break;
+	// Changes the light source
 	case 'd':
 	case 'D':
 		if (lightSource == 0)
@@ -251,6 +258,7 @@ void KeyboardFunc(unsigned char key, int x, int y) {
 			lightSource =0;
 		}
 		break;
+	// Changes the color of the light source
 	case 'f':
 	case 'F':
 		if (lightSource == 1)
@@ -259,7 +267,7 @@ void KeyboardFunc(unsigned char key, int x, int y) {
 			//light color cycling through pure red, green, blue, and white.
 		}
 		break;
-
+	// If none of the above, break
     default:
 		break;
     }
@@ -302,6 +310,9 @@ Setting the shader files
 Setting the shader variables
 *************************************************************/
 
+/**
+ * A helper method for reporting an error and exiting
+ */
 void error_exit(int status, char *text) {
 
 	// Print error message
@@ -316,6 +327,9 @@ void error_exit(int status, char *text) {
 	exit(status);
 }
 
+/**
+ * Reports a glError
+ */
 int PrintOGLError(char *file, int line) {
     GLenum glErr;
     int    retCode = 0;
@@ -330,7 +344,9 @@ int PrintOGLError(char *file, int line) {
     return retCode;
 }
 
-
+/**
+ * A function for setting up the shaders
+ */
 void setShaders() {
 
 	char *vs = NULL,*fs = NULL;
@@ -419,6 +435,9 @@ int getUniformVariable(GLuint program,char *name) {
 	return location;
 }
 
+/**
+ * A function for updating the light position
+ */
 void update_Light_Position() {
 	
 	// Create light components
@@ -426,11 +445,11 @@ void update_Light_Position() {
 			  CameraRadius*cos(CameraPhi) , 
 			  CameraRadius*sin(CameraTheta)*sin(CameraPhi),0.0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	
-
 }
 
-//Sets the light positions, etc. parameters for the shaders
+/**
+ * Sets the light positions, etc. parameters for the shaders
+ */
 void setParameters(GLuint program) {
 	int light_loc;
 	int ambient_loc,diffuse_loc,specular_loc;
@@ -468,7 +487,10 @@ Utility methods:
 shader file reader
 mesh reader for objectt
 ****************************************************************/
-//Read the shader files, given as parameter.
+
+/**
+ * Read the shader files, given as parameter.
+ */
 char *shaderFileRead(char *fn) {
 
 
@@ -504,6 +526,9 @@ char *shaderFileRead(char *fn) {
 	return content;
 }
 
+/**
+ * Reads in the vertices/faces for an object from a .obj file
+ */
 void meshReader (char *filename,int sign) {
   float x,y,z,len;
   int i;
