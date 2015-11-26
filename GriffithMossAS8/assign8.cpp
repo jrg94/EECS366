@@ -19,9 +19,29 @@
 #include "assign8.h"
 #include "read_tga.h"
 
+// Define the pi constant
 #define PI 3.14159265359
+
+// Define the number of algorithms in this assignment
 #define NUM_OF_ALGORITHMS 1
 
+// Define an enum for mapping algorithms
+#define TEXTURE_MAPPING 0
+#define ENVIRONMENT_MAPPING 1
+#define BUMP_MAPPING 2
+
+// Define an enum for objects
+#define PLANE 0
+#define SPHERE 1
+#define TEAPOT 2
+
+// Define an enum for mapping objects
+#define NONE -1
+#define PLANE_MAP 0
+#define SPHERE_MAP 1
+#define CUBE_MAP 2
+
+// Define some functions
 #define PrintOpenGLError()::PrintOGLError(__FILE__, __LINE__)
 
 using namespace std;
@@ -63,6 +83,9 @@ bool MouseRight = false;
 
 // Program functionality variables
 int algorithmIndex = 0;
+int algorithList[] = {TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, BUMP_MAPPING, BUMP_MAPPING}; // 11
+int objectList[] = {PLANE, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, PLANE, SPHERE}; // 11
+int mapList[] = {PLANE_MAP, PLANE_MAP, PLANE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, CUBE_MAP, CUBE_MAP, NONE, NONE}; // 11
 
 /**
  * The display function for the GLUT Main Loop
@@ -132,6 +155,7 @@ void DisplayFunc(void)  {
 	for (int i = 0; i < faces; i++) {
 		
 		glBegin(GL_TRIANGLES);
+			// Store face information here
 			point v1, v2, v3, n1, n2, n3;
 			v1 = vertList[faceList[i].v1];
 			v2 = vertList[faceList[i].v2];
@@ -139,6 +163,10 @@ void DisplayFunc(void)  {
 			n1 = vertList[faceList[i].v1];
 			n2 = vertList[faceList[i].v2];
 			n3 = vertList[faceList[i].v3];
+
+			// Algorithm info will be happening here
+
+			// GL Functions for displaying this face
 			glNormal3f(n1.x, n1.y, n1.z);
 			glTexCoord2f (v1.x, v1.y);
 			glVertex3f(v1.x, v1.y, v1.z);
