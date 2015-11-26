@@ -22,6 +22,7 @@ void update_Light_Position();
 void setParameters(GLuint program);
 
 GLuint LoadTexture(char* filename);
+void SetScene();
 
 void error_exit(int status, char *text);
 int PrintOGLError(char *file, int line);

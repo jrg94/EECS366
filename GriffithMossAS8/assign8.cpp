@@ -85,7 +85,7 @@ bool MouseRight = false;
 int algorithmIndex = 0;
 int algorithmList[] = {TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, BUMP_MAPPING, BUMP_MAPPING}; // 11
 int objectList[] = {PLANE, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, PLANE, SPHERE}; // 11
-int mapList[] = {PLANE_MAP, PLANE_MAP, PLANE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, CUBE_MAP, CUBE_MAP, NONE, NONE}; // 11
+int mapList[] = {PLANE_MAP, PLANE_MAP, PLANE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, CUBE_MAP, CUBE_MAP, PLANE_MAP, SPHERE_MAP}; // 11
 
 /**
  * The display function for the GLUT Main Loop
@@ -112,7 +112,7 @@ void DisplayFunc(void)  {
 
 	//setParameters(program);
 
-	LoadTexture("./sphericalenvironmentmap/house2.tga");
+	LoadTexture("./cubicenvironmentmap/cm_back2.tga");
 
 	for (int i = 0; i < faces; i++) {
 		
@@ -492,6 +492,8 @@ void setParameters(GLuint program) {
 	float tangent = 0.0;
 	float tangent_loc;
 
+	// Loads the current texture based on algorithmIndex
+	SetScene();
 	update_Light_Position();
 
 	//Access uniform variables in shaders
@@ -520,13 +522,14 @@ void SetScene() {
 
 	// If we are texture mapping
 	if (algorithmList[algorithmIndex] == TEXTURE_MAPPING) {
+
 		// And if we are using a plane map
 		if (mapList[algorithmIndex] == PLANE_MAP) {
-
+			// "./planartexturemap/abstract2.tga"
 		}
 		// And if we are using a sphere map
 		else if (mapList[algorithmIndex] == SPHERE_MAP) {
-
+			// "./sphericaltexturemap/earth2.tga"
 		}
 		// Otherwise, this is not a valid scene
 		else {
@@ -537,10 +540,38 @@ void SetScene() {
 	// If we are environment mapping
 	else if (algorithmList[algorithmIndex] == ENVIRONMENT_MAPPING) {
 
+		// And if we are using a sphere map
+		if (mapList[algorithmIndex] == SPHERE_MAP) {
+			// "./sphericalenvironmentmap/house2.tga"
+		}
+		// And if we are using a cube map
+		else if (mapList[algorithmIndex] == CUBE_MAP) {
+			// Requires 6 pieces
+			// "./cubicenvironmentmap/cm_back2.tga"
+		}
+		// Otherwise, this is not a valid scene
+		else {
+			printf("Not a valid scene\n");
+		}
 	}
+
 	// If we are bump mapping
 	else {
 
+		// And if we are using a plane map
+		if (mapList[algorithmIndex] == PLANE_MAP) {
+			// Requires 3 pieces
+			// "./planarbumpmap/abstract2.tga"
+		}
+		// And if we are using a sphere map
+		else if (mapList[algorithmIndex] == SPHERE_MAP) {
+			// Requires 3 pieces
+			// "./sphericalbumpmap/earth2.tga"
+		}
+		// Otherwise, this is not a valid scene
+		else {
+			printf("Not a valid scene\n");
+		}
 	}
 }
 
