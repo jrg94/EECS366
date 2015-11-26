@@ -91,7 +91,6 @@ int mapList[] = {PLANE_MAP, PLANE_MAP, PLANE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE
  * The display function for the GLUT Main Loop
  */
 void DisplayFunc(void)  {
-    GLuint id ;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//load projection and viewing transforms
@@ -111,46 +110,9 @@ void DisplayFunc(void)  {
 	glEnable(GL_DEPTH_TEST);	
 	glEnable(GL_TEXTURE_2D);
 
-	setParameters(program);
+	//setParameters(program);
 
-	// Load image from tga file
-	TGA *TGAImage	= new TGA("./sphericalenvironmentmap/house2.tga");
-	//TGA *TGAImage	= new TGA("./cubicenvironmentmap/cm_right.tga");
-
-	// Use to dimensions of the image as the texture dimensions
-	uint width	= TGAImage->GetWidth();
-	uint height	= TGAImage->GetHeigth();
-	
-	// The parameters for actual textures are changed
-
-	glGenTextures(1, &id);
-
-	glBindTexture(GL_TEXTURE_2D, id);
-
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-
-	// Finaly build the mipmaps
-	glTexImage2D (GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, TGAImage->GetPixels());
-
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height, GL_RGBA, GL_UNSIGNED_BYTE, TGAImage->GetPixels());
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	glEnable( GL_TEXTURE_2D );
-
-	glBindTexture (GL_TEXTURE_2D, id); 
-
-    delete TGAImage;
+	LoadTexture("./sphericalenvironmentmap/house2.tga");
 
 	for (int i = 0; i < faces; i++) {
 		
@@ -179,7 +141,7 @@ void DisplayFunc(void)  {
 	}	
 
 	//glutSolidTeapot(1);
-	setParameters(program);
+	//setParameters(program);
 	glutSwapBuffers();
 }
 
@@ -364,7 +326,7 @@ int main(int argc, char **argv) {
     glutMotionFunc(MotionFunc);
     glutKeyboardFunc(KeyboardFunc);
 	
-	setShaders();
+	//setShaders();
 	
 	meshReader("teapot.obj", 1);
 	PrintAlgorithm(algorithmIndex);
@@ -554,9 +516,56 @@ void setParameters(GLuint program) {
 
 /****************************************************************
 Utility methods:
+texture file reader
 shader file reader
 mesh reader for objectt
 ****************************************************************/
+
+GLuint LoadTexture(char* filename) {
+
+	GLuint id;
+
+	// Load image from tga file
+	TGA *TGAImage = new TGA(filename);
+	//TGA *TGAImage	= new TGA("./cubicenvironmentmap/cm_right.tga");
+
+	// Use to dimensions of the image as the texture dimensions
+	uint width = TGAImage->GetWidth();
+	uint height = TGAImage->GetHeigth();
+
+	// The parameters for actual textures are changed
+
+	glGenTextures(1, &id);
+
+	glBindTexture(GL_TEXTURE_2D, id);
+
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+
+	// Finaly build the mipmaps
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, TGAImage->GetPixels());
+
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height, GL_RGBA, GL_UNSIGNED_BYTE, TGAImage->GetPixels());
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glEnable(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, id);
+
+	delete TGAImage;
+
+	return id;
+}
 
 /**
  * Read the shader files, given as parameter.

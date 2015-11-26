@@ -21,6 +21,8 @@ int getUniformVariable(GLuint program,char *name);
 void update_Light_Position();
 void setParameters(GLuint program);
 
+GLuint LoadTexture(char* filename);
+
 void error_exit(int status, char *text);
 int PrintOGLError(char *file, int line);
 void setShaders() ;
