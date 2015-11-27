@@ -86,6 +86,7 @@ int algorithmIndex = 0;
 int algorithmList[] = {TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, BUMP_MAPPING, BUMP_MAPPING}; // 11
 int objectList[] = {PLANE, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, PLANE, SPHERE}; // 11
 int mapList[] = {PLANE_MAP, PLANE_MAP, PLANE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, CUBE_MAP, CUBE_MAP, PLANE_MAP, SPHERE_MAP}; // 11
+GLuint texture_map, environment_map, bump_map;
 
 /**
  * The display function for the GLUT Main Loop
@@ -110,9 +111,7 @@ void DisplayFunc(void)  {
 	glEnable(GL_DEPTH_TEST);	
 	glEnable(GL_TEXTURE_2D);
 
-	//setParameters(program);
-
-	LoadTexture("./cubicenvironmentmap/cm_back2.tga");
+	setParameters(program);
 
 	for (int i = 0; i < faces; i++) {
 		
@@ -417,7 +416,6 @@ void setShaders() {
 	//create an empty program object to attach the shader objects
 	p = glCreateProgramObjectARB();
 
-	program =p;
 	//attach the shader objects to the program object
 	glAttachObjectARB(p,vertex_shader);
 	glAttachObjectARB(p,fragment_shader);
@@ -446,9 +444,8 @@ void setShaders() {
 	//Start to use the program object, which is the part of the current rendering state
 	glUseProgramObjectARB(p);
 
-	    
-	//setParameters(p);
-
+	setParameters(p);
+	program = p;
 }
 
 /**
@@ -497,17 +494,17 @@ void setParameters(GLuint program) {
 	update_Light_Position();
 
 	//Access uniform variables in shaders
-	ambient_loc = getUniformVariable(program, "AmbientContribution");	
-	glUniform3fvARB(ambient_loc,1, ambient_cont);
+	//ambient_loc = getUniformVariable(program, "AmbientContribution");	
+	//glUniform3fvARB(ambient_loc,1, ambient_cont);
 
-	diffuse_loc = getUniformVariable(program, "DiffuseContribution");
-	glUniform3fvARB(diffuse_loc,1, diffuse_cont);
+	//diffuse_loc = getUniformVariable(program, "DiffuseContribution");
+	//glUniform3fvARB(diffuse_loc,1, diffuse_cont);
 
-	specular_loc = getUniformVariable(program, "SpecularContribution");
-	glUniform3fvARB(specular_loc,1,specular_cont);
+	//specular_loc = getUniformVariable(program, "SpecularContribution");
+	//glUniform3fvARB(specular_loc,1,specular_cont);
 
-	exponent_loc = getUniformVariable(program, "exponent");
-	glUniform1fARB(exponent_loc,exponent);
+	//exponent_loc = getUniformVariable(program, "exponent");
+	//glUniform1fARB(exponent_loc,exponent);
 
 	//Access attributes in vertex shader
 	tangent_loc = glGetAttribLocationARB(program,"tang");
@@ -525,11 +522,11 @@ void SetScene() {
 
 		// And if we are using a plane map
 		if (mapList[algorithmIndex] == PLANE_MAP) {
-			// "./planartexturemap/abstract2.tga"
+			texture_map = LoadTexture("./planartexturemap/abstract2.tga");
 		}
 		// And if we are using a sphere map
 		else if (mapList[algorithmIndex] == SPHERE_MAP) {
-			// "./sphericaltexturemap/earth2.tga"
+			texture_map = LoadTexture("./sphericaltexturemap/earth2.tga");
 		}
 		// Otherwise, this is not a valid scene
 		else {
@@ -542,12 +539,13 @@ void SetScene() {
 
 		// And if we are using a sphere map
 		if (mapList[algorithmIndex] == SPHERE_MAP) {
-			// "./sphericalenvironmentmap/house2.tga"
+			environment_map = LoadTexture("./sphericalenvironmentmap/house2.tga");
 		}
 		// And if we are using a cube map
 		else if (mapList[algorithmIndex] == CUBE_MAP) {
 			// Requires 6 pieces
 			// "./cubicenvironmentmap/cm_back2.tga"
+			printf("Cube maps are not implemented -> Not sure how to handle a set of tga files\n");
 		}
 		// Otherwise, this is not a valid scene
 		else {
@@ -561,12 +559,12 @@ void SetScene() {
 		// And if we are using a plane map
 		if (mapList[algorithmIndex] == PLANE_MAP) {
 			// Requires 3 pieces
-			// "./planarbumpmap/abstract2.tga"
+			bump_map = LoadTexture("./planarbumpmap/abstract2.tga");
 		}
 		// And if we are using a sphere map
 		else if (mapList[algorithmIndex] == SPHERE_MAP) {
 			// Requires 3 pieces
-			// "./sphericalbumpmap/earth2.tga"
+			bump_map = LoadTexture("./sphericalbumpmap/earth2.tga");
 		}
 		// Otherwise, this is not a valid scene
 		else {
