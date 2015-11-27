@@ -47,9 +47,7 @@
 using namespace std;
 
 // Object related information
-int verts, faces, norms;    // Number of vertices, faces and normals in the system
-point *vertList, *normList; // Vertex and Normal Lists
-faceStruct *faceList;	    // Face List
+obj *objects;
 
 // Illimunation and shading related declerations
 char *shaderFileRead(char *fn);
@@ -113,17 +111,19 @@ void DisplayFunc(void)  {
 
 	setParameters(program);
 
-	for (int i = 0; i < faces; i++) {
+	obj curr = objects[objectList[algorithmIndex]];
+
+	for (int i = 0; i < curr.faces; i++) {
 		
 		glBegin(GL_TRIANGLES);
 			// Store face information here
 			point v1, v2, v3, n1, n2, n3;
-			v1 = vertList[faceList[i].v1];
-			v2 = vertList[faceList[i].v2];
-			v3 = vertList[faceList[i].v3];
-			n1 = vertList[faceList[i].v1];
-			n2 = vertList[faceList[i].v2];
-			n3 = vertList[faceList[i].v3];
+			v1 = curr.vertList[curr.faceList[i].v1];
+			v2 = curr.vertList[curr.faceList[i].v2];
+			v3 = curr.vertList[curr.faceList[i].v3];
+			n1 = curr.vertList[curr.faceList[i].v1];
+			n2 = curr.vertList[curr.faceList[i].v2];
+			n3 = curr.vertList[curr.faceList[i].v3];
 
 			// GL Functions for displaying this face
 			glNormal3f(n1.x, n1.y, n1.z);
@@ -326,8 +326,21 @@ int main(int argc, char **argv) {
     glutKeyboardFunc(KeyboardFunc);
 	
 	//setShaders();
-	
-	meshReader("teapot.obj", 1);
+
+	// Generate object list
+	objects = (obj *)malloc(sizeof(obj)*3);
+
+	// Initialize objects
+	for (int i = 0; i < 3; i++) {
+		objects[i].verts = objects[i].faces = objects[i].norms = 0;
+	}
+
+	// Create objects from files
+	meshReader("sphere.obj", 1, &objects[PLANE]);
+	meshReader("sphere.obj", 1, &objects[SPHERE]);
+	meshReader("teapot.obj", 1, &objects[TEAPOT]);
+
+	// Print current algorithm to console
 	PrintAlgorithm(algorithmIndex);
 
 	glutMainLoop();
@@ -415,6 +428,7 @@ void setShaders() {
 	
 	//create an empty program object to attach the shader objects
 	p = glCreateProgramObjectARB();
+	program = p;
 
 	//attach the shader objects to the program object
 	glAttachObjectARB(p,vertex_shader);
@@ -445,7 +459,6 @@ void setShaders() {
 	glUseProgramObjectARB(p);
 
 	setParameters(p);
-	program = p;
 }
 
 /**
@@ -667,7 +680,7 @@ char *shaderFileRead(char *fn) {
 /**
  * Reads in the vertices/faces for an object from a .obj file
  */
-void meshReader (char *filename,int sign) {
+void meshReader (char *filename, int sign, obj *object) {
   float x,y,z,len;
   int i;
   char letter;
@@ -675,6 +688,8 @@ void meshReader (char *filename,int sign) {
   int ix,iy,iz;
   int *normCount;
   FILE *fp;
+
+  //object = (obj *)malloc(sizeof(obj));
 
   fp = fopen(filename, "r");
   if (fp == NULL) { 
@@ -688,62 +703,62 @@ void meshReader (char *filename,int sign) {
       fscanf(fp,"%c %f %f %f\n",&letter,&x,&y,&z);
       if (letter == 'v')
 	  {
-		  verts++;
+		  object->verts++;
 	  }
       else
 	  {
-		  faces++;
+		  object->faces++;
 	  }
    }
 
   fclose(fp);
 
-  printf("verts : %d\n", verts);
-  printf("faces : %d\n", faces);
+  printf("verts : %d\n", object->verts);
+  printf("faces : %d\n", object->faces);
 
   // Dynamic allocation of vertex and face lists
-  faceList = (faceStruct *)malloc(sizeof(faceStruct)*faces);
-  vertList = (point *)malloc(sizeof(point)*verts);
-  normList = (point *)malloc(sizeof(point)*verts);
+  object->faceList = (faceStruct *)malloc(sizeof(faceStruct)*object->faces);
+  object->vertList = (point *)malloc(sizeof(point)*object->verts);
+  object->normList = (point *)malloc(sizeof(point)*object->verts);
 
   fp = fopen(filename, "r");
 
   // Read the veritces
-  for(i = 0;i < verts;i++)
+  for(i = 0;i < object->verts;i++)
     {
       fscanf(fp,"%c %f %f %f\n",&letter,&x,&y,&z);
-      vertList[i].x = x;
-      vertList[i].y = y;
-      vertList[i].z = z;
+      object->vertList[i].x = x;
+      object->vertList[i].y = y;
+      object->vertList[i].z = z;
     }
 
   // Read the faces
-  for(i = 0;i < faces;i++)
+  for(i = 0;i < object->faces;i++)
     {
       fscanf(fp,"%c %d %d %d\n",&letter,&ix,&iy,&iz);
-      faceList[i].v1 = ix - 1;
-      faceList[i].v2 = iy - 1;
-      faceList[i].v3 = iz - 1;
+      object->faceList[i].v1 = ix - 1;
+      object->faceList[i].v2 = iy - 1;
+      object->faceList[i].v3 = iz - 1;
     }
   fclose(fp);
 
 
   // The part below calculates the normals of each vertex
-  normCount = (int *)malloc(sizeof(int)*verts);
-  for (i = 0;i < verts;i++)
+  normCount = (int *)malloc(sizeof(int)*object->verts);
+  for (i = 0;i < object->verts;i++)
     {
-      normList[i].x = normList[i].y = normList[i].z = 0.0;
+      object->normList[i].x = object->normList[i].y = object->normList[i].z = 0.0;
       normCount[i] = 0;
     }
 
-  for(i = 0;i < faces;i++)
+  for(i = 0;i < object->faces;i++)
     {
-      v1.x = vertList[faceList[i].v2].x - vertList[faceList[i].v1].x;
-      v1.y = vertList[faceList[i].v2].y - vertList[faceList[i].v1].y;
-      v1.z = vertList[faceList[i].v2].z - vertList[faceList[i].v1].z;
-      v2.x = vertList[faceList[i].v3].x - vertList[faceList[i].v2].x;
-      v2.y = vertList[faceList[i].v3].y - vertList[faceList[i].v2].y;
-      v2.z = vertList[faceList[i].v3].z - vertList[faceList[i].v2].z;
+      v1.x = object->vertList[object->faceList[i].v2].x - object->vertList[object->faceList[i].v1].x;
+      v1.y = object->vertList[object->faceList[i].v2].y - object->vertList[object->faceList[i].v1].y;
+      v1.z = object->vertList[object->faceList[i].v2].z - object->vertList[object->faceList[i].v1].z;
+      v2.x = object->vertList[object->faceList[i].v3].x - object->vertList[object->faceList[i].v2].x;
+      v2.y = object->vertList[object->faceList[i].v3].y - object->vertList[object->faceList[i].v2].y;
+      v2.z = object->vertList[object->faceList[i].v3].z - object->vertList[object->faceList[i].v2].z;
 
       crossP.x = v1.y*v2.z - v1.z*v2.y;
       crossP.y = v1.z*v2.x - v1.x*v2.z;
@@ -755,24 +770,24 @@ void meshReader (char *filename,int sign) {
       crossP.y = -crossP.y/len;
       crossP.z = -crossP.z/len;
 
-      normList[faceList[i].v1].x = normList[faceList[i].v1].x + crossP.x;
-      normList[faceList[i].v1].y = normList[faceList[i].v1].y + crossP.y;
-      normList[faceList[i].v1].z = normList[faceList[i].v1].z + crossP.z;
-      normList[faceList[i].v2].x = normList[faceList[i].v2].x + crossP.x;
-      normList[faceList[i].v2].y = normList[faceList[i].v2].y + crossP.y;
-      normList[faceList[i].v2].z = normList[faceList[i].v2].z + crossP.z;
-      normList[faceList[i].v3].x = normList[faceList[i].v3].x + crossP.x;
-      normList[faceList[i].v3].y = normList[faceList[i].v3].y + crossP.y;
-      normList[faceList[i].v3].z = normList[faceList[i].v3].z + crossP.z;
-      normCount[faceList[i].v1]++;
-      normCount[faceList[i].v2]++;
-      normCount[faceList[i].v3]++;
+	  object->normList[object->faceList[i].v1].x = object->normList[object->faceList[i].v1].x + crossP.x;
+	  object->normList[object->faceList[i].v1].y = object->normList[object->faceList[i].v1].y + crossP.y;
+	  object->normList[object->faceList[i].v1].z = object->normList[object->faceList[i].v1].z + crossP.z;
+	  object->normList[object->faceList[i].v2].x = object->normList[object->faceList[i].v2].x + crossP.x;
+	  object->normList[object->faceList[i].v2].y = object->normList[object->faceList[i].v2].y + crossP.y;
+	  object->normList[object->faceList[i].v2].z = object->normList[object->faceList[i].v2].z + crossP.z;
+	  object->normList[object->faceList[i].v3].x = object->normList[object->faceList[i].v3].x + crossP.x;
+	  object->normList[object->faceList[i].v3].y = object->normList[object->faceList[i].v3].y + crossP.y;
+	  object->normList[object->faceList[i].v3].z = object->normList[object->faceList[i].v3].z + crossP.z;
+	  normCount[object->faceList[i].v1]++;
+	  normCount[object->faceList[i].v2]++;
+	  normCount[object->faceList[i].v3]++;
     }
-  for (i = 0;i < verts;i++)
+  for (i = 0;i < object->verts;i++)
     {
-      normList[i].x = (float)sign*normList[i].x / (float)normCount[i];
-      normList[i].y = (float)sign*normList[i].y / (float)normCount[i];
-      normList[i].z = (float)sign*normList[i].z / (float)normCount[i];
+      object->normList[i].x = (float)sign*object->normList[i].x / (float)normCount[i];
+	  object->normList[i].y = (float)sign*object->normList[i].y / (float)normCount[i];
+	  object->normList[i].z = (float)sign*object->normList[i].z / (float)normCount[i];
     }
 
 }

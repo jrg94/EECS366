@@ -1,4 +1,3 @@
-   
 uniform vec3 AmbientContribution,DiffuseContribution,SpecularContribution;
 uniform float exponent;
 

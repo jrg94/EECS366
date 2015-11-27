@@ -17,6 +17,12 @@ typedef struct _faceStruct {
   int n1,n2,n3;
 } faceStruct;
 
+typedef struct _obj {
+	int verts, faces, norms;    // Number of vertices, faces and normals in the system
+	point *vertList, *normList; // Vertex and Normal Lists
+	faceStruct *faceList;
+} obj;
+
 int getUniformVariable(GLuint program,char *name);
 void update_Light_Position();
 void setParameters(GLuint program);
@@ -27,6 +33,6 @@ void SetScene();
 void error_exit(int status, char *text);
 int PrintOGLError(char *file, int line);
 void setShaders() ;
-void meshReader (char *filename,int sign);
+void meshReader (char *filename, int sign, obj *object);
 
 #endif 
