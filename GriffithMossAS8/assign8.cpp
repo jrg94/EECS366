@@ -336,7 +336,7 @@ int main(int argc, char **argv) {
 	}
 
 	// Create objects from files
-	meshReader("sphere.obj", 1, &objects[PLANE]);
+	meshReader("plane.obj", 1, &objects[PLANE]);
 	meshReader("sphere.obj", 1, &objects[SPHERE]);
 	meshReader("teapot.obj", 1, &objects[TEAPOT]);
 
