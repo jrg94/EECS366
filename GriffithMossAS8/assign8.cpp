@@ -159,14 +159,25 @@ point getTextureCoordinates(point p) {
 		ret.y = p.y/2 + 0.5;
 		ret.z = 0;
 	}
-	// Sphere mapping - Assume radius of 1
+
+	// Sphere mapping - Assume center is 0,0,0
 	else if (mapList[algorithmIndex] == SPHERE_MAP) {
+
+		// ? = atan2(-(z - cz), x - cx)
 		float theta = atan(-p.z / p.x);
+
+		// ? = acos(-(y - cy) / r);
 		float phi = acos(-p.y);
+
+		// u = (? + ?) / 2 ?
 		ret.x = (theta + PI) / (2 * PI);
+
+		// v = ? / ?;
 		ret.y = phi / PI;
+
 		ret.z = 0;
 	}
+
 	// Covers cube mapping
 	else {
 		// printf("This type of mapping is not implemented\n");
