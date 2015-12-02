@@ -23,6 +23,8 @@ typedef struct _obj {
 	faceStruct *faceList;
 } obj;
 
+point getTextureCoordinates(point p);
+
 int getUniformVariable(GLuint program,char *name);
 void update_Light_Position();
 void setParameters(GLuint program);

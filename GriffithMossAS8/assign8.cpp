@@ -116,14 +116,17 @@ void DisplayFunc(void)  {
 	for (int i = 0; i < curr.faces; i++) {
 		
 		glBegin(GL_TRIANGLES);
-			// Store face information here
-			point v1, v2, v3, n1, n2, n3;
+			// Store face information here - vertex, normal, texture
+			point v1, v2, v3, n1, n2, n3, t1, t2, t3;
 			v1 = curr.vertList[curr.faceList[i].v1];
 			v2 = curr.vertList[curr.faceList[i].v2];
 			v3 = curr.vertList[curr.faceList[i].v3];
 			n1 = curr.vertList[curr.faceList[i].v1];
 			n2 = curr.vertList[curr.faceList[i].v2];
 			n3 = curr.vertList[curr.faceList[i].v3];
+			t1 = getTextureCoordinates(v1);
+			t2 = getTextureCoordinates(v2);
+			t3 = getTextureCoordinates(v3);
 
 			// GL Functions for displaying this face
 			glNormal3f(n1.x, n1.y, n1.z);
@@ -142,6 +145,13 @@ void DisplayFunc(void)  {
 	//glutSolidTeapot(1);
 	//setParameters(program);
 	glutSwapBuffers();
+}
+
+/**
+ * Produces texture coordinates
+ */
+point getTextureCoordinates(point p) {
+	return p;
 }
 
 /**
