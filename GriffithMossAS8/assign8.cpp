@@ -51,20 +51,20 @@ obj *objects;
 
 // Illimunation and shading related declerations
 char *shaderFileRead(char *fn);
-GLuint vertex_shader,fragment_shader,p;
+GLuint vertex_shader, fragment_shader, p;
 int illimunationMode = 0;
 int shadingMode = 0;
 int lightSource = 0;
-int program=-1;
+int program = -1;
 
 // Parameters for Copper (From: "Computer Graphics Using OpenGL" BY F.S. Hill, Jr.) 
-GLfloat ambient_cont [] = {0.19125,0.0735,0.0225};
-GLfloat diffuse_cont [] = {0.7038,0.27048,0.0828};
-GLfloat specular_cont [] = {0.256777,0.137622,0.086014};
+GLfloat ambient_cont[] = { 0.19125,0.0735,0.0225 };
+GLfloat diffuse_cont[] = { 0.7038,0.27048,0.0828 };
+GLfloat specular_cont[] = { 0.256777,0.137622,0.086014 };
 GLfloat exponent = 12.8;
 
 // Projection, camera contral related declerations
-int WindowWidth,WindowHeight;
+int WindowWidth, WindowHeight;
 bool LookAtObject = false;
 bool ShowAxes = true;
 
@@ -81,32 +81,32 @@ bool MouseRight = false;
 
 // Program functionality variables
 int algorithmIndex = 0;
-int algorithmList[] = {TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, BUMP_MAPPING, BUMP_MAPPING}; // 11
-int objectList[] = {PLANE, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, PLANE, SPHERE}; // 11
-int mapList[] = {PLANE_MAP, PLANE_MAP, PLANE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, CUBE_MAP, CUBE_MAP, PLANE_MAP, SPHERE_MAP}; // 11
+int algorithmList[] = { TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, TEXTURE_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, ENVIRONMENT_MAPPING, BUMP_MAPPING, BUMP_MAPPING }; // 11
+int objectList[] = { PLANE, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, SPHERE, TEAPOT, PLANE, SPHERE }; // 11
+int mapList[] = { PLANE_MAP, PLANE_MAP, PLANE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, SPHERE_MAP, CUBE_MAP, CUBE_MAP, PLANE_MAP, SPHERE_MAP }; // 11
 GLuint texture_map, environment_map, bump_map;
 
 /**
  * The display function for the GLUT Main Loop
  */
-void DisplayFunc(void)  {
+void DisplayFunc(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//load projection and viewing transforms
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-        
-	gluPerspective(60,(GLdouble) WindowWidth/WindowHeight,0.01,10000);
+
+	gluPerspective(60, (GLdouble)WindowWidth / WindowHeight, 0.01, 10000);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(CameraRadius*cos(CameraTheta)*sin(CameraPhi),
-			  CameraRadius*cos(CameraPhi),
-			  CameraRadius*sin(CameraTheta)*sin(CameraPhi),
-			  0,0,0,
-			  0,1,0);
+		CameraRadius*cos(CameraPhi),
+		CameraRadius*sin(CameraTheta)*sin(CameraPhi),
+		0, 0, 0,
+		0, 1, 0);
 
-	glEnable(GL_DEPTH_TEST);	
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 
 	setParameters(program);
@@ -114,33 +114,33 @@ void DisplayFunc(void)  {
 	obj curr = objects[objectList[algorithmIndex]];
 
 	for (int i = 0; i < curr.faces; i++) {
-		
-		glBegin(GL_TRIANGLES);
-			// Store face information here - vertex, normal, texture
-			point v1, v2, v3, n1, n2, n3, t1, t2, t3;
-			v1 = curr.vertList[curr.faceList[i].v1];
-			v2 = curr.vertList[curr.faceList[i].v2];
-			v3 = curr.vertList[curr.faceList[i].v3];
-			n1 = curr.vertList[curr.faceList[i].v1];
-			n2 = curr.vertList[curr.faceList[i].v2];
-			n3 = curr.vertList[curr.faceList[i].v3];
-			t1 = getTextureCoordinates(v1);
-			t2 = getTextureCoordinates(v2);
-			t3 = getTextureCoordinates(v3);
 
-			// GL Functions for displaying this face
-			glNormal3f(n1.x, n1.y, n1.z);
-			glTexCoord2f (v1.x, v1.y);
-			glVertex3f(v1.x, v1.y, v1.z);
-			glNormal3f(n2.x, n2.y, n2.z);
-			glTexCoord2f (v2.x, v2.y);
-			glVertex3f(v2.x, v2.y, v2.z);
-			glNormal3f(n3.x, n3.y, n3.z);
-			glTexCoord2f (v3.x, v3.y);
-			glVertex3f(v3.x, v3.y, v3.z);
+		glBegin(GL_TRIANGLES);
+		// Store face information here - vertex, normal, texture
+		point v1, v2, v3, n1, n2, n3, t1, t2, t3;
+		v1 = curr.vertList[curr.faceList[i].v1];
+		v2 = curr.vertList[curr.faceList[i].v2];
+		v3 = curr.vertList[curr.faceList[i].v3];
+		n1 = curr.vertList[curr.faceList[i].v1];
+		n2 = curr.vertList[curr.faceList[i].v2];
+		n3 = curr.vertList[curr.faceList[i].v3];
+		t1 = getTextureCoordinates(v1);
+		t2 = getTextureCoordinates(v2);
+		t3 = getTextureCoordinates(v3);
+
+		// GL Functions for displaying this face
+		glNormal3f(n1.x, n1.y, n1.z);
+		glTexCoord2f(t1.x, t1.y);
+		glVertex3f(v1.x, v1.y, v1.z);
+		glNormal3f(n2.x, n2.y, n2.z);
+		glTexCoord2f(t2.x, t2.y);
+		glVertex3f(v2.x, v2.y, v2.z);
+		glNormal3f(n3.x, n3.y, n3.z);
+		glTexCoord2f(t3.x, t3.y);
+		glVertex3f(v3.x, v3.y, v3.z);
 		glEnd();
 
-	}	
+	}
 
 	//glutSolidTeapot(1);
 	//setParameters(program);
@@ -151,7 +151,29 @@ void DisplayFunc(void)  {
  * Produces texture coordinates
  */
 point getTextureCoordinates(point p) {
-	return p;
+	point ret;
+
+	// Plane mapping
+	if (mapList[algorithmIndex] == PLANE_MAP) {
+		ret.x = p.x/2 + 0.5;
+		ret.y = p.y/2 + 0.5;
+		ret.z = 0;
+	}
+	// Sphere mapping - Assume radius of 1
+	else if (mapList[algorithmIndex] == SPHERE_MAP) {
+		float theta = atan(-p.z / p.x);
+		float phi = acos(-p.y);
+		ret.x = (theta + PI) / (2 * PI);
+		ret.y = phi / PI;
+		ret.z = 0;
+	}
+	// Covers cube mapping
+	else {
+		// printf("This type of mapping is not implemented\n");
+		ret = p;
+	}
+
+	return ret;
 }
 
 /**
