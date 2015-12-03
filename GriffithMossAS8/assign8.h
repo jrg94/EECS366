@@ -29,7 +29,7 @@ int getUniformVariable(GLuint program,char *name);
 void update_Light_Position();
 void setParameters(GLuint program);
 
-GLuint LoadTexture(char* filename);
+GLuint LoadTexture(int numOfTextures, char* filename...);
 void SetScene();
 
 void error_exit(int status, char *text);

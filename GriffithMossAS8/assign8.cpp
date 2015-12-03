@@ -471,6 +471,17 @@ void setShaders() {
     if (vertCompiled == GL_FALSE)
 	{
         cout<<"vert not compiled"<<endl;
+
+		GLint maxLog;
+		glGetObjectParameterivARB(vertex_shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLog);
+
+		//std::vector<char> errorLog(maxLog);
+		char *errorLog;
+		errorLog = (char*)malloc(maxLog);
+		glGetInfoLogARB(vertex_shader, maxLog, &maxLog, &errorLog[0]);
+
+		printf("%s", errorLog);
+		glDeleteObjectARB(vertex_shader);
 	}
 
 	if (fragCompiled == GL_FALSE)
@@ -564,8 +575,9 @@ void update_Light_Position() {
  */
 void setParameters(GLuint program) {
 	int light_loc;
-	int ambient_loc,diffuse_loc,specular_loc;
+	int ambient_loc, specular_loc;
 	int exponent_loc;
+	int mapping_loc;
 
 	//sample variable used to demonstrate how attributes are used in vertex shaders.
 	//can be defined as gloabal and can change per vertex
@@ -580,14 +592,14 @@ void setParameters(GLuint program) {
 	ambient_loc = getUniformVariable(program, "AmbientContribution");	
 	glUniform3fvARB(ambient_loc,1, ambient_cont);
 
-	diffuse_loc = getUniformVariable(program, "DiffuseContribution");
-	glUniform3fvARB(diffuse_loc,1, diffuse_cont);
-
 	specular_loc = getUniformVariable(program, "SpecularContribution");
 	glUniform3fvARB(specular_loc,1,specular_cont);
 
 	exponent_loc = getUniformVariable(program, "exponent");
 	glUniform1fARB(exponent_loc,exponent);
+
+	mapping_loc = getUniformVariable(program, "mapping_mode");
+	glUniform1fARB(mapping_loc, mapList[algorithmIndex]);
 
 	//Access attributes in vertex shader
 	tangent_loc = glGetAttribLocationARB(program,"tang");
@@ -606,11 +618,11 @@ void SetScene() {
 
 		// And if we are using a plane map
 		if (mapList[algorithmIndex] == PLANE_MAP) {
-			texture_map = LoadTexture("./planartexturemap/abstract2.tga");
+			texture_map = LoadTexture(1, "./planartexturemap/abstract2.tga");
 		}
 		// And if we are using a sphere map
 		else if (mapList[algorithmIndex] == SPHERE_MAP) {
-			texture_map = LoadTexture("./sphericaltexturemap/earth2.tga");
+			texture_map = LoadTexture(1, "./sphericaltexturemap/earth2.tga");
 		}
 		// Otherwise, this is not a valid scene
 		else {
@@ -623,12 +635,14 @@ void SetScene() {
 
 		// And if we are using a sphere map
 		if (mapList[algorithmIndex] == SPHERE_MAP) {
-			environment_map = LoadTexture("./sphericalenvironmentmap/house2.tga");
+			environment_map = LoadTexture(1, "./sphericalenvironmentmap/house2.tga");
 		}
 		// And if we are using a cube map
 		else if (mapList[algorithmIndex] == CUBE_MAP) {
 			// Requires 6 pieces
 			// "./cubicenvironmentmap/cm_back2.tga"
+			environment_map = LoadTexture(6, "./cubicenvironmentmap/cm_back2.tga", "./cubicenvironmentmap/cm_bottom2.tga", "./cubicenvironmentmap/cm_front2.tga",
+											"./cubicenvironmentmap/cm_left2.tga", "./cubicenvironmentmap/cm_bright2.tga", "./cubicenvironmentmap/cm_top2.tga");
 			printf("Cube maps are not implemented -> Not sure how to handle a set of tga files\n");
 		}
 		// Otherwise, this is not a valid scene
@@ -643,12 +657,12 @@ void SetScene() {
 		// And if we are using a plane map
 		if (mapList[algorithmIndex] == PLANE_MAP) {
 			// Requires 3 pieces
-			bump_map = LoadTexture("./planarbumpmap/abstract2.tga");
+			bump_map = LoadTexture(3, "./planarbumpmap/abstract2.tga", "./planarbumpmap/abstract_gray2.tga", "./planarbumpmap/blue_base2.tga");
 		}
 		// And if we are using a sphere map
 		else if (mapList[algorithmIndex] == SPHERE_MAP) {
-			// Requires 3 pieces
-			bump_map = LoadTexture("./sphericalbumpmap/earth2.tga");
+			// Requires 2 pieces
+			bump_map = LoadTexture(2, "./sphericalbumpmap/earth2.tga", "./sphericalbumpmap/earth_gray2.tga");
 		}
 		// Otherwise, this is not a valid scene
 		else {
@@ -664,7 +678,9 @@ shader file reader
 mesh reader for objectt
 ****************************************************************/
 
-GLuint LoadTexture(char* filename) {
+GLuint LoadTexture(int numOfTextures, char* filename...) {
+
+
 
 	GLuint id;
 
