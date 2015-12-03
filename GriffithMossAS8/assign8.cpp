@@ -14,6 +14,7 @@
 #include <string.h>
 #include <GL/glut.h>
 #include <windows.h>
+#include <vector>
 
 #include "glprocs.h"
 #include "assign8.h"
@@ -143,7 +144,7 @@ void DisplayFunc(void) {
 	}
 
 	//glutSolidTeapot(1);
-	//setParameters(program);
+	setParameters(program);
 	glutSwapBuffers();
 }
 
@@ -368,7 +369,7 @@ int main(int argc, char **argv) {
     glutMotionFunc(MotionFunc);
     glutKeyboardFunc(KeyboardFunc);
 	
-	//setShaders();
+	setShaders();
 
 	// Generate object list
 	objects = (obj *)malloc(sizeof(obj)*3);
@@ -464,14 +465,30 @@ void setShaders() {
 
 	glGetObjectParameterivARB(fragment_shader, GL_OBJECT_COMPILE_STATUS_ARB, &fragCompiled);
 	glGetObjectParameterivARB(vertex_shader, GL_OBJECT_COMPILE_STATUS_ARB, &vertCompiled);
-    if (!vertCompiled || !fragCompiled)
+
+    if (vertCompiled == GL_FALSE)
 	{
-        cout<<"not compiled"<<endl;
+        cout<<"vert not compiled"<<endl;
+	}
+
+	if (fragCompiled == GL_FALSE)
+	{
+		cout << "frag not compiled" << endl;
+
+		GLint maxLog;
+		glGetObjectParameterivARB(fragment_shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLog);
+
+		//std::vector<char> errorLog(maxLog);
+		char *errorLog;
+		errorLog = (char*)malloc(maxLog);
+		glGetInfoLogARB(fragment_shader, maxLog, &maxLog, &errorLog[0]);
+
+		printf("%s", errorLog);
+		glDeleteObjectARB(fragment_shader);
 	}
 	
 	//create an empty program object to attach the shader objects
 	p = glCreateProgramObjectARB();
-	program = p;
 
 	//attach the shader objects to the program object
 	glAttachObjectARB(p,vertex_shader);
@@ -497,11 +514,19 @@ void setShaders() {
 	*/
 	glLinkProgramARB(p);
 
+	GLint result;
+	glGetObjectParameterivARB(p, GL_OBJECT_LINK_STATUS_ARB, &result);
+
+	if (!result) {
+		printf("Failed to link file.\n");
+	}
 
 	//Start to use the program object, which is the part of the current rendering state
 	glUseProgramObjectARB(p);
 
 	setParameters(p);
+
+	program = p;
 }
 
 /**
