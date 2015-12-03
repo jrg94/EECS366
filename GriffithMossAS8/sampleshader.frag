@@ -88,7 +88,7 @@ void main(void)
 	}
 	// Bump Mapping
 	else if (mapping_mode == 2) {
-		trueNorm = trueNorm + BumpMapping(texCoord, .01);
+		trueNorm = vNormal + BumpMapping(texCoord, .01);
 		texCoord = texture_coordinate;
 	}
 	// Texture Mapping

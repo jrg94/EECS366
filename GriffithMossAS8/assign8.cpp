@@ -64,7 +64,7 @@ GLfloat ambient_cont[] = { .1,.1,.1 };
 GLfloat diffuse_cont[] = { 0.7038,0.27048,0.0828 };
 //GLfloat specular_cont[] = { 0.256777,0.137622,0.086014 };
 GLfloat specular_cont[] = { 1,1,1};
-GLfloat exponent = 25;
+GLfloat exponent = 30;
 
 // Projection, camera contral related declerations
 int WindowWidth, WindowHeight;
@@ -72,7 +72,7 @@ bool LookAtObject = false;
 bool ShowAxes = true;
 
 // Camera declarations
-float CameraRadius = 10;
+float CameraRadius = 5;
 float CameraTheta = PI / 2;
 float CameraPhi = PI / 2;
 
@@ -110,7 +110,12 @@ void DisplayFunc(void) {
 		0, 1, 0);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
+	if (mapList[algorithmIndex] == CUBE_MAP) {
+		glEnable(GL_TEXTURE_CUBE_MAP);
+	}
+	else {
+		glEnable(GL_TEXTURE_2D);
+	}
 
 	setParameters(program);
 
@@ -566,7 +571,7 @@ void update_Light_Position() {
 	// Create light components
 	GLfloat light_position[] = { CameraRadius*cos(CameraTheta)*sin(CameraPhi),			  
 			  CameraRadius*cos(CameraPhi) , 
-			  CameraRadius*sin(CameraTheta)*sin(CameraPhi),0.0 };
+			  CameraRadius*sin(CameraTheta)*sin(CameraPhi), 0.0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 }
 
@@ -599,13 +604,11 @@ void setParameters(GLuint program) {
 	glUniform1fARB(exponent_loc,exponent);
 
 	mapping_loc = getUniformVariable(program, "mapping_mode");
-	glUniform1fARB(mapping_loc, mapList[algorithmIndex]);
+	glUniform1fARB(mapping_loc, algorithmList[algorithmIndex]);
 
 	//Access attributes in vertex shader
 	tangent_loc = glGetAttribLocationARB(program,"tang");
 	glVertexAttrib1fARB(tangent_loc,tangent);
-
-	glActiveTexture(GL_TEXTURE0);
 }
 
 /**
@@ -745,6 +748,21 @@ void Load2DColorTexture(GLuint* id, uint* width, uint* height, char* filename, T
 }
 
 /**
+ * Stores the bump map
+ */
+void Load2DBumpMap(GLuint* id, uint* width, uint* height, char* filename, TGA** TGAImage, int index) {
+	glBindTexture(GL_TEXTURE_2D, *id);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, *width, *height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+	glBindTexture(GL_TEXTURE_2D, *id);
+}
+
+/**
  * A helper method for building textures within LoadTexture
  */
 void BuildTexture(GLuint* id, uint* width, uint* height, char* filename, TGA** TGAImage, int index) {
@@ -764,10 +782,12 @@ void BuildTexture(GLuint* id, uint* width, uint* height, char* filename, TGA** T
 	if (algorithmList[algorithmIndex] == BUMP_MAPPING) {
 		switch (index) {
 		case 0:
+			glActiveTextureARB(GL_TEXTURE0);
 			Load2DColorTexture(id, width, height, filename, TGAImage, index);
 			break;
 		case 1:
-			// TODO: Do something with texture map
+			glActiveTextureARB(GL_TEXTURE1);
+			Load2DBumpMap(id, width, height, filename, TGAImage, index);
 			break;
 		case 2:
 			// Do nothing
@@ -779,10 +799,12 @@ void BuildTexture(GLuint* id, uint* width, uint* height, char* filename, TGA** T
 	else {
 		// Plane or sphere mapping
 		if (mapList[algorithmIndex] == PLANE_MAP || mapList[algorithmIndex] == SPHERE_MAP) {
+			glActiveTextureARB(GL_TEXTURE0);
 			Load2DColorTexture(id, width, height, filename, TGAImage, index);
 		}
 		// Cube mapping
 		else {
+			glActiveTextureARB(GL_TEXTURE0);
 			LoadCubeTexture(id, width, height, filename, TGAImage, index);
 		}
 	}
