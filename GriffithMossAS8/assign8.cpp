@@ -570,8 +570,8 @@ void update_Light_Position() {
 	
 	// Create light components
 	GLfloat light_position[] = { CameraRadius*cos(CameraTheta)*sin(CameraPhi),			  
-			  CameraRadius*cos(CameraPhi) , 
-			  CameraRadius*sin(CameraTheta)*sin(CameraPhi), 0.0 };
+			  CameraRadius*cos(CameraPhi), 
+			  CameraRadius*sin(CameraTheta)*sin(CameraPhi) - 1, 0.0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 }
 
@@ -589,6 +589,8 @@ void setParameters(GLuint program) {
 	float tangent = 0.0;
 	float tangent_loc;
 
+	// Compute tangents and bitangents
+
 	// Loads the current texture based on algorithmIndex
 	SetScene();
 	update_Light_Position();
@@ -603,12 +605,16 @@ void setParameters(GLuint program) {
 	exponent_loc = getUniformVariable(program, "exponent");
 	glUniform1fARB(exponent_loc,exponent);
 
+	GLint mapping = algorithmList[algorithmIndex];
 	mapping_loc = getUniformVariable(program, "mapping_mode");
-	glUniform1fARB(mapping_loc, algorithmList[algorithmIndex]);
+	glUniform1fARB(mapping_loc, mapping);
+	//printf("%d\n", algorithmList[algorithmIndex]);
 
 	//Access attributes in vertex shader
 	tangent_loc = glGetAttribLocationARB(program,"tang");
 	glVertexAttrib1fARB(tangent_loc,tangent);
+	
+
 }
 
 /**
@@ -646,7 +652,6 @@ void SetScene() {
 			// "./cubicenvironmentmap/cm_back2.tga"
 			environment_map = LoadTexture(6, "./cubicenvironmentmap/cm_back2.tga", "./cubicenvironmentmap/cm_bottom2.tga", "./cubicenvironmentmap/cm_front2.tga",
 											"./cubicenvironmentmap/cm_left2.tga", "./cubicenvironmentmap/cm_right2.tga", "./cubicenvironmentmap/cm_top2.tga");
-			printf("Cube maps are not implemented -> Not sure how to handle a set of tga files\n");
 		}
 		// Otherwise, this is not a valid scene
 		else {
@@ -737,7 +742,7 @@ void Load2DColorTexture(GLuint* id, uint* width, uint* height, char* filename, T
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, *width, *height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 4, *width, *height, GL_RGBA, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
