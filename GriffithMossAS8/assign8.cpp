@@ -642,7 +642,7 @@ void SetScene() {
 			// Requires 6 pieces
 			// "./cubicenvironmentmap/cm_back2.tga"
 			environment_map = LoadTexture(6, "./cubicenvironmentmap/cm_back2.tga", "./cubicenvironmentmap/cm_bottom2.tga", "./cubicenvironmentmap/cm_front2.tga",
-											"./cubicenvironmentmap/cm_left2.tga", "./cubicenvironmentmap/cm_bright2.tga", "./cubicenvironmentmap/cm_top2.tga");
+											"./cubicenvironmentmap/cm_left2.tga", "./cubicenvironmentmap/cm_right2.tga", "./cubicenvironmentmap/cm_top2.tga");
 			printf("Cube maps are not implemented -> Not sure how to handle a set of tga files\n");
 		}
 		// Otherwise, this is not a valid scene
@@ -678,48 +678,113 @@ shader file reader
 mesh reader for objectt
 ****************************************************************/
 
-GLuint LoadTexture(int numOfTextures, char* filename...) {
-
-
-
-	GLuint id;
+/**
+ * A helper method for building textures within LoadTexture
+ */
+void BuildTexture(GLuint* id, uint* width, uint* height, char* filename, TGA** TGAImage, int index) {
 
 	// Load image from tga file
-	TGA *TGAImage = new TGA(filename);
-	//TGA *TGAImage	= new TGA("./cubicenvironmentmap/cm_right.tga");
+	*TGAImage = new TGA(filename);
 
 	// Use to dimensions of the image as the texture dimensions
-	uint width = TGAImage->GetWidth();
-	uint height = TGAImage->GetHeigth();
+	*width = (*TGAImage)->GetWidth();
+	*height = (*TGAImage)->GetHeigth();
 
-	// The parameters for actual textures are changed
-
-	glGenTextures(1, &id);
-
-	glBindTexture(GL_TEXTURE_2D, id);
-
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	glGenTextures(1, id);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	
+	// Bump Mapping
+	if (algorithmList[algorithmIndex] == BUMP_MAPPING) {
 
+	}
 
-	// Finaly build the mipmaps
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, TGAImage->GetPixels());
+	// Txture and environment mapping
+	else {
+		// Plane or sphere mapping
+		if (mapList[algorithmIndex] == PLANE_MAP || mapList[algorithmIndex] == SPHERE_MAP) {
+			glBindTexture(GL_TEXTURE_2D, *id);
 
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height, GL_RGBA, GL_UNSIGNED_BYTE, TGAImage->GetPixels());
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+			gluBuild2DMipmaps(GL_TEXTURE_2D, 4, *width, *height, GL_RGBA, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
 
-	glEnable(GL_TEXTURE_2D);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	glBindTexture(GL_TEXTURE_2D, id);
+			glEnable(GL_TEXTURE_2D);
+
+			glBindTexture(GL_TEXTURE_2D, *id);
+
+		}
+		// Cube mapping
+		else {
+			glBindTexture(GL_TEXTURE_CUBE_MAP, *id);
+
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+			GLenum side;
+
+			switch (index) {
+				// back
+			case 0:
+				side = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+				break;
+				// bottom
+			case 1:
+				side = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+				break;
+				// front
+			case 2:
+				side = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+				break;
+				// left
+			case 3:
+				side = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+				break;
+				// right
+			case 4:
+				side = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+				break;
+				// top
+			case 5:
+				side = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+				break;
+			}
+
+			glTexImage2D(side, 0, GL_RGBA, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+			//gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP, 4, *width, *height, GL_RGBA, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+			glEnable(GL_TEXTURE_CUBE_MAP);
+
+			glBindTexture(GL_TEXTURE_CUBE_MAP, *id);
+
+		}
+	}
+}
+
+/**
+ * Stores all the textures
+ */
+GLuint LoadTexture(int numOfTextures, char* filename...) {
+
+	GLuint id;
+	TGA *TGAImage;
+	uint width, height;
+
+	// The parameters for actual textures are changed
+	for (int i = 0; i < numOfTextures; i++) {
+		BuildTexture(&id, &width, &height, filename+i, &TGAImage, i);
+	}
 
 	delete TGAImage;
 

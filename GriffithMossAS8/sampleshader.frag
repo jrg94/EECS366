@@ -2,8 +2,10 @@
 
 uniform vec3 AmbientContribution,SpecularContribution;
 uniform float exponent;
-uniform sampler2D tex;
 uniform int mapping_mode;
+
+uniform sampler2D tex;
+uniform samplerCube cube_texture;
 
 varying vec3 vNormal, vLight, vView, vHalfway;
 varying vec2 texture_coordinate;
