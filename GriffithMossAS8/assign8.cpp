@@ -59,10 +59,12 @@ int lightSource = 0;
 int program = -1;
 
 // Parameters for Copper (From: "Computer Graphics Using OpenGL" BY F.S. Hill, Jr.) 
-GLfloat ambient_cont[] = { 0.19125,0.0735,0.0225 };
+//GLfloat ambient_cont[] = { 0.19125,0.0735,0.0225 };
+GLfloat ambient_cont[] = { .1,.1,.1 };
 GLfloat diffuse_cont[] = { 0.7038,0.27048,0.0828 };
-GLfloat specular_cont[] = { 0.256777,0.137622,0.086014 };
-GLfloat exponent = 12.8;
+//GLfloat specular_cont[] = { 0.256777,0.137622,0.086014 };
+GLfloat specular_cont[] = { 1,1,1};
+GLfloat exponent = 25;
 
 // Projection, camera contral related declerations
 int WindowWidth, WindowHeight;
@@ -144,7 +146,7 @@ void DisplayFunc(void) {
 	}
 
 	//glutSolidTeapot(1);
-	setParameters(program);
+	//setParameters(program);
 	glutSwapBuffers();
 }
 
@@ -575,22 +577,23 @@ void setParameters(GLuint program) {
 	update_Light_Position();
 
 	//Access uniform variables in shaders
-	//ambient_loc = getUniformVariable(program, "AmbientContribution");	
-	//glUniform3fvARB(ambient_loc,1, ambient_cont);
+	ambient_loc = getUniformVariable(program, "AmbientContribution");	
+	glUniform3fvARB(ambient_loc,1, ambient_cont);
 
-	//diffuse_loc = getUniformVariable(program, "DiffuseContribution");
-	//glUniform3fvARB(diffuse_loc,1, diffuse_cont);
+	diffuse_loc = getUniformVariable(program, "DiffuseContribution");
+	glUniform3fvARB(diffuse_loc,1, diffuse_cont);
 
-	//specular_loc = getUniformVariable(program, "SpecularContribution");
-	//glUniform3fvARB(specular_loc,1,specular_cont);
+	specular_loc = getUniformVariable(program, "SpecularContribution");
+	glUniform3fvARB(specular_loc,1,specular_cont);
 
-	//exponent_loc = getUniformVariable(program, "exponent");
-	//glUniform1fARB(exponent_loc,exponent);
+	exponent_loc = getUniformVariable(program, "exponent");
+	glUniform1fARB(exponent_loc,exponent);
 
 	//Access attributes in vertex shader
 	tangent_loc = glGetAttribLocationARB(program,"tang");
 	glVertexAttrib1fARB(tangent_loc,tangent);
 
+	glActiveTexture(GL_TEXTURE0);
 }
 
 /**

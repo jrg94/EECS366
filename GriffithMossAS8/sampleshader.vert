@@ -6,6 +6,7 @@ uniform float exponent;
 attribute float tang;
 
 varying vec3 vNormal, vLight, vView, vHalfway;
+varying vec4 texture_coordinate;
 
 /*
 ===============================================================================
@@ -28,7 +29,9 @@ void main(void)
    // Compute the halfway vector if the halfway approximation is used   
    
    vHalfway  = normalize(vLight + vView );
-	
+
+   texture_coordinate = gl_MultiTexCoord0;
+
    float data_from_opengl = tang;
    gl_Position = ftransform();
    

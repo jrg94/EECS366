@@ -2,7 +2,9 @@
 
 uniform vec3 AmbientContribution,DiffuseContribution,SpecularContribution;
 uniform float exponent;
+uniform sampler2D texture;
 varying vec3 vNormal, vLight, vView, vHalfway;
+varying vec4 texture_coordinate;
 
 vec3 AmbientComponent(void)
 {
@@ -11,7 +13,8 @@ vec3 AmbientComponent(void)
 
 vec3 DiffuseComponent(void)
 {
-   return vec3(DiffuseContribution * max(0.0, dot(vNormal, vLight)));
+   vec3 diffuse_color = texture2D(texture, vec2(texture_coordinate.x, texture_coordinate.y)).rgb;
+   return vec3((DiffuseContribution * 0) + diffuse_color * max(0.0, dot(vNormal, vLight)));
 }
 
 vec3 SpecularComponent(void)
