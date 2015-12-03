@@ -675,8 +675,74 @@ void SetScene() {
 Utility methods:
 texture file reader
 shader file reader
-mesh reader for objectt
+mesh reader for object
 ****************************************************************/
+
+void LoadCubeTexture(GLuint* id, uint* width, uint* height, char* filename, TGA** TGAImage, int index) {
+	glBindTexture(GL_TEXTURE_CUBE_MAP, *id);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	GLenum side;
+
+	switch (index) {
+		// back
+	case 0:
+		side = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+		break;
+		// bottom
+	case 1:
+		side = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+		break;
+		// front
+	case 2:
+		side = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+		break;
+		// left
+	case 3:
+		side = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+		break;
+		// right
+	case 4:
+		side = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+		break;
+		// top
+	case 5:
+		side = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+		break;
+	}
+
+	glTexImage2D(side, 0, GL_RGBA, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+	//gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP, 4, *width, *height, GL_RGBA, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glEnable(GL_TEXTURE_CUBE_MAP);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, *id);
+}
+
+void Load2DColorTexture(GLuint* id, uint* width, uint* height, char* filename, TGA** TGAImage, int index) {
+	glBindTexture(GL_TEXTURE_2D, *id);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 4, *width, *height, GL_RGBA, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glEnable(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, *id);
+}
 
 /**
  * A helper method for building textures within LoadTexture
@@ -696,78 +762,28 @@ void BuildTexture(GLuint* id, uint* width, uint* height, char* filename, TGA** T
 	
 	// Bump Mapping
 	if (algorithmList[algorithmIndex] == BUMP_MAPPING) {
-
+		switch (index) {
+		case 0:
+			Load2DColorTexture(id, width, height, filename, TGAImage, index);
+			break;
+		case 1:
+			// TODO: Do something with texture map
+			break;
+		case 2:
+			// Do nothing
+			break;
+		}
 	}
 
 	// Txture and environment mapping
 	else {
 		// Plane or sphere mapping
 		if (mapList[algorithmIndex] == PLANE_MAP || mapList[algorithmIndex] == SPHERE_MAP) {
-			glBindTexture(GL_TEXTURE_2D, *id);
-
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-
-			glTexImage2D(GL_TEXTURE_2D, 0, 4, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
-			gluBuild2DMipmaps(GL_TEXTURE_2D, 4, *width, *height, GL_RGBA, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-			glEnable(GL_TEXTURE_2D);
-
-			glBindTexture(GL_TEXTURE_2D, *id);
-
+			Load2DColorTexture(id, width, height, filename, TGAImage, index);
 		}
 		// Cube mapping
 		else {
-			glBindTexture(GL_TEXTURE_CUBE_MAP, *id);
-
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-			GLenum side;
-
-			switch (index) {
-				// back
-			case 0:
-				side = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-				break;
-				// bottom
-			case 1:
-				side = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-				break;
-				// front
-			case 2:
-				side = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-				break;
-				// left
-			case 3:
-				side = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-				break;
-				// right
-			case 4:
-				side = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-				break;
-				// top
-			case 5:
-				side = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-				break;
-			}
-
-			glTexImage2D(side, 0, GL_RGBA, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
-			//gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP, 4, *width, *height, GL_RGBA, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
-
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-			glEnable(GL_TEXTURE_CUBE_MAP);
-
-			glBindTexture(GL_TEXTURE_CUBE_MAP, *id);
-
+			LoadCubeTexture(id, width, height, filename, TGAImage, index);
 		}
 	}
 }
