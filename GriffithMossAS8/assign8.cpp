@@ -605,9 +605,8 @@ void setParameters(GLuint program) {
 	exponent_loc = getUniformVariable(program, "exponent");
 	glUniform1fARB(exponent_loc,exponent);
 
-	GLint mapping = algorithmList[algorithmIndex];
 	mapping_loc = getUniformVariable(program, "mapping_mode");
-	glUniform1fARB(mapping_loc, mapping);
+	glUniform1iARB(mapping_loc, algorithmList[algorithmIndex]);
 	//printf("%d\n", algorithmList[algorithmIndex]);
 
 	//Access attributes in vertex shader

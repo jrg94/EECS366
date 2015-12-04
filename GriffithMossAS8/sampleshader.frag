@@ -31,40 +31,26 @@ vec3 DiffuseComponent(vec2 texCoord)
 vec3 SpecularComponent(void)
 {   
 	// Approximation to the specular reflection using the halfway vector
-	return vec3(SpecularContribution * pow(max(0.0, dot(trueNorm, normalize(vHalfway))), exponent));  
+	return vec3(SpecularContribution * pow(max(0.0, dot(trueNorm, vHalfway)), exponent));  
 }
 
+/**
+ * Produces the environment map coordinates
+ */
 vec2 EnvironmentMapping(void)
 {
-	float PI = 3.14159265359f;
-
 	// Normalize all vectors
 	vec3 N = normalize(vNormal);
 	vec3 L = normalize(vLight);
 
 	// Calculate reflection ray
-	vec3 R = normalize(N - dot(N, L) * 2 * N);
-
-	// Compute texture coordinates - Assuming sphere
-
-	// ? = atan2(-(z - cz), x - cx)
-	float theta = atan(-R.z / R.x);
-
-	// f = acos(-(y - cy) / r);
-	float phi = acos(-R.y);
-
-	// u = (? + p) / 2 p
-	float texx = (theta + PI) / (2 * PI);
-
-	// v = f / p;
-	float texy = phi / PI;
-
-	vec2 tex = vec2( texx, texy);
-	if (R.x > 0) {
-		tex.x = tex.x + 0.5;
-	}
-
-	return tex;
+	vec3 R = reflect(L, N);
+	
+	float M = 2 * sqrt(pow(R.x, 2) + pow(R.y, 2) + pow(R.z, 2));
+	
+	vec2 vN = R.xy / M + .5;
+	
+	return -vN;
 }
 
 vec3 BumpMapping(vec2 texCoord, float offset) {
@@ -94,6 +80,7 @@ vec3 BumpMapping(vec2 texCoord, float offset) {
 void main(void)
 {
 	vec2 texCoord;
+	vec3 color;
 	
 	vec3 N = normalize(vNormal);
 	vec3 H = normalize(vHalfway);
@@ -103,22 +90,21 @@ void main(void)
 	// Environment mapping      
 	if (mapping_mode == 1) {
 		trueNorm = V;
-		texCoord = EnvironmentMapping();
+		//texCoord = EnvironmentMapping();
+		color = texture2D(texture_map, EnvironmentMapping()).rgb;
 	}
 	// Bump Mapping
 	else if (mapping_mode == 2) {
 		trueNorm = V + BumpMapping(texCoord, .1);
-		//vec3 norm = texture2D(bump_map, gl_TexCoord[0].st).rgb * 2.0 - 1.0;
 		texCoord = texture_coordinate;
+		color = (AmbientComponent() + DiffuseComponent(texCoord)) + SpecularComponent();
 	}
 	// Texture Mapping
 	else {
 		trueNorm = N;
-		//texCoord = texture_coordinate;
-	}
-
-	// Phong Illumination Model   
-	vec3 color = (AmbientComponent() + DiffuseComponent(texCoord)) + SpecularComponent();  
+		texCoord = texture_coordinate;
+		color = (AmbientComponent() + DiffuseComponent(texCoord)) + SpecularComponent();
+	}  
 	
 	// Final color
 	gl_FragColor = vec4(color, 1.0);
