@@ -571,7 +571,7 @@ void update_Light_Position() {
 	// Create light components
 	GLfloat light_position[] = { CameraRadius*cos(CameraTheta)*sin(CameraPhi),			  
 			  CameraRadius*cos(CameraPhi), 
-			  CameraRadius*sin(CameraTheta)*sin(CameraPhi) - 1, 0.0 };
+			  CameraRadius*sin(CameraTheta)*sin(CameraPhi) , 0.0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 }
 
@@ -726,6 +726,8 @@ void LoadCubeTexture(GLuint* id, uint* width, uint* height, char* filename, TGA*
 	glTexImage2D(side, 0, GL_RGBA, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
 	//gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP, 4, *width, *height, GL_RGBA, GL_UNSIGNED_BYTE, (*TGAImage)->GetPixels());
 
+	glUniform1iARB(getUniformVariable(program, "square"), 0);
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glEnable(GL_TEXTURE_CUBE_MAP);
@@ -792,6 +794,7 @@ void BuildTexture(GLuint* id, uint* width, uint* height, char* filename, TGA** T
 		case 1:
 			glActiveTextureARB(GL_TEXTURE1);
 			Load2DBumpMap(id, width, height, filename, TGAImage, index);
+			glUniform1iARB(getUniformVariable(program, "bump_map"), 1);
 			break;
 		case 2:
 			// Do nothing

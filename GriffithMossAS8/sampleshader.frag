@@ -3,6 +3,7 @@
 uniform vec3 AmbientContribution,SpecularContribution;
 uniform float exponent;
 uniform int mapping_mode;
+uniform int square;
 
 uniform sampler2D texture_map;
 uniform sampler2D bump_map;
@@ -59,13 +60,13 @@ vec3 BumpMapping(vec2 texCoord, float offset) {
 	//vec3 N = normalize(texture2D(bump_map, gl_TexCoord[0].st).xyz * 2.0 - 1.0);
 	
 	float A = texture2D( bump_map, texCoord.xy ).x;
-	float B = texture2D( bump_map, texCoord.xy + vec2( 1, 0 )).x;
-	float C = texture2D( bump_map, texCoord.xy + vec2( 0, 1 )).x;
+	float B = texture2D( bump_map, texCoord.xy + vec2( .01, 0 )).x;
+	float C = texture2D( bump_map, texCoord.xy + vec2( 0, .01 )).x;
 	
 	float D = B - A;
 	float E = C - A;
 	
-	vec3 N = vec3(D, E, 4);
+	vec3 N = vec3(D, E, .1);
 	N = normalize(N);
 	
 	return N;
@@ -90,12 +91,16 @@ void main(void)
 	// Environment mapping      
 	if (mapping_mode == 1) {
 		trueNorm = V;
-		//texCoord = EnvironmentMapping();
-		color = texture2D(texture_map, EnvironmentMapping()).rgb;
+		if (square == 0) {
+			color = texture2D(texture_map, EnvironmentMapping()).rgb;
+		} 
+		else if (square == 1) {
+			color = texture(cube_texture, vec3(EnvironmentMapping(), 0.0)).rgb;
+		}
 	}
 	// Bump Mapping
 	else if (mapping_mode == 2) {
-		trueNorm = V + BumpMapping(texCoord, .1);
+		trueNorm = N + BumpMapping(texCoord, .1);
 		texCoord = texture_coordinate;
 		color = (AmbientComponent() + DiffuseComponent(texCoord)) + SpecularComponent();
 	}
